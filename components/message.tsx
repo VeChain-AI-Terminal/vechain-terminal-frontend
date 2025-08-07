@@ -193,7 +193,7 @@ const PurePreviewMessage = ({
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId} className="skeleton">
-                      <p>Getting chain context...</p>
+                      <p>Making transaction...</p>
                     </div>
                   );
                 }
