@@ -7,7 +7,7 @@ import {
   streamText,
 } from "ai";
 import { auth, type UserType } from "@/app/(auth)/auth";
-import { type RequestHints, systemPrompt } from "@/lib/ai/prompts";
+import { systemPrompt } from "@/lib/ai/prompts";
 import {
   createStreamId,
   deleteChatById,
@@ -19,10 +19,6 @@ import {
 } from "@/lib/db/queries";
 import { convertToUIMessages, generateUUID } from "@/lib/utils";
 import { generateTitleFromUserMessage } from "../../actions";
-import { createDocument } from "@/lib/ai/tools/create-document";
-import { updateDocument } from "@/lib/ai/tools/update-document";
-import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
-import { getWeather } from "@/lib/ai/tools/get-weather";
 import { isProductionEnvironment } from "@/lib/constants";
 import { myProvider } from "@/lib/ai/providers";
 import { entitlementsByUserType } from "@/lib/ai/entitlements";
@@ -127,15 +123,6 @@ export async function POST(request: Request) {
     const messagesFromDb = await getMessagesByChatId({ id });
     const uiMessages = [...convertToUIMessages(messagesFromDb), message];
 
-    const { longitude, latitude, city, country } = geolocation(request);
-
-    const requestHints: RequestHints = {
-      longitude,
-      latitude,
-      city,
-      country,
-    };
-
     await saveMessages({
       messages: [
         {
@@ -156,33 +143,18 @@ export async function POST(request: Request) {
       execute: ({ writer: dataStream }) => {
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
-          system: systemPrompt({ selectedChatModel, requestHints }),
+          system: systemPrompt({ selectedChatModel }),
           messages: convertToModelMessages(uiMessages),
           stopWhen: stepCountIs(5),
           experimental_activeTools:
             selectedChatModel === "chat-model-reasoning"
               ? []
-              : [
-                  "getWeather",
-                  "getChainContext",
-                  "getValidators",
-                  "nebulaTool",
-                  "createDocument",
-                  "updateDocument",
-                  "requestSuggestions",
-                ],
+              : ["getChainContext", "getValidators", "nebulaTool"],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
-            getWeather,
             getChainContext,
             nebulaTool,
             getValidators,
-            createDocument: createDocument({ session, dataStream }),
-            updateDocument: updateDocument({ session, dataStream }),
-            requestSuggestions: requestSuggestions({
-              session,
-              dataStream,
-            }),
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,

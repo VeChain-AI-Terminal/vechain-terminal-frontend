@@ -9,7 +9,6 @@ import {
   useState,
 } from 'react';
 import { cn } from '@/lib/utils';
-import { useArtifactSelector } from '@/hooks/use-artifact';
 
 export interface ConsoleOutputContent {
   type: 'text' | 'image';
@@ -32,7 +31,6 @@ export function Console({ consoleOutputs, setConsoleOutputs }: ConsoleProps) {
   const [isResizing, setIsResizing] = useState(false);
   const consoleEndRef = useRef<HTMLDivElement>(null);
 
-  const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
 
   const minHeight = 100;
   const maxHeight = 800;
@@ -70,11 +68,7 @@ export function Console({ consoleOutputs, setConsoleOutputs }: ConsoleProps) {
     consoleEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [consoleOutputs]);
 
-  useEffect(() => {
-    if (!isArtifactVisible) {
-      setConsoleOutputs([]);
-    }
-  }, [isArtifactVisible, setConsoleOutputs]);
+  
 
   return consoleOutputs.length > 0 ? (
     <>
