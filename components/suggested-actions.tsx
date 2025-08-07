@@ -6,6 +6,8 @@ import { memo } from "react";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import type { VisibilityType } from "./visibility-selector";
 import type { ChatMessage } from "@/lib/types";
+import { toast } from "sonner";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 interface SuggestedActionsProps {
   chatId: string;
@@ -18,6 +20,8 @@ function PureSuggestedActions({
   sendMessage,
   selectedVisibilityType,
 }: SuggestedActionsProps) {
+  const { address, isConnected, caipAddress } = useAppKitAccount();
+
   const suggestedActions = [
     {
       title: "Show me the best yield options",
@@ -72,7 +76,13 @@ function PureSuggestedActions({
         >
           <Button
             variant="ghost"
-            onClick={async () => {
+            onClick={async (e) => {
+              e.preventDefault();
+              if (!isConnected) {
+                toast.error("Please connect your wallet to send a message");
+                return;
+              }
+
               window.history.replaceState({}, "", `/chat/${chatId}`);
 
               sendMessage({
