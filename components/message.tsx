@@ -208,6 +208,7 @@ const PurePreviewMessage = ({
                       to={to}
                       value={value}
                       chainId={chainId}
+                      key={toolCallId}
                     />
                   );
                 }
