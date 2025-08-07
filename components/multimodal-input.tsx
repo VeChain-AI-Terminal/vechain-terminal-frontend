@@ -28,6 +28,7 @@ import { ArrowDown } from "lucide-react";
 import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom";
 import type { VisibilityType } from "./visibility-selector";
 import type { Attachment, ChatMessage } from "@/lib/types";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 function PureMultimodalInput({
   chatId,
@@ -58,6 +59,7 @@ function PureMultimodalInput({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
+  const { address, isConnected, caipAddress } = useAppKitAccount();
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -111,6 +113,11 @@ function PureMultimodalInput({
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
 
   const submitForm = useCallback(() => {
+    if (!isConnected) {
+      toast.error("Please connect your wallet to send a message");
+      return;
+    }
+
     window.history.replaceState({}, "", `/chat/${chatId}`);
 
     sendMessage({
