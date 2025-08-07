@@ -60,9 +60,9 @@ export async function createUser(email: string, password: string) {
 }
 
 export async function createGuestUser() {
+  console.log("creating guest user");
   const email = `guest-${Date.now()}`;
   const password = generateHashedPassword(generateUUID());
-
   try {
     return await db.insert(user).values({ email, password }).returning({
       id: user.id,
@@ -96,6 +96,7 @@ export async function saveChat({
       visibility,
     });
   } catch (error) {
+    console.error(error);
     throw new ChatSDKError("bad_request:database", "Failed to save chat");
   }
 }

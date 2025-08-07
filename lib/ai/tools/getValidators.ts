@@ -87,7 +87,7 @@ export const getValidators = tool({
           const delegatedBTCPercent = `${parseFloat(v.btcPowerRate).toFixed(
             2
           )}%`;
-          const commission = `${v.commission}%`;
+          const commission = `${(v.commission / 10).toFixed(2)}%`;
           const hybridScore = `${parseFloat(v.proportion).toFixed(2)}%`;
           const coreRewardRate = `${parseFloat(v.apr).toFixed(2)}%`;
           const btcRewardRate = `${parseFloat(v.btcStakeApr).toFixed(2)}%`;
