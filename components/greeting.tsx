@@ -5,7 +5,7 @@ export const Greeting = () => {
   return (
     <div
       key="overview"
-      className="max-w-3xl mx-auto md:mt-20 px-8 size-full flex flex-col justify-center"
+      className="max-w-3xl mx-auto md:mt-20 px-8 size-full flex flex-col justify-center gap-2"
     >
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -29,7 +29,7 @@ export const Greeting = () => {
         transition={{ delay: 0.6 }}
         className="text-2xl text-zinc-500"
       >
-        A focused, no-nonsense AI for Core Blockchain.
+        AI co-pilot for the Bitcoin on CORE
       </motion.div>
     </div>
   );

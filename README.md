@@ -1,6 +1,6 @@
 # Orange Terminal
 
-A focused, no-nonsense AI for Core Blockchain.
+AI co-pilot for the Bitcoin on CORE
 
 ## Features
 

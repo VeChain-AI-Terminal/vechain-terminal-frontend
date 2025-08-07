@@ -253,14 +253,14 @@ function PureMultimodalInput({
           />
         )}
 
-      <input
+      {/* <input
         type="file"
         className="fixed -top-4 -left-4 size-0.5 opacity-0 pointer-events-none"
         ref={fileInputRef}
         multiple
         onChange={handleFileChange}
         tabIndex={-1}
-      />
+      /> */}
 
       {(attachments.length > 0 || uploadQueue.length > 0) && (
         <div
@@ -295,7 +295,7 @@ function PureMultimodalInput({
           "min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl !text-base bg-muted pb-10 dark:border-zinc-700",
           className
         )}
-        rows={2}
+        rows={1}
         autoFocus
         onKeyDown={(event) => {
           if (
@@ -313,10 +313,10 @@ function PureMultimodalInput({
           }
         }}
       />
-
+      {/* 
       <div className="absolute bottom-0 p-2 w-fit flex flex-row justify-start">
         <AttachmentsButton fileInputRef={fileInputRef} status={status} />
-      </div>
+      </div> */}
 
       <div className="absolute bottom-0 right-0 p-2 w-fit flex flex-row justify-end">
         {status === "submitted" ? (

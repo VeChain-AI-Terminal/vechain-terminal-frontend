@@ -15,7 +15,7 @@ export const nebulaTool = tool({
     message: z.string(), // User's question
     signer_wallet_address: z
       .string()
-      .default("0x0000000000000000000000000000000000000000"), // User's wallet address
+      .describe("The wallet address of the user"),
     contextFilter: z
       .object({
         chains: z.array(z.number()).optional(),
