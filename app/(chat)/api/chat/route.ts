@@ -36,6 +36,7 @@ import type { VisibilityType } from "@/components/visibility-selector";
 import { getChainContext } from "@/lib/ai/tools/getChainContext";
 import { getValidators } from "@/lib/ai/tools/getValidators";
 import { nebulaTool } from "@/lib/ai/tools/nebulaTool";
+import { makeTransaction } from "@/lib/ai/tools/makeTransaction";
 
 export const maxDuration = 60;
 
@@ -149,12 +150,18 @@ export async function POST(request: Request) {
           experimental_activeTools:
             selectedChatModel === "chat-model-reasoning"
               ? []
-              : ["getChainContext", "getValidators", "nebulaTool"],
+              : [
+                  "getChainContext",
+                  "getValidators",
+                  "nebulaTool",
+                  "makeTransaction",
+                ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
             getChainContext,
             nebulaTool,
             getValidators,
+            makeTransaction,
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,

@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { getChainContext } from "./ai/tools/getChainContext";
 import type { getValidators } from "./ai/tools/getValidators";
 import type { nebulaTool } from "./ai/tools/nebulaTool";
+import type { makeTransaction } from "./ai/tools/makeTransaction";
 import type { InferUITool, UIMessage } from "ai";
 
 export type DataPart = { type: "append-message"; message: string };
@@ -15,11 +16,13 @@ export type MessageMetadata = z.infer<typeof messageMetadataSchema>;
 type getChainContextTool = InferUITool<typeof getChainContext>;
 type getValidatorsTool = InferUITool<typeof getValidators>;
 type nebulaToolTool = InferUITool<typeof nebulaTool>;
+type makeTransactionTool = InferUITool<typeof makeTransaction>;
 
 export type ChatTools = {
   getChainContext: getChainContextTool;
   getValidators: getValidatorsTool;
   nebulaTool: nebulaToolTool;
+  makeTransaction: makeTransactionTool;
 };
 
 export type CustomUIDataTypes = {

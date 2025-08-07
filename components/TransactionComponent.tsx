@@ -5,12 +5,12 @@ import { parseEther, type Address, formatEther } from "viem";
 import { useAppKitAccount } from "@reown/appkit/react";
 import Image from "next/image";
 
-interface TransactionComponentProps {
+export type TransactionComponentProps = {
   from: string;
   to: string;
   value: string;
   chainId: number;
-}
+};
 
 const chainIdToName = {
   1114: "Core Blockchain Testnet 2",

@@ -1,22 +1,25 @@
-'use client';
-import cx from 'classnames';
-import { AnimatePresence, motion } from 'framer-motion';
-import { memo, useState } from 'react';
-import type { Vote } from '@/lib/db/schema';
-import { PencilEditIcon, SparklesIcon } from './icons';
-import { Markdown } from './markdown';
-import { MessageActions } from './message-actions';
-import { PreviewAttachment } from './preview-attachment';
-import equal from 'fast-deep-equal';
-import { cn, sanitizeText } from '@/lib/utils';
-import { Button } from './ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-import { MessageEditor } from './message-editor';
-import { MessageReasoning } from './message-reasoning';
-import type { UseChatHelpers } from '@ai-sdk/react';
-import type { ChatMessage } from '@/lib/types';
-import { useDataStream } from './data-stream-provider';
-import { ChainContext } from '@/lib/ai/tools/getChainContext';
+"use client";
+import cx from "classnames";
+import { AnimatePresence, motion } from "framer-motion";
+import { memo, useState } from "react";
+import type { Vote } from "@/lib/db/schema";
+import { PencilEditIcon, SparklesIcon } from "./icons";
+import { Markdown } from "./markdown";
+import { MessageActions } from "./message-actions";
+import { PreviewAttachment } from "./preview-attachment";
+import equal from "fast-deep-equal";
+import { cn, sanitizeText } from "@/lib/utils";
+import { Button } from "./ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { MessageEditor } from "./message-editor";
+import { MessageReasoning } from "./message-reasoning";
+import type { UseChatHelpers } from "@ai-sdk/react";
+import type { ChatMessage } from "@/lib/types";
+import { useDataStream } from "./data-stream-provider";
+import { ChainContext } from "@/lib/ai/tools/getChainContext";
+import TransactionComponent, {
+  TransactionComponentProps,
+} from "@/components/TransactionComponent";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -35,15 +38,15 @@ const PurePreviewMessage = ({
   message: ChatMessage;
   vote: Vote | undefined;
   isLoading: boolean;
-  setMessages: UseChatHelpers<ChatMessage>['setMessages'];
-  regenerate: UseChatHelpers<ChatMessage>['regenerate'];
+  setMessages: UseChatHelpers<ChatMessage>["setMessages"];
+  regenerate: UseChatHelpers<ChatMessage>["regenerate"];
   isReadonly: boolean;
   requiresScrollPadding: boolean;
 }) => {
-  const [mode, setMode] = useState<'view' | 'edit'>('view');
+  const [mode, setMode] = useState<"view" | "edit">("view");
 
   const attachmentsFromMessage = message.parts.filter(
-    (part) => part.type === 'file',
+    (part) => part.type === "file"
   );
 
   useDataStream();
@@ -59,14 +62,14 @@ const PurePreviewMessage = ({
       >
         <div
           className={cn(
-            'flex gap-4 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl',
+            "flex gap-4 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl",
             {
-              'w-full': mode === 'edit',
-              'group-data-[role=user]/message:w-fit': mode !== 'edit',
-            },
+              "w-full": mode === "edit",
+              "group-data-[role=user]/message:w-fit": mode !== "edit",
+            }
           )}
         >
-          {message.role === 'assistant' && (
+          {message.role === "assistant" && (
             <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border bg-background">
               <div className="translate-y-px">
                 <SparklesIcon size={14} />
@@ -75,8 +78,8 @@ const PurePreviewMessage = ({
           )}
 
           <div
-            className={cn('flex flex-col gap-4 w-full', {
-              'min-h-96': message.role === 'assistant' && requiresScrollPadding,
+            className={cn("flex flex-col gap-4 w-full", {
+              "min-h-96": message.role === "assistant" && requiresScrollPadding,
             })}
           >
             {attachmentsFromMessage.length > 0 && (
@@ -88,7 +91,7 @@ const PurePreviewMessage = ({
                   <PreviewAttachment
                     key={attachment.url}
                     attachment={{
-                      name: attachment.filename ?? 'file',
+                      name: attachment.filename ?? "file",
                       contentType: attachment.mediaType,
                       url: attachment.url,
                     }}
@@ -101,7 +104,7 @@ const PurePreviewMessage = ({
               const { type } = part;
               const key = `message-${message.id}-part-${index}`;
 
-              if (type === 'reasoning' && part.text?.trim().length > 0) {
+              if (type === "reasoning" && part.text?.trim().length > 0) {
                 return (
                   <MessageReasoning
                     key={key}
@@ -111,11 +114,11 @@ const PurePreviewMessage = ({
                 );
               }
 
-              if (type === 'text') {
-                if (mode === 'view') {
+              if (type === "text") {
+                if (mode === "view") {
                   return (
                     <div key={key} className="flex flex-row gap-2 items-start">
-                      {message.role === 'user' && !isReadonly && (
+                      {message.role === "user" && !isReadonly && (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
@@ -123,7 +126,7 @@ const PurePreviewMessage = ({
                               variant="ghost"
                               className="px-2 h-fit rounded-full text-muted-foreground opacity-0 group-hover/message:opacity-100"
                               onClick={() => {
-                                setMode('edit');
+                                setMode("edit");
                               }}
                             >
                               <PencilEditIcon />
@@ -135,9 +138,9 @@ const PurePreviewMessage = ({
 
                       <div
                         data-testid="message-content"
-                        className={cn('flex flex-col gap-4', {
-                          'bg-primary text-primary-foreground px-3 py-2 rounded-xl':
-                            message.role === 'user',
+                        className={cn("flex flex-col gap-4", {
+                          "bg-primary text-primary-foreground px-3 py-2 rounded-xl":
+                            message.role === "user",
                         })}
                       >
                         <Markdown>{sanitizeText(part.text)}</Markdown>
@@ -146,7 +149,7 @@ const PurePreviewMessage = ({
                   );
                 }
 
-                if (mode === 'edit') {
+                if (mode === "edit") {
                   return (
                     <div key={key} className="flex flex-row gap-2 items-start">
                       <div className="size-8" />
@@ -163,11 +166,9 @@ const PurePreviewMessage = ({
                 }
               }
 
-           
-
-              if (type === 'tool-getChainContext') {
+              if (type === "tool-getChainContext") {
                 const { toolCallId, state } = part;
-                if (state === 'input-available') {
+                if (state === "input-available") {
                   return (
                     <div key={toolCallId} className="skeleton">
                       <p>Getting chain context...</p>
@@ -175,7 +176,7 @@ const PurePreviewMessage = ({
                   );
                 }
 
-                if (state === 'output-available') {
+                if (state === "output-available") {
                   const { output } = part;
 
                   const chainContext = output as ChainContext;
@@ -187,11 +188,36 @@ const PurePreviewMessage = ({
                 }
               }
 
-              if (type === 'tool-getValidators') {
+              if (type === "tool-makeTransaction") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId} className="skeleton">
+                      <p>Getting chain context...</p>
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+                  const { from, to, value, chainId } =
+                    output as TransactionComponentProps;
+                  return (
+                    <TransactionComponent
+                      from={from}
+                      to={to}
+                      value={value}
+                      chainId={chainId}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-getValidators") {
                 const { toolCallId, state } = part;
                 console.log("toolCallId", toolCallId);
                 console.log("state", state);
-                if (state === 'input-available') {
+                if (state === "input-available") {
                   return (
                     <div key={toolCallId} className="skeleton">
                       <p>Getting validators...</p>
@@ -199,7 +225,7 @@ const PurePreviewMessage = ({
                   );
                 }
 
-                if (state === 'output-available') {
+                if (state === "output-available") {
                   const { output } = part;
 
                   return (
@@ -209,11 +235,11 @@ const PurePreviewMessage = ({
                   );
                 }
               }
-              if (type === 'tool-nebulaTool') {
+              if (type === "tool-nebulaTool") {
                 const { toolCallId, state } = part;
                 console.log("toolCallId", toolCallId);
                 console.log("state", state);
-                if (state === 'input-available') {
+                if (state === "input-available") {
                   return (
                     <div key={toolCallId} className="skeleton">
                       <p>Finding info...</p>
@@ -221,7 +247,7 @@ const PurePreviewMessage = ({
                   );
                 }
 
-                if (state === 'output-available') {
+                if (state === "output-available") {
                   const { output } = part;
 
                   return (
@@ -231,7 +257,6 @@ const PurePreviewMessage = ({
                   );
                 }
               }
-
             })}
 
             {!isReadonly && (
@@ -261,11 +286,11 @@ export const PreviewMessage = memo(
     if (!equal(prevProps.vote, nextProps.vote)) return false;
 
     return false;
-  },
+  }
 );
 
 export const ThinkingMessage = () => {
-  const role = 'assistant';
+  const role = "assistant";
 
   return (
     <motion.div
@@ -277,10 +302,10 @@ export const ThinkingMessage = () => {
     >
       <div
         className={cx(
-          'flex gap-4 group-data-[role=user]/message:px-3 w-full group-data-[role=user]/message:w-fit group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl group-data-[role=user]/message:py-2 rounded-xl',
+          "flex gap-4 group-data-[role=user]/message:px-3 w-full group-data-[role=user]/message:w-fit group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl group-data-[role=user]/message:py-2 rounded-xl",
           {
-            'group-data-[role=user]/message:bg-muted': true,
-          },
+            "group-data-[role=user]/message:bg-muted": true,
+          }
         )}
       >
         <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">

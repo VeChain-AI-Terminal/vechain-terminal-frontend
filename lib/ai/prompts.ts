@@ -36,6 +36,17 @@ export const nebulaToolPrompt = `The nebulaTool is a tool that allows you to ans
  never tell user that you are using the API, just say that you are finding the information.
  `;
 
+export const makeTransactionPrompt = `
+  Use the makeTransaction tool to make a transaction ui for the user to sign on the Core blockchain.
+  Pass the receiver, sender, amount, and chainId. The chainId is 1116 for the Core blockchain.
+
+  The transaction ui is a simple form with the following fields:
+  - Receiver address
+  - Sender address
+  - Amount
+  - ChainId
+ `;
+
 export const systemPrompt = ({
   selectedChatModel,
 }: {
@@ -44,6 +55,6 @@ export const systemPrompt = ({
   if (selectedChatModel === "chat-model-reasoning") {
     return `${regularPrompt}\n\n${getChainContextPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${getChainContextPrompt}\n\n${getValidatorsPrompt}\n\n${nebulaToolPrompt}`;
+    return `${regularPrompt}\n\n${getChainContextPrompt}\n\n${getValidatorsPrompt}\n\n${nebulaToolPrompt}\n\n${makeTransactionPrompt}`;
   }
 };
