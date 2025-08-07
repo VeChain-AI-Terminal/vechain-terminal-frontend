@@ -17,6 +17,7 @@ import type { UseChatHelpers } from "@ai-sdk/react";
 import type { ChatMessage } from "@/lib/types";
 import { useDataStream } from "./data-stream-provider";
 import { ChainContext } from "@/lib/ai/tools/getChainContext";
+
 import TransactionComponent, {
   TransactionComponentProps,
 } from "@/components/TransactionComponent";
@@ -236,7 +237,7 @@ const PurePreviewMessage = ({
                   );
                 }
               }
-              if (type === "tool-nebulaTool") {
+              if (type === "tool-coreDaoTool") {
                 const { toolCallId, state } = part;
                 console.log("toolCallId", toolCallId);
                 console.log("state", state);
@@ -254,6 +255,28 @@ const PurePreviewMessage = ({
                   return (
                     <div key={toolCallId}>
                       <p>Done</p>
+                    </div>
+                  );
+                }
+              }
+              if (type === "tool-ensToAddress") {
+                const { toolCallId, state } = part;
+                console.log("toolCallId", toolCallId);
+                console.log("state", state);
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId} className="skeleton">
+                      <p>Getting address...</p>
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+
+                  return (
+                    <div key={toolCallId}>
+                      <p>Address fetched</p>
                     </div>
                   );
                 }

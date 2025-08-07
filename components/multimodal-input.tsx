@@ -436,10 +436,11 @@ const Disclaimer = () => {
   return (
     <div className="text-xs text-muted-foreground text-center">
       <p>
-        Orange Terminal is in beta. It can help you search onchain and offchain.
-        It can help you with research and transactions. <br />
+        Orange Terminal is in beta. It can help you search onchain and offchain,
+        research and transactions. It is NOT a financial advisor
+        <br />
       </p>
-      <p>It is NOT a financial advisor.</p>
+      {/* <p>It is NOT a financial advisor.</p> */}
     </div>
   );
 };

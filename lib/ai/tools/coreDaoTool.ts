@@ -8,7 +8,7 @@ export type ContextFilter = {
   contractAddresses?: string[];
 };
 
-export const nebulaTool = tool({
+export const coreDaoTool = tool({
   description:
     "Get answers for generic questions about the Core blockchain, search contracts, and handle web searches",
   inputSchema: z.object({
@@ -25,7 +25,7 @@ export const nebulaTool = tool({
       .optional(),
   }),
   execute: async ({ message, signer_wallet_address, contextFilter }) => {
-    console.log("calling nebula tool");
+    console.log("calling core dao tool");
     // Chain ID for Core Mainnet (always 1116)
     const chainId = "1116"; // Convert chain ID to string
 
@@ -82,15 +82,15 @@ export const nebulaTool = tool({
       }
 
       const data = await response.json();
-      console.log("nebula response", data);
+      console.log("core dao tool response", data);
 
       return {
         response: data,
       };
     } catch (error) {
-      console.error("Error calling Nebula API:", error);
+      console.error("Error calling Core DAO API:", error);
       return {
-        error: "There was an issue with the Nebula API request.",
+        error: "There was an issue with the Core DAO API request.",
       };
     }
   },

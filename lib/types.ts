@@ -1,8 +1,9 @@
 import { z } from "zod";
 import type { getChainContext } from "./ai/tools/getChainContext";
 import type { getValidators } from "./ai/tools/getValidators";
-import type { nebulaTool } from "./ai/tools/nebulaTool";
+import type { coreDaoTool } from "./ai/tools/coreDaoTool";
 import type { makeTransaction } from "./ai/tools/makeTransaction";
+import type { ensToAddress } from "./ai/tools/ensToAddress";
 import type { InferUITool, UIMessage } from "ai";
 
 export type DataPart = { type: "append-message"; message: string };
@@ -15,14 +16,16 @@ export type MessageMetadata = z.infer<typeof messageMetadataSchema>;
 
 type getChainContextTool = InferUITool<typeof getChainContext>;
 type getValidatorsTool = InferUITool<typeof getValidators>;
-type nebulaToolTool = InferUITool<typeof nebulaTool>;
+type coreDaoToolType = InferUITool<typeof coreDaoTool>;
 type makeTransactionTool = InferUITool<typeof makeTransaction>;
+type ensToAddressTool = InferUITool<typeof ensToAddress>;
 
 export type ChatTools = {
   getChainContext: getChainContextTool;
   getValidators: getValidatorsTool;
-  nebulaTool: nebulaToolTool;
+  coreDaoTool: coreDaoToolType;
   makeTransaction: makeTransactionTool;
+  ensToAddress: ensToAddressTool;
 };
 
 export type CustomUIDataTypes = {

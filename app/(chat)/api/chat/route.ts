@@ -35,8 +35,9 @@ import type { ChatModel } from "@/lib/ai/models";
 import type { VisibilityType } from "@/components/visibility-selector";
 import { getChainContext } from "@/lib/ai/tools/getChainContext";
 import { getValidators } from "@/lib/ai/tools/getValidators";
-import { nebulaTool } from "@/lib/ai/tools/nebulaTool";
+import { coreDaoTool } from "@/lib/ai/tools/coreDaoTool";
 import { makeTransaction } from "@/lib/ai/tools/makeTransaction";
+import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
 
 export const maxDuration = 60;
 
@@ -153,15 +154,17 @@ export async function POST(request: Request) {
               : [
                   "getChainContext",
                   "getValidators",
-                  "nebulaTool",
+                  "coreDaoTool",
                   "makeTransaction",
+                  "ensToAddress",
                 ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
             getChainContext,
-            nebulaTool,
+            coreDaoTool,
             getValidators,
             makeTransaction,
+            ensToAddress,
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,

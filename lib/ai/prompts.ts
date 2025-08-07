@@ -1,5 +1,5 @@
 export const regularPrompt =
-  "You are a friendly assistant! Keep your responses concise and helpful.";
+  " You are a helpful assistant that can answer questions about the Core blockchain. You are made by LVM team. ";
 
 export const getChainContextPrompt = `
   Use the getChainContext tool to get the chain context.
@@ -22,7 +22,7 @@ export const getValidatorsPrompt = `
  
  `;
 
-export const nebulaToolPrompt = `The nebulaTool is a tool that allows you to answer generic questions about the Core blockchain, search for contracts, and perform web searches related to blockchain topics. 
+export const coreDaoToolPrompt = `The coreDaoTool is a tool that allows you to answer generic questions about the Core blockchain, search for contracts, and perform web searches related to blockchain topics. 
  
  Here's what the tool does:
  1. **Message Handling**: It processes the user's question and context, which may include wallet addresses and contract addresses.
@@ -47,6 +47,12 @@ export const makeTransactionPrompt = `
   - ChainId
  `;
 
+export const ensToAddressPrompt = `
+If user enters a ENS name, like somename.eth or someName.someChain.eth then use the ensToAddress tool to get the corresponding address. use this address for further queries.
+  Use the ensToAddress tool to get the address corresponding to ENS.
+  Pass the ens name to the tool.
+ `;
+
 export const systemPrompt = ({
   selectedChatModel,
 }: {
@@ -55,6 +61,6 @@ export const systemPrompt = ({
   if (selectedChatModel === "chat-model-reasoning") {
     return `${regularPrompt}\n\n${getChainContextPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${getChainContextPrompt}\n\n${getValidatorsPrompt}\n\n${nebulaToolPrompt}\n\n${makeTransactionPrompt}`;
+    return `${regularPrompt}\n\n${getChainContextPrompt}\n\n${getValidatorsPrompt}\n\n${coreDaoToolPrompt}\n\n${makeTransactionPrompt}\n\n${ensToAddressPrompt}`;
   }
 };
