@@ -24,24 +24,24 @@ function PureSuggestedActions({
 
   const suggestedActions = [
     {
-      title: "Show me the best CORE staking yield options",
+      title: "Highest yield options for CORE staking?",
       label: "for maximizing yield on Core blockchain",
       action: "Find me the highest CORE staking yields available on Core.",
     },
     {
-      title: "What is the current TVL in Core DeFi?",
-      label: "for maximizing yield on Core blockchain?",
-      action: "Check the latest DeFi TVL and Bitcoin staked on Core.",
+      title: "Show my portfolio",
+      label: "for checking your portfolio",
+      action: "Give me a breakdown of my portfolio",
     },
     {
-      title: "How to stake Bitcoin alongside CORE?",
+      title: "What is dual staking?",
       label: "for earning more rewards",
-      action: "How to stake Bitcoin alongside CORE?",
+      action: "Explain how dual staking works",
     },
     {
-      title: "Send 10 CORE to vitalik.eth",
+      title: "Send CORE tokens",
       label: "for 1-click transactions",
-      action: "Send 10 CORE to vitalik.eth",
+      action: "Send core tokens",
     },
   ];
 

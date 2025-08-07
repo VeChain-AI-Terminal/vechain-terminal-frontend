@@ -58,20 +58,20 @@ function PureChatHeader({
         )}
 
         {/* {!isReadonly && (
-  <ModelSelector
-    session={session}
-    selectedModelId={selectedModelId}
-    className="order-1 md:order-2"
-  />
-)} */}
+          <ModelSelector
+            session={session}
+            selectedModelId={selectedModelId}
+            className="order-1 md:order-2"
+          />
+        )} */}
 
-        {!isReadonly && (
+        {/* {!isReadonly && (
           <VisibilitySelector
             chatId={chatId}
             selectedVisibilityType={selectedVisibilityType}
             className="order-1 md:order-3"
           />
-        )}
+        )} */}
       </div>
 
       <ConnectButton />

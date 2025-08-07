@@ -41,7 +41,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                 width={30}
                 height={30}
               />
-              <h1 className="text-lg font-semibold text-orange-500">
+              <h1 className="text-lg font-semibold text-theme-orange dark:text-theme-orange">
                 Orange Terminal
               </h1>
             </Link>

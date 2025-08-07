@@ -12,7 +12,7 @@ export const Greeting = () => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.5 }}
-        className="text-3xl font-semibold text-orange-500 flex flex-row gap-2 items-center"
+        className="text-3xl font-semibold text-theme-orange flex flex-row gap-2 items-center"
       >
         <Image
           src="/images/orange-terminal.png"
@@ -20,7 +20,7 @@ export const Greeting = () => {
           width={40}
           height={40}
         />
-        <h1 className=" font-semibold text-orange-500">Orange Terminal</h1>
+        <h1 className=" font-semibold text-theme-orange">Orange Terminal</h1>
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
