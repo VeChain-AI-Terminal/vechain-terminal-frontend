@@ -217,8 +217,6 @@ const PurePreviewMessage = ({
 
               if (type === "tool-getValidators") {
                 const { toolCallId, state } = part;
-                console.log("toolCallId", toolCallId);
-                console.log("state", state);
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId} className="skeleton">
@@ -239,8 +237,6 @@ const PurePreviewMessage = ({
               }
               if (type === "tool-coreDaoTool") {
                 const { toolCallId, state } = part;
-                console.log("toolCallId", toolCallId);
-                console.log("state", state);
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId} className="skeleton">
@@ -261,8 +257,6 @@ const PurePreviewMessage = ({
               }
               if (type === "tool-ensToAddress") {
                 const { toolCallId, state } = part;
-                console.log("toolCallId", toolCallId);
-                console.log("state", state);
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId} className="skeleton">
