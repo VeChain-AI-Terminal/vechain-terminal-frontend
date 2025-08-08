@@ -1,5 +1,5 @@
 {
-  "id": "ffb4aad5-3289-4251-b68c-ce5be50cd660",
+  "id": "22f704c8-7481-412d-acba-6bb7d0a23abc",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -237,17 +237,11 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "email": {
-          "name": "email",
-          "type": "varchar(64)",
+        "address": {
+          "name": "address",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
-        },
-        "password": {
-          "name": "password",
-          "type": "varchar(64)",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {},

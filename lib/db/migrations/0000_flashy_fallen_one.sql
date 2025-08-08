@@ -32,8 +32,7 @@ CREATE TABLE IF NOT EXISTS "Stream" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "User" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"email" varchar(64) NOT NULL,
-	"password" varchar(64)
+	"address" varchar NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Vote_v2" (
