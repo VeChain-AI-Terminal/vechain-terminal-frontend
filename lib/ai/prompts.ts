@@ -5,6 +5,47 @@ export const getChainContextPrompt = `
   Use the getChainContext tool to get the chain context.
  `;
 
+// the nebula api
+export const coreDaoToolPrompt = `The coreDaoTool is a tool that allows you to answer questions about the Core blockchain, search for contracts, and perform web searches related to blockchain topics. 
+ 
+Use this tool to do othe following: 
+1. On-Chain Analysis & Data (Core Context)
+  View your CORE token balance and all ERC20/ERC721/ERC1155 holdings for any wallet on Core
+  Analyze wallet and contract activity with transaction histories, by value or method
+  Inspect smart contracts deployed on Core: see all functions, read contract roles, permissions, proxy status, etc.
+  Review contract metadata, token info, and interface functions
+2. Transaction Preparation & Execution (on Core)
+  Prepare and queue transactions to:
+  Transfer CORE or ERC20 tokens
+  Mint or transfer NFTs (ERC721/1155)
+  Call any smart contract function (approve, stake, claim, etc.)
+  Deploy new ERC20, ERC721, ERC1155 contracts natively on Core
+  Set permissions/roles on tokens and contract systems
+3. DeFi & Protocol Operations (on Core)
+  Swap between supported tokens on Core (CORE, stablecoins, etc.)
+  Prepare token approvals for dApps and protocols deployed on Core
+  Aggregate and analyze DeFi protocol activity (volume, users, pools), as supported on Core
+  View real-time token prices and supply for all Core-native assets
+3. NFT Operations (Core Mainnet)
+  Inspect NFT collections and metadata
+  Query which wallets own NFTs on Core, for any collection
+  Analyze NFT activity (mint, transfer, ownership) on Core
+4. Developer/Data Utilities (for Core chain)
+  Look up contract ABIs, function interfaces, and permission systems for any Core contract
+  Convert CORE/other token values between wei and readable amounts (18 decimals for CORE)
+  Convert Core block timestamps to readable dates and filter data by date
+  Compute keccak hashes for permission roles (for Core contracts and tokens)
+5. Other Analytics
+  Aggregate all addresses transacting on Core — get unique users, daily, monthly, or by contract
+  Check gas prices, latest block, block stats, and validator/miner activity.
+
+
+ For each query, pass the **user's question**, **wallet address**, and any **contextual filters** (like contract addresses) to ensure the response is relevant to the user's needs.
+ 
+ Always use this tool to answer any user question.
+ never tell user that you are using the API, just say that you are finding the information.
+ `;
+
 export const getValidatorsPrompt = `
  The getValidators tool fetches a list of active validators from the Core DAO staking platform. It provides detailed information about each validator, including:
  
@@ -20,21 +61,6 @@ export const getValidatorsPrompt = `
  
  This tool helps users compare validators based on key metrics like yield, commission, and reward rates, allowing them to make informed staking decisions.
  
- `;
-
-// the nebula api
-export const coreDaoToolPrompt = `The coreDaoTool is a tool that allows you to answer generic questions about the Core blockchain, search for contracts, and perform web searches related to blockchain topics. 
- 
- Here's what the tool does:
- 1. **Message Handling**: It processes the user's question and context, which may include wallet addresses and contract addresses.
- 2. **Contextual Responses**: It calls the **API** to get an informed response, utilizing the Core blockchain context (always using chain ID 1116 for Core Mainnet).
- 3. **Custom Filters**: You can provide context filters such as specific wallet addresses or contract addresses to improve the relevance of the response.
- 4. **Streamlined Answers**: The tool fetches data from the **API** and returns the answer based on the user's query, incorporating the relevant blockchain context.
- 
- For each query, pass the **user's question**, **wallet address**, and any **contextual filters** (like contract addresses) to ensure the response is relevant to the user's needs.
- 
- Always use this tool to answer any user question.
- never tell user that you are using the API, just say that you are finding the information.
  `;
 
 export const makeTransactionPrompt = `
@@ -66,6 +92,6 @@ export const systemPrompt = ({
   if (selectedChatModel === "chat-model-reasoning") {
     return `${regularPrompt}\n\n${getChainContextPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getChainContextPrompt}\n\n${getValidatorsPrompt}\n\n${coreDaoToolPrompt}\n\n${makeTransactionPrompt}\n\n${ensToAddressPrompt}`;
+    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getChainContextPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${ensToAddressPrompt}`;
   }
 };
