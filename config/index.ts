@@ -99,19 +99,25 @@ export const siweConfig = createSIWEConfig({
         callbackUrl: "/protected",
       });
 
-      return Boolean(success?.ok);
+      if (success?.ok) {
+        // Force reload so server-side auth() sees the cookie immediately
+        window.location.reload();
+        return true;
+      }
+      return false;
     } catch (error) {
+      console.error("verifyMessage error:", error);
       return false;
     }
   },
   signOut: async () => {
     try {
-      await signOut({
-        redirect: false,
-      });
-
+      await signOut({ redirect: false });
+      // Force reload so server components clear the session
+      window.location.reload();
       return true;
     } catch (error) {
+      console.error("signOut error:", error);
       return false;
     }
   },

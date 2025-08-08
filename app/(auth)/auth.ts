@@ -91,6 +91,7 @@ export const {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        // @ts-ignore
         const parts = user.id.split(":");
         let chainId, address;
 
@@ -100,7 +101,7 @@ export const {
           [chainId, address] = parts;
         }
 
-        const dbUser = await upsertUserByAddress(address);
+        const dbUser = await upsertUserByAddress(address as string);
 
         token.address = address;
         token.chainId = Number(chainId);
@@ -116,6 +117,7 @@ export const {
       if (token.address && token.chainId) {
         session.address = token.address as string;
         session.chainId = token.chainId as number;
+        // @ts-ignore
         session.user = { id: token.userId as string };
       }
       // console.log("session", session);

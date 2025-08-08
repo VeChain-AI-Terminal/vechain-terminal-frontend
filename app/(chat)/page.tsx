@@ -13,7 +13,7 @@ export default async function Page() {
   }
 
   const id = generateUUID();
-  console.log("session", session);
+  console.log("session in page", session);
 
   const cookieStore = await cookies();
   const modelIdFromCookie = cookieStore.get("chat-model");
