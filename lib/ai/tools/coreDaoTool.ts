@@ -12,10 +12,8 @@ export const coreDaoTool = tool({
   description:
     "Get answers for generic questions about the Core blockchain, search contracts, and handle web searches",
   inputSchema: z.object({
-    message: z.string(), // User's question
-    signer_wallet_address: z
-      .string()
-      .describe("The wallet address of the user"),
+    message: z.string().describe("query"),
+
     contextFilter: z
       .object({
         chains: z.array(z.number()).optional(),
@@ -24,7 +22,7 @@ export const coreDaoTool = tool({
       })
       .optional(),
   }),
-  execute: async ({ message, signer_wallet_address, contextFilter }) => {
+  execute: async ({ message, contextFilter }) => {
     console.log("calling core dao tool");
     // Chain ID for Core Mainnet (always 1116)
     const chainId = "1116"; // Convert chain ID to string
@@ -49,15 +47,11 @@ export const coreDaoTool = tool({
       message: messagesString,
       execute_config: {
         mode: "client",
-        signer_wallet_address,
       },
       sessionId: Date.now().toString(), // Example session ID
       stream: false,
       context_filter: {
         chain_ids: [chainId], // Always set to 1116 (Core Mainnet)
-        wallet_addresses: contextFilter?.walletAddresses || [
-          signer_wallet_address,
-        ],
         contract_addresses: contextFilter?.contractAddresses || [],
       },
     };
