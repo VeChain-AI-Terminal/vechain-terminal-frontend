@@ -28,7 +28,7 @@ export function SidebarUserNav({ user }: { user: User }) {
   const { data, status } = useSession();
   const { setTheme, resolvedTheme } = useTheme();
 
-  const isGuest = guestRegex.test(data?.user?.address ?? "");
+  const isGuest = guestRegex.test(data?.user?.id ?? "");
   console.log("data", data);
 
   return (

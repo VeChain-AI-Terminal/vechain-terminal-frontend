@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
-import { useParams, useRouter } from 'next/navigation';
-import type { User } from 'next-auth';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+import { isToday, isYesterday, subMonths, subWeeks } from "date-fns";
+import { useParams, useRouter } from "next/navigation";
+import type { User } from "next-auth";
+import { useState } from "react";
+import { toast } from "sonner";
+import { motion } from "framer-motion";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,18 +15,18 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   useSidebar,
-} from '@/components/ui/sidebar';
-import type { Chat } from '@/lib/db/schema';
-import { fetcher } from '@/lib/utils';
-import { ChatItem } from './sidebar-history-item';
-import useSWRInfinite from 'swr/infinite';
-import { LoaderIcon } from './icons';
+} from "@/components/ui/sidebar";
+import type { Chat } from "@/lib/db/schema";
+import { fetcher } from "@/lib/utils";
+import { ChatItem } from "./sidebar-history-item";
+import useSWRInfinite from "swr/infinite";
+import { LoaderIcon } from "./icons";
 
 type GroupedChats = {
   today: Chat[];
@@ -72,13 +72,13 @@ const groupChatsByDate = (chats: Chat[]): GroupedChats => {
       lastWeek: [],
       lastMonth: [],
       older: [],
-    } as GroupedChats,
+    } as GroupedChats
   );
 };
 
 export function getChatHistoryPaginationKey(
   pageIndex: number,
-  previousPageData: ChatHistory,
+  previousPageData: ChatHistory
 ) {
   if (previousPageData && previousPageData.hasMore === false) {
     return null;
@@ -110,7 +110,6 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
   const router = useRouter();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
   const hasReachedEnd = paginatedChatHistories
     ? paginatedChatHistories.some((page) => page.hasMore === false)
     : false;
@@ -121,11 +120,11 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 
   const handleDelete = async () => {
     const deletePromise = fetch(`/api/chat?id=${deleteId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
 
     toast.promise(deletePromise, {
-      loading: 'Deleting chat...',
+      loading: "Deleting chat...",
       success: () => {
         mutate((chatHistories) => {
           if (chatHistories) {
@@ -136,15 +135,15 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
           }
         });
 
-        return 'Chat deleted successfully';
+        return "Chat deleted successfully";
       },
-      error: 'Failed to delete chat',
+      error: "Failed to delete chat",
     });
 
     setShowDeleteDialog(false);
 
     if (deleteId === id) {
-      router.push('/');
+      router.push("/");
     }
   };
 
@@ -153,7 +152,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
       <SidebarGroup>
         <SidebarGroupContent>
           <div className="px-2 text-zinc-500 w-full flex flex-row justify-center items-center text-sm gap-2">
-            Login to save and revisit previous chats!
+            Connect your wallet to save and revisit previous chats!
           </div>
         </SidebarGroupContent>
       </SidebarGroup>
@@ -177,7 +176,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                   className="h-4 rounded-md flex-1 max-w-[--skeleton-width] bg-sidebar-accent-foreground/10"
                   style={
                     {
-                      '--skeleton-width': `${item}%`,
+                      "--skeleton-width": `${item}%`,
                     } as React.CSSProperties
                   }
                 />
@@ -209,7 +208,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
             {paginatedChatHistories &&
               (() => {
                 const chatsFromHistory = paginatedChatHistories.flatMap(
-                  (paginatedChatHistory) => paginatedChatHistory.chats,
+                  (paginatedChatHistory) => paginatedChatHistory.chats
                 );
 
                 const groupedChats = groupChatsByDate(chatsFromHistory);

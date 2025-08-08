@@ -35,7 +35,7 @@ export function Chat({
   initialChatModel: string;
   initialVisibilityType: VisibilityType;
   isReadonly: boolean;
-  session: Session;
+  session?: Session;
   autoResume: boolean;
 }) {
   const { visibilityType } = useChatVisibility({

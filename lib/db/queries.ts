@@ -40,11 +40,12 @@ const db = drizzle(client);
 
 export async function getUser(address: string): Promise<Array<User>> {
   try {
-    return await db.select().from(user).where(eq(user.address, address));
+    const addr = address.toLowerCase();
+    return await db.select().from(user).where(eq(user.address, addr));
   } catch (error) {
     throw new ChatSDKError(
       "bad_request:database",
-      "Failed to get user by email"
+      "Failed to get user by address"
     );
   }
 }

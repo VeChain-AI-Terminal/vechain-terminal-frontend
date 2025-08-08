@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { startTransition, useMemo, useOptimistic, useState } from 'react';
+import { startTransition, useMemo, useOptimistic, useState } from "react";
 
-import { saveChatModelAsCookie } from '@/app/(chat)/actions';
-import { Button } from '@/components/ui/button';
+import { saveChatModelAsCookie } from "@/app/(chat)/actions";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { chatModels } from '@/lib/ai/models';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/dropdown-menu";
+import { chatModels } from "@/lib/ai/models";
+import { cn } from "@/lib/utils";
 
-import { CheckCircleFillIcon, ChevronDownIcon } from './icons';
-import { entitlementsByUserType } from '@/lib/ai/entitlements';
-import type { Session } from 'next-auth';
+import { CheckCircleFillIcon, ChevronDownIcon } from "./icons";
+// import { entitlementsByUserType } from '@/lib/ai/entitlements';
+import type { Session } from "next-auth";
 
 export function ModelSelector({
   session,
@@ -29,28 +29,28 @@ export function ModelSelector({
   const [optimisticModelId, setOptimisticModelId] =
     useOptimistic(selectedModelId);
 
-  const userType = session.user.type;
-  const { availableChatModelIds } = entitlementsByUserType[userType];
+  // const userType = session.user.type;
+  // const { availableChatModelIds } = entitlementsByUserType[userType];
 
-  const availableChatModels = chatModels.filter((chatModel) =>
-    availableChatModelIds.includes(chatModel.id),
-  );
+  // const availableChatModels = chatModels.filter((chatModel) =>
+  //   availableChatModelIds.includes(chatModel.id),
+  // );
 
-  const selectedChatModel = useMemo(
-    () =>
-      availableChatModels.find(
-        (chatModel) => chatModel.id === optimisticModelId,
-      ),
-    [optimisticModelId, availableChatModels],
-  );
+  // const selectedChatModel = useMemo(
+  //   () =>
+  //     availableChatModels.find(
+  //       (chatModel) => chatModel.id === optimisticModelId,
+  //     ),
+  //   [optimisticModelId, availableChatModels],
+  // );
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger
         asChild
         className={cn(
-          'w-fit data-[state=open]:bg-accent data-[state=open]:text-accent-foreground',
-          className,
+          "w-fit data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
+          className
         )}
       >
         <Button
@@ -58,11 +58,11 @@ export function ModelSelector({
           variant="outline"
           className="md:px-2 md:h-[34px]"
         >
-          {selectedChatModel?.name}
+          {selectedModelId}
           <ChevronDownIcon />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="min-w-[300px]">
+      {/* <DropdownMenuContent align="start" className="min-w-[300px]">
         {availableChatModels.map((chatModel) => {
           const { id } = chatModel;
 
@@ -99,7 +99,7 @@ export function ModelSelector({
             </DropdownMenuItem>
           );
         })}
-      </DropdownMenuContent>
+      </DropdownMenuContent> */}
     </DropdownMenu>
   );
 }
