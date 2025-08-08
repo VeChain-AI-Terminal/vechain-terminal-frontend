@@ -113,8 +113,6 @@ export const siweConfig = createSIWEConfig({
   signOut: async () => {
     try {
       await signOut({ redirect: false });
-      // Redirect to home after sign out
-      window.location.href = "/";
       return true;
     } catch (error) {
       console.error("signOut error:", error);
