@@ -54,6 +54,10 @@ If user enters a ENS name, like somename.eth or someName.someChain.eth then use 
   Pass the ens name to the tool.
  `;
 
+export const getUserWalletInfoPrompt = `
+  Use the getUserWalletInfo tool to get the user's wallet info like address and chainId.
+ `;
+
 export const systemPrompt = ({
   selectedChatModel,
 }: {
@@ -62,6 +66,6 @@ export const systemPrompt = ({
   if (selectedChatModel === "chat-model-reasoning") {
     return `${regularPrompt}\n\n${getChainContextPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${getChainContextPrompt}\n\n${getValidatorsPrompt}\n\n${coreDaoToolPrompt}\n\n${makeTransactionPrompt}\n\n${ensToAddressPrompt}`;
+    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getChainContextPrompt}\n\n${getValidatorsPrompt}\n\n${coreDaoToolPrompt}\n\n${makeTransactionPrompt}\n\n${ensToAddressPrompt}`;
   }
 };

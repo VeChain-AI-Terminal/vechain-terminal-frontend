@@ -38,6 +38,7 @@ import { getValidators } from "@/lib/ai/tools/getValidators";
 import { coreDaoTool } from "@/lib/ai/tools/coreDaoTool";
 import { makeTransaction } from "@/lib/ai/tools/makeTransaction";
 import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
+import { getUserWalletInfo } from "@/lib/ai/tools/getUserWalletInfo";
 
 export const maxDuration = 60;
 
@@ -157,6 +158,7 @@ export async function POST(request: Request) {
                   "coreDaoTool",
                   "makeTransaction",
                   "ensToAddress",
+                  "getUserWalletInfo",
                 ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
@@ -165,6 +167,7 @@ export async function POST(request: Request) {
             getValidators,
             makeTransaction,
             ensToAddress,
+            getUserWalletInfo,
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,

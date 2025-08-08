@@ -176,14 +176,14 @@ const PurePreviewMessage = ({
                     </div>
                   );
                 }
+              }
 
-                if (state === "output-available") {
-                  const { output } = part;
-
-                  const chainContext = output as ChainContext;
+              if (type === "tool-getUserWalletInfo") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
                   return (
-                    <div key={toolCallId}>
-                      <p>Chain context: {chainContext.chainName}</p>
+                    <div key={toolCallId} className="skeleton">
+                      <p>Getting your wallet info...</p>
                     </div>
                   );
                 }

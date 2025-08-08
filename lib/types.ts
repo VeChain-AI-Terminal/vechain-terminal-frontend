@@ -1,10 +1,12 @@
 import { z } from "zod";
+import type { InferUITool, UIMessage } from "ai";
+
 import type { getChainContext } from "./ai/tools/getChainContext";
 import type { getValidators } from "./ai/tools/getValidators";
 import type { coreDaoTool } from "./ai/tools/coreDaoTool";
 import type { makeTransaction } from "./ai/tools/makeTransaction";
 import type { ensToAddress } from "./ai/tools/ensToAddress";
-import type { InferUITool, UIMessage } from "ai";
+import type { getUserWalletInfo } from "./ai/tools/getUserWalletInfo";
 
 export type DataPart = { type: "append-message"; message: string };
 
@@ -19,6 +21,7 @@ type getValidatorsTool = InferUITool<typeof getValidators>;
 type coreDaoToolType = InferUITool<typeof coreDaoTool>;
 type makeTransactionTool = InferUITool<typeof makeTransaction>;
 type ensToAddressTool = InferUITool<typeof ensToAddress>;
+type getUserWalletInfoTool = InferUITool<typeof getUserWalletInfo>;
 
 export type ChatTools = {
   getChainContext: getChainContextTool;
@@ -26,6 +29,7 @@ export type ChatTools = {
   coreDaoTool: coreDaoToolType;
   makeTransaction: makeTransactionTool;
   ensToAddress: ensToAddressTool;
+  getUserWalletInfo: getUserWalletInfoTool;
 };
 
 export type CustomUIDataTypes = {
