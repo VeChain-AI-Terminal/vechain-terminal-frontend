@@ -38,9 +38,9 @@ import { ChatSDKError } from "../errors";
 const client = postgres(process.env.POSTGRES_URL!);
 const db = drizzle(client);
 
-export async function getUser(email: string): Promise<Array<User>> {
+export async function getUser(address: string): Promise<Array<User>> {
   try {
-    return await db.select().from(user).where(eq(user.email, email));
+    return await db.select().from(user).where(eq(user.address, address));
   } catch (error) {
     throw new ChatSDKError(
       "bad_request:database",
@@ -49,29 +49,27 @@ export async function getUser(email: string): Promise<Array<User>> {
   }
 }
 
-export async function createUser(email: string, password: string) {
-  const hashedPassword = generateHashedPassword(password);
-
+// lib/db/queries.ts
+export async function upsertUserByAddress(address: string): Promise<User> {
+  console.log("upsertUserByAddress", address);
   try {
-    return await db.insert(user).values({ email, password: hashedPassword });
-  } catch (error) {
-    throw new ChatSDKError("bad_request:database", "Failed to create user");
-  }
-}
+    const addr = address.toLowerCase();
+    const existing = await db
+      .select()
+      .from(user)
+      .where(eq(user.address, addr))
+      .limit(1);
+    if (existing.length > 0) return existing[0];
 
-export async function createGuestUser() {
-  console.log("creating guest user");
-  const email = `guest-${Date.now()}`;
-  const password = generateHashedPassword(generateUUID());
-  try {
-    return await db.insert(user).values({ email, password }).returning({
-      id: user.id,
-      email: user.email,
-    });
-  } catch (error) {
+    const [created] = await db
+      .insert(user)
+      .values({ address: addr })
+      .returning();
+    return created;
+  } catch {
     throw new ChatSDKError(
       "bad_request:database",
-      "Failed to create guest user"
+      "Failed to upsert user by address"
     );
   }
 }

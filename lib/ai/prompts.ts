@@ -22,6 +22,7 @@ export const getValidatorsPrompt = `
  
  `;
 
+// the nebula api
 export const coreDaoToolPrompt = `The coreDaoTool is a tool that allows you to answer generic questions about the Core blockchain, search for contracts, and perform web searches related to blockchain topics. 
  
  Here's what the tool does:

@@ -6,7 +6,11 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { headers } from "next/headers";
-import ContextProvider from "@/context";
+
+import { cookieToInitialState } from "wagmi";
+
+import { wagmiAdapter } from "@/config/index";
+import AppKitProvider from "@/context";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://chat.vercel.ai"),
@@ -57,6 +61,7 @@ export default async function RootLayout({
 }>) {
   const headersData = await headers();
   const cookies = headersData.get("cookie");
+  const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig, cookies);
 
   return (
     <html
@@ -76,7 +81,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <ContextProvider cookies={cookies}>
+        <AppKitProvider initialState={initialState}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -86,7 +91,7 @@ export default async function RootLayout({
             <Toaster position="top-center" />
             <SessionProvider>{children}</SessionProvider>
           </ThemeProvider>
-        </ContextProvider>
+        </AppKitProvider>
       </body>
     </html>
   );

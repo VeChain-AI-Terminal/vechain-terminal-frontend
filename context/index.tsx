@@ -1,22 +1,23 @@
 "use client";
 
-import { wagmiAdapter, projectId, networks } from "@/config";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React, { ReactNode } from "react";
 import { createAppKit } from "@reown/appkit/react";
-import React, { type ReactNode } from "react";
-import { cookieToInitialState, WagmiProvider, type Config } from "wagmi";
+import {
+  wagmiAdapter,
+  projectId,
+  siweConfig,
+  metadata,
+  chains,
+} from "@/config/index";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { State, WagmiProvider } from "wagmi";
+
 import { defineChain } from "@reown/appkit/networks";
 
-// Set up queryClient
+// Setup queryClient
 const queryClient = new QueryClient();
 
-// Set up metadata
-const metadata = {
-  name: "Orange Terminal",
-  description: "Orange Terminal for Core Blockchain",
-  url: "https://github.com/0xonerb/next-reown-appkit-ssr", // origin must match your domain & subdomain
-  icons: ["/images/core.png"],
-};
+if (!projectId) throw new Error("Project ID is not defined");
 
 const coreDao = /*#__PURE__*/ defineChain({
   id: 1116,
@@ -75,50 +76,41 @@ const coreTestnet2 = /*#__PURE__*/ defineChain({
   testnet: true,
 });
 
-if (!projectId) {
-  throw new Error("Project ID is not set");
-}
 // Create the modal
 export const modal = createAppKit({
   adapters: [wagmiAdapter],
-  projectId,
   networks: [coreDao, coreTestnet2],
   chainImages: {
     1116: "/images/core.png",
     1114: "/images/core.png",
   },
-  defaultNetwork: coreDao,
-  enableNetworkSwitch: true,
+  projectId,
+  siweConfig,
   metadata,
-  themeMode: "dark",
   features: {
     analytics: true, // Optional - defaults to your Cloud configuration
   },
+  defaultNetwork: coreDao,
+  enableNetworkSwitch: true,
+  themeMode: "dark",
   themeVariables: {
     "--w3m-accent": "#000000",
   },
 });
 
-function ContextProvider({
+export default function AppKitProvider({
   children,
-  cookies,
+  initialState,
 }: {
   children: ReactNode;
-  cookies: string | null;
+  initialState?: State;
 }) {
-  const initialState = cookieToInitialState(
-    wagmiAdapter.wagmiConfig as Config,
-    cookies
-  );
-
   return (
     <WagmiProvider
-      config={wagmiAdapter.wagmiConfig as Config}
+      config={wagmiAdapter.wagmiConfig}
       initialState={initialState}
     >
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   );
 }
-
-export default ContextProvider;

@@ -1,34 +1,31 @@
-import { compare } from 'bcrypt-ts';
-import NextAuth, { type DefaultSession } from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
-import { createGuestUser, getUser } from '@/lib/db/queries';
-import { authConfig } from './auth.config';
-import { DUMMY_PASSWORD } from '@/lib/constants';
-import type { DefaultJWT } from 'next-auth/jwt';
+// app/api/auth/[...nextauth]/route.ts
+import NextAuth from "next-auth";
+import { JWT } from "next-auth/jwt";
+import credentialsProvider from "next-auth/providers/credentials";
+import { createPublicClient, http } from "viem";
+import {
+  getChainIdFromMessage,
+  getAddressFromMessage,
+} from "@reown/appkit-siwe";
+import { upsertUserByAddress } from "@/lib/db/queries";
 
-export type UserType = 'guest' | 'regular';
-
-declare module 'next-auth' {
-  interface Session extends DefaultSession {
-    user: {
-      id: string;
-      type: UserType;
-    } & DefaultSession['user'];
+declare module "next-auth" {
+  interface Session {
+    user: { id: string; type: "regular"; address: string };
+    chainId?: number;
   }
-
-  interface User {
-    id?: string;
-    email?: string | null;
-    type: UserType;
+}
+declare module "next-auth/jwt" {
+  interface JWT {
+    userId: string;
+    type: "regular";
+    address: string;
+    chainId: number;
   }
 }
 
-declare module 'next-auth/jwt' {
-  interface JWT extends DefaultJWT {
-    id: string;
-    type: UserType;
-  }
-}
+const nextAuthSecret = process.env.AUTH_SECRET!;
+const projectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID!;
 
 export const {
   handlers: { GET, POST },
@@ -36,56 +33,62 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
-  ...authConfig,
   providers: [
-    Credentials({
-      credentials: {},
-      async authorize({ email, password }: any) {
-        const users = await getUser(email);
-
-        if (users.length === 0) {
-          await compare(password, DUMMY_PASSWORD);
-          return null;
-        }
-
-        const [user] = users;
-
-        if (!user.password) {
-          await compare(password, DUMMY_PASSWORD);
-          return null;
-        }
-
-        const passwordsMatch = await compare(password, user.password);
-
-        if (!passwordsMatch) return null;
-
-        return { ...user, type: 'regular' };
+    credentialsProvider({
+      name: "Ethereum",
+      credentials: {
+        message: { label: "Message", type: "text" },
+        signature: { label: "Signature", type: "text" },
       },
-    }),
-    Credentials({
-      id: 'guest',
-      credentials: {},
-      async authorize() {
-        const [guestUser] = await createGuestUser();
-        return { ...guestUser, type: 'guest' };
+      async authorize(creds) {
+        if (!creds?.message || !creds?.signature) return null;
+
+        const message = creds.message as string;
+        const signature = creds.signature as `0x${string}`;
+        const address = getAddressFromMessage(message);
+        const chainId = getChainIdFromMessage(message);
+
+        const publicClient = createPublicClient({
+          transport: http(
+            `https://rpc.walletconnect.org/v1/?chainId=${chainId}&projectId=${projectId}`
+          ),
+        });
+        const ok = await publicClient.verifyMessage({
+          message,
+          address: address as `0x${string}`,
+          signature,
+        });
+        if (!ok) return null;
+
+        const dbUser = await upsertUserByAddress(address);
+        return {
+          id: dbUser.id,
+          type: "regular",
+          address: dbUser.address,
+          chainId,
+        };
       },
     }),
   ],
+  secret: nextAuthSecret,
+  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id as string;
-        token.type = user.type;
+        token.userId = (user as any).id;
+        token.type = "regular";
+        token.address = (user as any).address;
+        token.chainId = (user as any).chainId;
       }
-
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id;
-        session.user.type = token.type;
-      }
-
+      session.user = {
+        id: token.userId as string,
+        type: "regular",
+        address: token.address as string,
+      };
+      session.chainId = token.chainId as number;
       return session;
     },
   },
