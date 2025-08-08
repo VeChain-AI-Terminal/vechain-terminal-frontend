@@ -29,6 +29,7 @@ import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom";
 import type { VisibilityType } from "./visibility-selector";
 import type { Attachment, ChatMessage } from "@/lib/types";
 import { useAppKitAccount } from "@reown/appkit/react";
+import Disclaimer from "@/components/disclaimer";
 
 function PureMultimodalInput({
   chatId,
@@ -431,16 +432,3 @@ const SendButton = memo(PureSendButton, (prevProps, nextProps) => {
   if (prevProps.input !== nextProps.input) return false;
   return true;
 });
-
-const Disclaimer = () => {
-  return (
-    <div className="text-xs text-muted-foreground text-center">
-      <p>
-        Orange Terminal is in beta. It can help you search onchain and offchain,
-        research and transactions. It is NOT a financial advisor
-        <br />
-      </p>
-      {/* <p>It is NOT a financial advisor.</p> */}
-    </div>
-  );
-};
