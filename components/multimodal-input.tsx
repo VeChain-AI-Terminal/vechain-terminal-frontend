@@ -30,8 +30,9 @@ import type { VisibilityType } from "./visibility-selector";
 import type { Attachment, ChatMessage } from "@/lib/types";
 import { useAppKitAccount } from "@reown/appkit/react";
 import Disclaimer from "@/components/disclaimer";
+import { useSession } from "next-auth/react";
 
-function PureMultimodalInput({
+export function MultimodalInput({
   chatId,
   input,
   setInput,
@@ -61,7 +62,10 @@ function PureMultimodalInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
   const { address, isConnected, caipAddress } = useAppKitAccount();
+  const { status: sessionStatus } = useSession();
 
+  // console.log("is connected multimodal", isConnected);
+  // console.log("sessionStatus multimodal", sessionStatus);
   useEffect(() => {
     if (textareaRef.current) {
       adjustHeight();
@@ -113,7 +117,10 @@ function PureMultimodalInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
 
-  const submitForm = useCallback(() => {
+  function submitForm() {
+    // console.log("is conencted in submit form ---- ", isConnected);
+    // console.log("sessionStatus submit form", sessionStatus);
+
     if (!isConnected) {
       toast.error("Please connect your wallet to send a message");
       return;
@@ -145,16 +152,7 @@ function PureMultimodalInput({
     if (width && width > 768) {
       textareaRef.current?.focus();
     }
-  }, [
-    input,
-    setInput,
-    attachments,
-    sendMessage,
-    setAttachments,
-    setLocalStorageInput,
-    width,
-    chatId,
-  ]);
+  }
 
   const uploadFile = async (file: File) => {
     const formData = new FormData();
@@ -339,20 +337,7 @@ function PureMultimodalInput({
   );
 }
 
-export const MultimodalInput = memo(
-  PureMultimodalInput,
-  (prevProps, nextProps) => {
-    if (prevProps.input !== nextProps.input) return false;
-    if (prevProps.status !== nextProps.status) return false;
-    if (!equal(prevProps.attachments, nextProps.attachments)) return false;
-    if (prevProps.selectedVisibilityType !== nextProps.selectedVisibilityType)
-      return false;
-
-    return true;
-  }
-);
-
-function PureAttachmentsButton({
+function AttachmentsButton({
   fileInputRef,
   status,
 }: {
@@ -375,9 +360,7 @@ function PureAttachmentsButton({
   );
 }
 
-const AttachmentsButton = memo(PureAttachmentsButton);
-
-function PureStopButton({
+function StopButton({
   stop,
   setMessages,
 }: {
@@ -399,9 +382,7 @@ function PureStopButton({
   );
 }
 
-const StopButton = memo(PureStopButton);
-
-function PureSendButton({
+function SendButton({
   submitForm,
   input,
   uploadQueue,
@@ -425,10 +406,3 @@ function PureSendButton({
     </Button>
   );
 }
-
-const SendButton = memo(PureSendButton, (prevProps, nextProps) => {
-  if (prevProps.uploadQueue.length !== nextProps.uploadQueue.length)
-    return false;
-  if (prevProps.input !== nextProps.input) return false;
-  return true;
-});

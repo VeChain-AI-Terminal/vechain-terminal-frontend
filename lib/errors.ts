@@ -79,7 +79,7 @@ export function getMessageByErrorCode(errorCode: ErrorCode): string {
       return "The request couldn't be processed. Please check your input and try again.";
 
     case "unauthorized:auth":
-      return "You need to sign in before continuing.";
+      return "You need to connect wallet before continuing.";
     case "forbidden:auth":
       return "Your account does not have access to this feature.";
 
@@ -90,7 +90,7 @@ export function getMessageByErrorCode(errorCode: ErrorCode): string {
     case "forbidden:chat":
       return "This chat belongs to another user. Please check the chat ID and try again.";
     case "unauthorized:chat":
-      return "You need to sign in to view this chat. Please sign in and try again.";
+      return "You need to connect wallet to chat. Please connect wallet and try again.";
     case "offline:chat":
       return "We're having trouble sending your message. Please check your internet connection and try again.";
 
