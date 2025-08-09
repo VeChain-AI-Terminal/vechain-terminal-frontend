@@ -201,12 +201,18 @@ const PurePreviewMessage = ({
 
                 if (state === "output-available") {
                   const { output } = part;
-                  const { from, to, value, chainId } =
-                    output as TransactionComponentProps;
+                  const {
+                    from,
+                    receiver_address,
+                    receiver_ensName,
+                    value,
+                    chainId,
+                  } = output as TransactionComponentProps;
                   return (
                     <TransactionComponent
                       from={from}
-                      to={to}
+                      receiver_address={receiver_address}
+                      receiver_ensName={receiver_ensName}
                       value={value}
                       chainId={chainId}
                       key={toolCallId}

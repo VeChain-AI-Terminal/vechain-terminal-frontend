@@ -65,13 +65,15 @@ export const getValidatorsPrompt = `
 
 export const makeTransactionPrompt = `
   Use the makeTransaction tool to make a transaction ui for the user to sign on the Core blockchain.
-  Pass the receiver, sender, amount, and chainId. The chainId is 1116 for the Core blockchain.
+  Pass the receiver,recever ens name if avalaible,  sender, amount, and chainId. The chainId is 1116 for the Core blockchain.
+  if user has mentioned the ens name of receiver in his prompt, always pass the ens name as well, with the adress
 
   First use the coreDaoTool to gather relevant information about the transaciton like token addresses, etc
   then after getting all relevant data, pass the data to this tool
 
   The transaction ui is a simple form with the following fields:
   - Receiver address
+  - recever ens name if avalaible
   - Sender address
   - Amount
   - ChainId
