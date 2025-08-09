@@ -36,12 +36,16 @@ export const coreDaoTool = tool({
     ];
 
     // ✅ Convert messages array into a single string
-    const messagesString = messages
+    let messagesString = messages
       .map((m) => `${m.role}: ${m.content}`)
       .join("\n");
 
-    console.log("messagesString", messagesString);
+    //add the core blockchain context to message
+    messagesString =
+      messagesString +
+      "\nkeep the answers related to core blockchain, chain id is 1116. ";
 
+    console.log("messagesString", messagesString);
     // Prepare the context filter (if provided)
     const body = {
       message: messagesString,

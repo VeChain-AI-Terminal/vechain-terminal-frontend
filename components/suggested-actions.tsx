@@ -36,7 +36,7 @@ function PureSuggestedActions({
     {
       title: "What is dual staking?",
       label: "for earning more rewards",
-      action: "Explain how dual staking works",
+      action: "Explain how dual staking works in Core blockchain",
     },
     {
       title: "Send CORE tokens",

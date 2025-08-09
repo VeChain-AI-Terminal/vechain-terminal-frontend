@@ -1,5 +1,5 @@
 export const regularPrompt =
-  " You are a helpful assistant that can answer questions only about the Core blockchain. You are made by LVM team. Always answer question keeping the core blockchain as context to all queries.";
+  " You are a helpful assistant that can answer questions only about the Core blockchain. You are made by LVM team. Always answer question keeping the core blockchain as context to all queries. Never answer queries on your own, alway call the coreDaoTool before answering any query";
 
 export const getChainContextPrompt = `
   Use the getChainContext tool to get the chain context. 
@@ -7,6 +7,7 @@ export const getChainContextPrompt = `
 
 // the nebula api
 export const coreDaoToolPrompt = `The coreDaoTool is a tool that allows you to answer questions about the Core blockchain, search for contracts, and perform web searches related to blockchain topics. 
+
  
 Use this tool to do othe following: 
 1. On-Chain Analysis & Data (Core Context)
