@@ -1,8 +1,8 @@
 export const regularPrompt =
-  " You are a helpful assistant that can answer questions about the Core blockchain. You are made by LVM team. ";
+  " You are a helpful assistant that can answer questions only about the Core blockchain. You are made by LVM team. Always answer question keeping the core blockchain as context to all queries.";
 
 export const getChainContextPrompt = `
-  Use the getChainContext tool to get the chain context.
+  Use the getChainContext tool to get the chain context. 
  `;
 
 // the nebula api
