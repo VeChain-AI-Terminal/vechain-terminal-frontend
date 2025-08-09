@@ -79,6 +79,23 @@ export const makeTransactionPrompt = `
   - ChainId
  `;
 
+export const makeStakeTransactionPrompt = `
+  Use the makeStakeTransaction tool to create a staking UI for the user to sign on the Core blockchain.
+  Pass the candidate (validator operator address), stake amount, and chainId. The chainId is 1116 for the Core blockchain.
+
+  if the user has not mentioned any particular validator/candidate, first show him the list of validator according to rewards and ask him to specify the candidate he wants to stake into. never choose the validator yourself
+
+  Then use the getValidators tool to gather relevant information about the staking transaction such as the validatores rewards, required minimum deposit, and candidate details.
+
+
+  Then, after getting all relevant data, pass the data to this tool.
+
+  The staking UI is a simple form with the following fields:
+  - Candidate address (validator operator)
+  - Amount to stake
+  - ChainId
+`;
+
 export const ensToAddressPrompt = `
 If user enters a ENS name, like somename.eth or someName.someChain.eth then use the ensToAddress tool to get the corresponding address. use this address for further queries.
   Use the ensToAddress tool to get the address corresponding to ENS.
@@ -97,6 +114,6 @@ export const systemPrompt = ({
   if (selectedChatModel === "chat-model-reasoning") {
     return `${regularPrompt}\n\n${getChainContextPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getChainContextPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${ensToAddressPrompt}`;
+    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getChainContextPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${makeStakeTransactionPrompt}\n\n${ensToAddressPrompt}`;
   }
 };

@@ -21,6 +21,9 @@ import { ChainContext } from "@/lib/ai/tools/getChainContext";
 import TransactionComponent, {
   TransactionComponentProps,
 } from "@/components/TransactionComponent";
+import StakeComponent, {
+  StakeComponentProps,
+} from "@/components/StakeComponent";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -213,6 +216,31 @@ const PurePreviewMessage = ({
                       from={from}
                       receiver_address={receiver_address}
                       receiver_ensName={receiver_ensName}
+                      value={value}
+                      chainId={chainId}
+                      key={toolCallId}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-makeStakeTransaction") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId} className="skeleton">
+                      <p>Making stake transaction...</p>
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+                  const { candidate, value, chainId } =
+                    output as StakeComponentProps;
+                  return (
+                    <StakeComponent
+                      candidate={candidate}
                       value={value}
                       chainId={chainId}
                       key={toolCallId}

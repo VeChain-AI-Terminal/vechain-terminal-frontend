@@ -37,6 +37,7 @@ import { getChainContext } from "@/lib/ai/tools/getChainContext";
 import { getValidators } from "@/lib/ai/tools/getValidators";
 import { coreDaoTool } from "@/lib/ai/tools/coreDaoTool";
 import { makeTransaction } from "@/lib/ai/tools/makeTransaction";
+import { makeStakeTransaction } from "@/lib/ai/tools/makeStakeTransaction";
 import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
 import { getUserWalletInfo } from "@/lib/ai/tools/getUserWalletInfo";
 
@@ -157,6 +158,7 @@ export async function POST(request: Request) {
                   "getValidators",
                   "coreDaoTool",
                   "makeTransaction",
+                  "makeStakeTransaction",
                   "ensToAddress",
                   "getUserWalletInfo",
                 ],
@@ -166,6 +168,7 @@ export async function POST(request: Request) {
             coreDaoTool,
             getValidators,
             makeTransaction,
+            makeStakeTransaction,
             ensToAddress,
             getUserWalletInfo,
           },

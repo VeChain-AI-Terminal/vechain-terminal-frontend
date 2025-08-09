@@ -27,3 +27,7 @@ core agent = 0x0000000000000000000000000000000000001011
 
 https://stake.coredao.org/api/staking/search_candidate_page
 to get info of the validators and their
+
+0.00419
+
+0.00171

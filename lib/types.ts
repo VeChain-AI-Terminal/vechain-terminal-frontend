@@ -5,6 +5,7 @@ import type { getChainContext } from "./ai/tools/getChainContext";
 import type { getValidators } from "./ai/tools/getValidators";
 import type { coreDaoTool } from "./ai/tools/coreDaoTool";
 import type { makeTransaction } from "./ai/tools/makeTransaction";
+import type { makeStakeTransaction } from "./ai/tools/makeStakeTransaction";
 import type { ensToAddress } from "./ai/tools/ensToAddress";
 import type { getUserWalletInfo } from "./ai/tools/getUserWalletInfo";
 
@@ -20,6 +21,7 @@ type getChainContextTool = InferUITool<typeof getChainContext>;
 type getValidatorsTool = InferUITool<typeof getValidators>;
 type coreDaoToolType = InferUITool<typeof coreDaoTool>;
 type makeTransactionTool = InferUITool<typeof makeTransaction>;
+type makeStakeTransactionTool = InferUITool<typeof makeStakeTransaction>;
 type ensToAddressTool = InferUITool<typeof ensToAddress>;
 type getUserWalletInfoTool = InferUITool<typeof getUserWalletInfo>;
 
@@ -28,6 +30,7 @@ export type ChatTools = {
   getValidators: getValidatorsTool;
   coreDaoTool: coreDaoToolType;
   makeTransaction: makeTransactionTool;
+  makeStakeTransaction: makeStakeTransactionTool;
   ensToAddress: ensToAddressTool;
   getUserWalletInfo: getUserWalletInfoTool;
 };
