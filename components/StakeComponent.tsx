@@ -226,7 +226,6 @@ const StakeComponent: React.FC<StakeComponentProps> = ({
           <p className="text-gray-500 text-sm">
             staked to{" "}
             <span className="font-medium">
-              {" "}
               {validatorAddressToName[candidate]
                 ? validatorAddressToName[candidate]
                 : shortenAddress(candidate)}
