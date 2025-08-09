@@ -225,7 +225,12 @@ const StakeComponent: React.FC<StakeComponentProps> = ({
           </div>
           <p className="text-gray-500 text-sm">
             staked to{" "}
-            <span className="font-medium">{shortenAddress(candidate)}</span>
+            <span className="font-medium">
+              {" "}
+              {validatorAddressToName[candidate]
+                ? validatorAddressToName[candidate]
+                : shortenAddress(candidate)}
+            </span>
           </p>
           <p className="text-gray-400 text-xs mt-2">on {networkName}</p>
           <p>
