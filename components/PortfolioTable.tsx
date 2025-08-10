@@ -70,7 +70,7 @@ const PortfolioTable: React.FC<PortfolioDataType> = ({
           </div>
         )}
 
-        {totalUSD > 0 && (
+        {totalUSD > 0 && weightedChangePercent ? (
           <span className="text-sm text-gray-400 mt-1">
             24h Change:{" "}
             <span className={getPercentChangeColor(weightedChangePercent)}>
@@ -78,7 +78,7 @@ const PortfolioTable: React.FC<PortfolioDataType> = ({
               {absoluteChange.toFixed(2)} USD&#x29;
             </span>
           </span>
-        )}
+        ) : null}
       </div>
 
       {/* Tokens */}
@@ -102,23 +102,26 @@ const PortfolioTable: React.FC<PortfolioDataType> = ({
                 </div>
                 {t.balance > 0 && (
                   <div className="text-sm text-gray-500">
-                    {t.balance} {t.symbol} @ ${t.currentPrice.toFixed(4)}
+                    {t.balance.toFixed(4)} {t.symbol} @ $
+                    {t.currentPrice.toFixed(4)}
                   </div>
                 )}
               </div>
 
               <div className="text-right">
-                {t.usdValue > 0 && (
+                {t.usdValue >= 0 && (
                   <div className="font-semibold">${t.usdValue.toFixed(2)}</div>
                 )}
 
-                <div
-                  className={`text-xs ${getPercentChangeColor(
-                    t.change24hPercent
-                  )}`}
-                >
-                  {t.change24hPercent.toFixed(2)}%
-                </div>
+                {t.change24hPercent ? (
+                  <div
+                    className={`text-xs ${getPercentChangeColor(
+                      t.change24hPercent
+                    )}`}
+                  >
+                    {t.change24hPercent.toFixed(2)}%
+                  </div>
+                ) : null}
 
                 {typeof t.marketCap === "number" && t.marketCap > 0 && (
                   <div className="text-[10px] text-gray-400">

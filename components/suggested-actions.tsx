@@ -31,7 +31,7 @@ function PureSuggestedActions({
     {
       title: "Show my portfolio",
       label: "for checking your portfolio",
-      action: "Give me a breakdown of my portfolio",
+      action: "Show me my portfolio",
     },
     {
       title: "What is dual staking?",
