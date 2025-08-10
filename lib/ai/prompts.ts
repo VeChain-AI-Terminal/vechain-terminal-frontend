@@ -42,6 +42,13 @@ Use this tool to do othe following:
 
 
  For each query, pass the **user's question**, **wallet address**, and any **contextual filters** (like contract addresses) to ensure the response is relevant to the user's needs.
+ If user asked for portfolio, always as the tool for
+   - chainId (for Core blockchain, use 1116 unless specified otherwise)
+  - walletAddress
+  - fungibleTokens (array of objects with name, symbol, balance, usdValue, tokenAddress, currentPrice, change24hPercent, and optional marketCap)
+  - nfts (array of objects with name, tokenId, contractAddress)
+  - totalPortfolioValueUSD (total USD value of all holdings)
+  
  
  Always use this tool to answer any user question.
  never tell user that you are using the API, just say that you are finding the information.
@@ -80,6 +87,27 @@ export const makeTransactionPrompt = `
   - ChainId
  `;
 
+export const makePortfolioTablePrompt = `
+  Use the makePortfolioTable tool to create a portfolio object for the user on the Core blockchain.
+  Pass the following fields exactly as required:
+  - chainId (for Core blockchain, use 1116 unless specified otherwise)
+  - walletAddress
+  - fungibleTokens (array of objects with name, symbol, balance, usdValue, tokenAddress, currentPrice, change24hPercent, and optional marketCap)
+  - nfts (array of objects with name, tokenId, contractAddress)
+  - totalPortfolioValueUSD (total USD value of all holdings)
+
+  First, use the coreDaoTool or other relevant blockchain data sources to gather up-to-date token balances, NFT data, current prices, and market caps.
+  Then, after collecting all relevant data, pass it into the makePortfolioTable tool in the correct schema.
+
+  The portfolio object is used to render a simple portfolio UI that shows:
+  - Overall portfolio value in USD
+  - 24h performance change
+  - Breakdown of fungible tokens (with balance, price, change%)
+  - NFT holdings count and details
+
+  Always use this tool to show user its portfolio data whenever it asks for his portfolio
+`;
+
 export const makeStakeTransactionPrompt = `
   Use the makeStakeTransaction tool to create a staking UI for the user to sign on the Core blockchain.
   Pass the candidate (validator operator address), stake amount, and chainId. The chainId is 1116 for the Core blockchain.
@@ -115,6 +143,6 @@ export const systemPrompt = ({
   if (selectedChatModel === "chat-model-reasoning") {
     return `${regularPrompt}\n\n${getChainContextPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getChainContextPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${makeStakeTransactionPrompt}\n\n${ensToAddressPrompt}`;
+    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getChainContextPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${makePortfolioTablePrompt}\n\n${makeStakeTransactionPrompt}\n\n${ensToAddressPrompt}`;
   }
 };
