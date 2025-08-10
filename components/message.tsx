@@ -253,6 +253,7 @@ const PurePreviewMessage = ({
                       fungibleTokens={fungibleTokens}
                       nfts={nfts}
                       totalPortfolioValueUSD={totalPortfolioValueUSD}
+                      key={key}
                     />
                   );
                 }
