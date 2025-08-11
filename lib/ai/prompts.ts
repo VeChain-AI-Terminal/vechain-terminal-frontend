@@ -83,7 +83,7 @@ export const getPortfolioPrompt = ` use the getPortfolio tool to fecth the user 
 
 export const makeStakeTransactionPrompt = `
   Use the makeStakeTransaction tool to create a staking UI for the user to sign on the Core blockchain.
-  Pass the candidate (validator operator address), stake amount, and chainId. The chainId is 1116 for the Core blockchain.
+  Pass the candidate (validator) operator address, candidate name,, stake amount, and chainId. The chainId is 1116 for the Core blockchain.
 
   if the user has not mentioned any particular validator/candidate, first show him the list of validator according to rewards and ask him to specify the candidate he wants to stake into. never choose the validator yourself
 
@@ -94,6 +94,7 @@ export const makeStakeTransactionPrompt = `
 
   The staking UI is a simple form with the following fields:
   - Candidate address (validator operator)
+  - candidate name
   - Amount to stake
   - ChainId
 `;

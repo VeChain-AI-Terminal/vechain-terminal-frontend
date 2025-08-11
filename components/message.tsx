@@ -283,11 +283,12 @@ const PurePreviewMessage = ({
 
                 if (state === "output-available") {
                   const { output } = part;
-                  const { candidate, value, chainId } =
+                  const { candidateAddress, candidateName, value, chainId } =
                     output as StakeComponentProps;
                   return (
                     <StakeComponent
-                      candidate={candidate}
+                      candidateAddress={candidateAddress}
+                      candidateName={candidateName}
                       value={value}
                       chainId={chainId}
                       key={toolCallId}

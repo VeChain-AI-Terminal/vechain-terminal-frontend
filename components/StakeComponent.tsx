@@ -12,7 +12,8 @@ import Link from "next/link";
 import { CheckCircleFillIcon } from "@/components/icons";
 
 export type StakeComponentProps = {
-  candidate: string; // validator operator address
+  candidateAddress: string; // validator operator address
+  candidateName: string; // validator operator address
   value: string; // amount in wei or decimal CORE string
   chainId: number;
 };
@@ -43,46 +44,9 @@ const chainIdToToken = {
   1116: "CORE",
 } as const;
 
-const validatorAddressToName: Record<string, string> = {
-  "0x64db24a662e20bbdf72d1cc6e973dbb2d12897d5": "DAO Mining Pool 4",
-  "0xee79f2b4be44b582f496d857727f2d6aff4c71f3": "ZAN Node",
-  "0x359b5fbc5b294e953dbec5cbb769e2186bb30e56": "stc Bahrain",
-  "0x2e50087fb834747606ed01ad67ad0f32129ab431": "Foundry",
-  "0xa37cf4faa0758b26dca666f3e36d42fa15cc0106": "DAO Mining Pool 5",
-  "0x651da43be21fdb85615a58350cc09d019c3f47c4": "OKXEarn",
-  "0xa898e2f126b642d6e401bdcb79979c691a8fd90d": "WolfEdge Labs",
-  "0xc24fe962e6230841c5019e531e3c713ed30161b4": "Fireblocks",
-  "0x58d8efc838d2de558eedeabce631c7dff92c947a": "DAO Validator 6",
-  "0x83ee5d8b74a1d9310f0c152d30c0772529efedff": "huobi",
-  "0x33c724450ab1d9c5e583fcdd74701a7019706024": "Valour",
-  "0xdbc83c2093def988fbe96993292c058ef7da0784": "Satoshi App",
-  "0x2d058b58dcf4b0db11168c62d3109f6e02710b02": "M Labs",
-  "0x1c151923cf6c381c4af6c3071a2773b3cdbbf704": "Kiln",
-  "0xbfbbacbd59c3bd551d40729061dc4d21ccbea792": "UTXO",
-  "0x42fdeae88682a965939fee9b7b2bd5b99694ff64": "DAO Mining Pool 3",
-  "0xf6fdbc19a25dc91454cec19ef7714e8b67c4e0e6": "Animoca Brands",
-  "0xa21cbd3caa4fe89bccd1d716c92ce4533e4d4733": "DAO Mining Pool 1",
-  "0x8c7c180d12565254880d84e8ecc3242b7b4a2915": "Luganodes",
-  "0xbe795699b8789a27d20a6ca7cd84a0b057fae46c": "",
-  "0xebbaf365b0d5fa072e2b2429db23696291f2c038": "Ardennes",
-  "0xf79efaceb93a83e114d4e2e957fa16d69380cc25": "KODA x Nodeinfra",
-  "0xba57b8de67e0cf289c1ee39f1f888767003819aa": "Figment",
-  "0x2953559db5cc88ab20b1960faa9793803d070337": "DAO Mining Pool 2",
-  "0x307f36ff0aff7000ebd4eea1e8e9bbbfa0e1134c": "Everstake",
-  "0x536de38d1db7c68636fc989e4d0daac51e4eb950": "Solv",
-  "0x5b9b30813264eaab2b70817a36c94733812e591c": "DAO Validator 2",
-  "0xe2f8cefcdee51f48e3ce5c4deea3095c43369b36": "InfStones",
-  "0x741095f5f73475f3f5ee4bb12cbb23574546fdd8": "BTCS",
-  "0x7c706ca44a28fdd25761250961276bd61d5aa87b": "DAO Validator 1",
-  "0x917f346613054d8de508acb7af92f9f9a29e3f26": "Blockdaemon",
-  "0x608988097efc97679e3e2f5820ea81ff7ab5c85a": "Bitget",
-  "0x86835128b29fef52fc61299ebb50d85e03960976": "P2P.org",
-  "0xc6867d7a2e9b4ee71f11cdaccd4d2ec04a690ec2": "DAO Validator 5",
-  "0x38b6515c22e3c376fc736f8614bba68439d3a642": "DAO Validator 12",
-};
-
 const StakeComponent: React.FC<StakeComponentProps> = ({
-  candidate,
+  candidateAddress,
+  candidateName,
   value,
   chainId,
 }) => {
@@ -111,7 +75,7 @@ const StakeComponent: React.FC<StakeComponentProps> = ({
   const networkName =
     chainIdToName[chainId as keyof typeof chainIdToName] || String(chainId);
 
-  const stakeArgs = [candidate as Address] as const;
+  const stakeArgs = [candidateAddress as Address] as const;
   const stakeValue = parseEther(decimalValue);
 
   const txConfig = {
@@ -154,11 +118,7 @@ const StakeComponent: React.FC<StakeComponentProps> = ({
 
         <div className="mb-4 flex justify-between items-center border-b border-zinc-700 pb-3">
           <span className="text-gray-400">Candidate</span>
-          <span>
-            {validatorAddressToName[candidate]
-              ? validatorAddressToName[candidate]
-              : shortenAddress(candidate)}
-          </span>
+          <span>{candidateName ? candidateName : candidateAddress}</span>
         </div>
 
         <div className="mb-4 flex justify-between items-center border-b border-zinc-700 pb-3">
@@ -226,9 +186,7 @@ const StakeComponent: React.FC<StakeComponentProps> = ({
           <p className="text-gray-500 text-sm">
             staked to{" "}
             <span className="font-medium">
-              {validatorAddressToName[candidate]
-                ? validatorAddressToName[candidate]
-                : shortenAddress(candidate)}
+              {candidateName ? candidateName : candidateAddress}
             </span>
           </p>
           <p className="text-gray-400 text-xs mt-2">on {networkName}</p>
