@@ -7,6 +7,7 @@ import type { makeTransaction } from "./ai/tools/makeTransaction";
 import type { makeStakeCoreTransaction } from "./ai/tools/coreStakeActions/makeStakeCoreTransaction";
 import type { getDelegatedCoreForEachValidator } from "./ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";
 import type { makeUnDelegateCoreTransaction } from "./ai/tools/coreStakeActions/makeUnDelegateCoreTransaction";
+import type { makeTransferStakedCoreTransaction } from "./ai/tools/coreStakeActions/makeTransferStakedCoreTransaction";
 import type { getPortfolio } from "./ai/tools/getPortfolio";
 import type { ensToAddress } from "./ai/tools/ensToAddress";
 import type { getUserWalletInfo } from "./ai/tools/getUserWalletInfo";
@@ -30,6 +31,9 @@ type getDelegatedCoreForEachValidatorTool = InferUITool<
 type makeUnDelegateCoreTransactionTool = InferUITool<
   typeof makeUnDelegateCoreTransaction
 >;
+type makeTransferStakedCoreTransactionTool = InferUITool<
+  typeof makeTransferStakedCoreTransaction
+>;
 type ensToAddressTool = InferUITool<typeof ensToAddress>;
 type getUserWalletInfoTool = InferUITool<typeof getUserWalletInfo>;
 
@@ -41,6 +45,7 @@ export type ChatTools = {
   makeStakeCoreTransaction: makeStakeTransactionTool;
   getDelegatedCoreForEachValidator: getDelegatedCoreForEachValidatorTool;
   makeUnDelegateCoreTransaction: makeUnDelegateCoreTransactionTool;
+  makeTransferStakedCoreTransaction: makeTransferStakedCoreTransactionTool;
   ensToAddress: ensToAddressTool;
   getUserWalletInfo: getUserWalletInfoTool;
 };

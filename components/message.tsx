@@ -27,6 +27,8 @@ import { PortfolioData } from "@/lib/ai/tools/getPortfolio";
 import { StakeComponentProps } from "@/lib/ai/tools/coreStakeActions/makeStakeCoreTransaction";
 import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";
 import UnDelegateComponent from "@/components/stake-actions-components/UnDelegateComponent";
+import TransferComponent from "@/components/stake-actions-components/TransferComponent";
+import { TransferStakedCoreTransactionProps } from "@/lib/ai/tools/coreStakeActions/makeTransferStakedCoreTransaction";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -312,6 +314,41 @@ const PurePreviewMessage = ({
                     <UnDelegateComponent
                       candidateAddress={candidateAddress}
                       candidateName={candidateName}
+                      valueInWei={valueInWei}
+                      chainId={chainId}
+                      key={toolCallId}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-makeTransferStakedCoreTransaction") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId} className="skeleton">
+                      <p>Making transfer stake transaction...</p>
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+                  const {
+                    sourceCandidateAddress,
+                    sourceCandidateName,
+                    targetCandidateAddress,
+                    targetCandidateName,
+                    valueInWei,
+                    chainId,
+                  } = output as TransferStakedCoreTransactionProps;
+
+                  return (
+                    <TransferComponent
+                      sourceCandidateAddress={sourceCandidateAddress}
+                      sourceCandidateName={sourceCandidateName}
+                      targetCandidateAddress={targetCandidateAddress}
+                      targetCandidateName={targetCandidateName}
                       valueInWei={valueInWei}
                       chainId={chainId}
                       key={toolCallId}

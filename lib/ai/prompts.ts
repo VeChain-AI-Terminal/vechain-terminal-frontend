@@ -126,6 +126,26 @@ if the user wants to un-delegate his staked core, Use the makeStakeCoreTransacti
 
 `;
 
+export const makeTransferStakedCoreTransactionPrompt = `
+if the user wants to transfer his staked core,from current validator to any other,  Use the makeStakeCoreTransaction tool to create a transfer UI for the user to sign on the Core blockchain.
+  Pass the   sourceCandidateAddress, sourceCandidateName, targetCandidateAddress, targetCandidateName, valueInWei, chainId,. The chainId is 1116 for the Core blockchain.
+
+  if the user has not mentioned any particular validator/candidate, first show him the list of his staked core validators using the getDelegatedCoreForEachValidator tool and also fetch the available validators and ask him to specify the candidate he wants to transfer. never choose the validator yourself
+
+  Then, after getting all relevant data, pass the data to this tool.
+
+  The staking UI is a simple form with the following fields:
+  - sourceCandidateAddress,
+  - sourceCandidateName,
+  - targetCandidateAddress,
+  - targetCandidateName,
+  - valueInWei,
+  - chainId,
+
+  the stake value must be below 1000 core. do not alow higher valued transaction. 
+
+`;
+
 export const ensToAddressPrompt = `
 If user enters a ENS name, like somename.eth or someName.someChain.eth then use the ensToAddress tool to get the corresponding address. use this address for further queries.
   Use the ensToAddress tool to get the address corresponding to ENS.
@@ -140,6 +160,6 @@ export const systemPrompt = ({
   if (selectedChatModel === "chat-model-reasoning") {
     return `${regularPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n${ensToAddressPrompt}`;
+    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}`;
   }
 };

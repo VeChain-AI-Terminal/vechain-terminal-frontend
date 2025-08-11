@@ -1,5 +1,15 @@
+import { toWei } from "@/lib/utils";
 import { tool } from "ai";
 import z from "zod";
+
+export type TransferStakedCoreTransactionProps = {
+  sourceCandidateAddress: string;
+  sourceCandidateName: string;
+  targetCandidateAddress: string;
+  targetCandidateName: string;
+  valueInWei: string;
+  chainId: number;
+};
 
 export const makeTransferStakedCoreTransaction = tool({
   description:
@@ -30,14 +40,14 @@ export const makeTransferStakedCoreTransaction = tool({
     value,
     chainId,
   }) => {
+    const valueInWei = toWei(value);
     const transaction = {
       sourceCandidateAddress,
       sourceCandidateName,
       targetCandidateAddress,
       targetCandidateName,
-      value,
+      valueInWei,
       chainId,
-      action: "transfer",
     };
 
     console.log(
