@@ -1,23 +1,18 @@
-import { tool } from "ai"; // Import tool utility
-import { z } from "zod"; // Assuming you are using zod for schema validation
+import { tool } from "ai";
+import { z } from "zod";
 
-type ValidatorInput = {
-  operatorAddress: {
-    candidateName: string | null;
-    hash: string;
-  };
+type ValidatorResponse = {
+  name: string;
+  operatorAddress: string;
   status: number;
-  active: boolean;
-  coinPower: string;
-  coinRate: string;
-  nextRoundHashCnt: string;
-  hashPowerRate: string;
-  btcPower: string;
-  btcPowerRate: string;
-  commission: number;
-  proportion: string;
-  apr: string;
-  btcStakeApr: string;
+  stakedCoreAmount: string;
+  stakedBTCAmount: string;
+  stakedHashAmount: string;
+  stakedCoreScore: string; // added
+  realtimeCoreAmount: string; // added
+  estimatedCoreRewardRate: string;
+  estimatedBTCRewardRate: string;
+  hybridScore: string;
 };
 
 type ValidatorSummary = {
@@ -25,93 +20,81 @@ type ValidatorSummary = {
   operatorAddress: string;
   status: "Active" | "Inactive";
   state: "Normal" | "Unknown";
-  stakedCORE: string;
-  stakedCOREPercent: string;
+  stakedCORE: string; // in M CORE, e.g. "12.34M"
+  stakedBTC: string;
   stakedHash: string;
-  stakedHashPercent: string;
-  delegatedBTC: string;
-  delegatedBTCPercent: string;
-  commission: string;
+  coreRewardRate: string; // e.g. "5.70%"
+  btcRewardRate: string; // e.g. "4.14%"
   hybridScore: string;
-  coreRewardRate: string;
-  btcRewardRate: string;
+
+  // New decision stats
+  coreScoreEfficiency: string; // e.g. "1.00x"
+  realtimeDeltaCORE_M: string; // e.g. "+0.25M"
+  realtimeDeltaCOREPct: string; // e.g. "+2.10%"
 };
 
 export const getValidators = tool({
-  description: "Get the active validators with their staking and reward info",
+  description:
+    "Get the active validators with their staking and decision stats",
   inputSchema: z.object({}),
   execute: async () => {
-    // API URL and POST body
-    const apiUrl =
-      "https://stake.coredao.org/api/staking/search_candidate_page";
-    const requestBody = {
-      pageNum: 1,
-      pageSize: 50,
-    };
+    console.log("fething validaotrs summary ...");
+    const apiUrl = "https://staking-api.coredao.org/staking/status/validators";
 
-    // Make the POST request to the API
     const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
     });
 
-    // Parse the response data
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
     const data = await response.json();
 
-    // Extract and filter the active validators
-    const activeValidators: ValidatorSummary[] =
-      data?.data?.records
-        ?.filter((v: ValidatorInput) => v.active) // Filter for active validators
-        .map((v: ValidatorInput) => {
-          const formatMillions = (numStr: string) => {
-            const num = parseFloat(numStr) / 1e18;
-            return `${(num / 1_000_000).toFixed(2)}M`;
-          };
+    const toCore = (weiStr: string) => {
+      const n = Number(weiStr || "0");
+      return n / 1e18;
+    };
 
-          const name = v.operatorAddress?.candidateName || "Unknown";
-          const operatorAddress = v.operatorAddress?.hash || "Unknown";
-          const status = v.active ? "Active" : "Inactive";
-          const state = v.status === 17 ? "Normal" : "Unknown";
-          const stakedCORE = formatMillions(v.coinPower);
-          const stakedCOREPercent = `${parseFloat(v.coinRate).toFixed(2)}%`;
-          const stakedHash = v.nextRoundHashCnt || "0";
-          const stakedHashPercent = `${parseFloat(v.hashPowerRate).toFixed(
-            2
-          )}%`;
-          const delegatedBTC = `${parseFloat(
-            v.btcPower || "0"
-          ).toLocaleString()}`;
-          const delegatedBTCPercent = `${parseFloat(v.btcPowerRate).toFixed(
-            2
-          )}%`;
-          const commission = `${(v.commission / 10).toFixed(2)}%`;
-          const hybridScore = `${parseFloat(v.proportion).toFixed(2)}%`;
-          const coreRewardRate = `${parseFloat(v.apr).toFixed(2)}%`;
-          const btcRewardRate = `${parseFloat(v.btcStakeApr).toFixed(2)}%`;
+    const toMillions = (core: number) => `${(core / 1_000_000).toFixed(2)}M`;
+
+    const pct = (x: number) => `${x.toFixed(2)}%`;
+
+    const safeDiv = (a: number, b: number) => (b === 0 ? 0 : a / b);
+
+    const activeValidators: ValidatorSummary[] =
+      data?.data?.validatorsList
+        ?.filter((v: ValidatorResponse) => v.status === 17) // Normal
+        .map((v: ValidatorResponse) => {
+          const coreAmt = toCore(v.stakedCoreAmount || "0");
+          const coreScore = toCore(v.stakedCoreScore || "0");
+          const rtCoreAmt = toCore(v.realtimeCoreAmount || "0");
+
+          const scoreEff = safeDiv(coreScore, coreAmt); // ratio
+          const deltaCore = rtCoreAmt - coreAmt;
+          const deltaPct = safeDiv(deltaCore, coreAmt) * 100;
 
           return {
-            name,
-            operatorAddress,
-            status,
-            state,
-            stakedCORE,
-            stakedCOREPercent,
-            stakedHash,
-            stakedHashPercent,
-            delegatedBTC,
-            delegatedBTCPercent,
-            commission,
-            hybridScore,
-            coreRewardRate,
-            btcRewardRate,
+            name: v.name || "Unknown",
+            operatorAddress: v.operatorAddress || "Unknown",
+            status: v.status === 17 ? "Active" : "Inactive",
+            state: v.status === 17 ? "Normal" : "Unknown",
+            stakedCORE: toMillions(coreAmt),
+            stakedBTC: Number(v.stakedBTCAmount || "0").toLocaleString(),
+            stakedHash: v.stakedHashAmount || "0",
+            coreRewardRate: pct(Number(v.estimatedCoreRewardRate || "0") * 100),
+            btcRewardRate: pct(Number(v.estimatedBTCRewardRate || "0") * 100),
+            hybridScore: Number(v.hybridScore || "0").toLocaleString(),
+
+            coreScoreEfficiency: `${scoreEff.toFixed(2)}x`,
+            realtimeDeltaCORE_M: `${deltaCore >= 0 ? "+" : ""}${(
+              deltaCore / 1_000_000
+            ).toFixed(2)}M`,
+            realtimeDeltaCOREPct: `${deltaPct >= 0 ? "+" : ""}${pct(deltaPct)}`,
           };
         }) || [];
 
-    return {
-      validators: activeValidators,
-    };
+    return { validators: activeValidators };
   },
 });
