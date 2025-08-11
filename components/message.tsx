@@ -401,12 +401,6 @@ const PurePreviewMessage = ({
                     </div>
                   );
                 }
-              } else {
-                return (
-                  <div key={key}>
-                    <p>Working on it...</p>
-                  </div>
-                );
               }
             })}
 
