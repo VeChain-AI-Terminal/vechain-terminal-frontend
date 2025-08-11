@@ -1,10 +1,11 @@
 import { z } from "zod";
 import type { InferUITool, UIMessage } from "ai";
 
-import type { getValidators } from "./ai/tools/getValidators";
+import type { getValidators } from "./ai/tools/coreStakeActions/getValidators";
 import type { coreDaoTool } from "./ai/tools/coreDaoTool";
 import type { makeTransaction } from "./ai/tools/makeTransaction";
 import type { makeStakeCoreTransaction } from "./ai/tools/coreStakeActions/makeStakeCoreTransaction";
+import type { getDelegatedCoreForEachValidator } from "./ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";
 import type { makeUnDelegateCoreTransaction } from "./ai/tools/coreStakeActions/makeUnDelegateCoreTransaction";
 import type { getPortfolio } from "./ai/tools/getPortfolio";
 import type { ensToAddress } from "./ai/tools/ensToAddress";
@@ -23,6 +24,9 @@ type coreDaoToolType = InferUITool<typeof coreDaoTool>;
 type makeTransactionTool = InferUITool<typeof makeTransaction>;
 type getPortfolioTool = InferUITool<typeof getPortfolio>;
 type makeStakeTransactionTool = InferUITool<typeof makeStakeCoreTransaction>;
+type getDelegatedCoreForEachValidatorTool = InferUITool<
+  typeof getDelegatedCoreForEachValidator
+>;
 type makeUnDelegateCoreTransactionTool = InferUITool<
   typeof makeUnDelegateCoreTransaction
 >;
@@ -35,6 +39,7 @@ export type ChatTools = {
   makeTransaction: makeTransactionTool;
   getPortfolio: getPortfolioTool;
   makeStakeCoreTransaction: makeStakeTransactionTool;
+  getDelegatedCoreForEachValidator: getDelegatedCoreForEachValidatorTool;
   makeUnDelegateCoreTransaction: makeUnDelegateCoreTransactionTool;
   ensToAddress: ensToAddressTool;
   getUserWalletInfo: getUserWalletInfoTool;

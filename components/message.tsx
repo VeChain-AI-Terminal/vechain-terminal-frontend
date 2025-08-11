@@ -25,6 +25,7 @@ import { PortfolioDataType } from "@/lib/types/portfolio-data";
 import PortfolioTable from "@/components/PortfolioTable";
 import { PortfolioData } from "@/lib/ai/tools/getPortfolio";
 import { StakeComponentProps } from "@/lib/ai/tools/coreStakeActions/makeStakeCoreTransaction";
+import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";
 import UnDelegateComponent from "@/components/stake-actions-components/UnDelegateComponent";
 
 // Type narrowing is handled by TypeScript's control flow analysis
@@ -339,6 +340,28 @@ const PurePreviewMessage = ({
                   );
                 }
               }
+
+              if (type === "tool-getDelegatedCoreForEachValidator") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId} className="skeleton">
+                      <p>Looking up your staked CORE across validators...</p>
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+
+                  return (
+                    <div key={toolCallId}>
+                      <p>Done</p>
+                    </div>
+                  );
+                }
+              }
+
               if (type === "tool-coreDaoTool") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
@@ -381,7 +404,7 @@ const PurePreviewMessage = ({
               } else {
                 return (
                   <div key={key}>
-                    <p>Gathering information to help with your request...</p>
+                    <p>Working on it...</p>
                   </div>
                 );
               }

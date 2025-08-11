@@ -33,10 +33,11 @@ import { ChatSDKError } from "@/lib/errors";
 import type { ChatMessage } from "@/lib/types";
 import type { ChatModel } from "@/lib/ai/models";
 import type { VisibilityType } from "@/components/visibility-selector";
-import { getValidators } from "@/lib/ai/tools/getValidators";
+import { getValidators } from "@/lib/ai/tools/coreStakeActions/getValidators";
 import { coreDaoTool } from "@/lib/ai/tools/coreDaoTool";
 import { makeTransaction } from "@/lib/ai/tools/makeTransaction";
 import { makeStakeCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeStakeCoreTransaction";
+import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";
 import { makeUnDelegateCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeUnDelegateCoreTransaction";
 import { getPortfolio } from "@/lib/ai/tools/getPortfolio";
 import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
@@ -159,6 +160,7 @@ export async function POST(request: Request) {
                   "coreDaoTool",
                   "makeTransaction",
                   "makeStakeCoreTransaction",
+                  "getDelegatedCoreForEachValidator",
                   "makeUnDelegateCoreTransaction",
                   "getPortfolio",
                   "ensToAddress",
@@ -170,6 +172,7 @@ export async function POST(request: Request) {
             getValidators,
             makeTransaction,
             makeStakeCoreTransaction,
+            getDelegatedCoreForEachValidator,
             makeUnDelegateCoreTransaction,
             getPortfolio,
             ensToAddress,
