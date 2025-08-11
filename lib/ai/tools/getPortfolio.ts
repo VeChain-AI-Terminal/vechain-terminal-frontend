@@ -224,7 +224,7 @@ async function getNftsData(walletAddress: string): Promise<NFTData[]> {
 /** ---------- Tool ---------- */
 export const getPortfolio = tool({
   description:
-    "Create a PortfolioData object for a Core wallet with chainId, walletAddress, fungibleTokens, nfts, totalPortfolioValueUSD, and optional stakingPortfolio.",
+    "Get the portfolio for a Core wallet with chainId, walletAddress, fungibleTokens, nfts, totalPortfolioValueUSD, and optional stakingPortfolio.",
   inputSchema: z.object({
     walletAddress: z
       .string()

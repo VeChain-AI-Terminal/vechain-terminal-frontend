@@ -1,7 +1,6 @@
 import { z } from "zod";
 import type { InferUITool, UIMessage } from "ai";
 
-import type { getChainContext } from "./ai/tools/getChainContext";
 import type { getValidators } from "./ai/tools/getValidators";
 import type { coreDaoTool } from "./ai/tools/coreDaoTool";
 import type { makeTransaction } from "./ai/tools/makeTransaction";
@@ -18,7 +17,6 @@ export const messageMetadataSchema = z.object({
 
 export type MessageMetadata = z.infer<typeof messageMetadataSchema>;
 
-type getChainContextTool = InferUITool<typeof getChainContext>;
 type getValidatorsTool = InferUITool<typeof getValidators>;
 type coreDaoToolType = InferUITool<typeof coreDaoTool>;
 type makeTransactionTool = InferUITool<typeof makeTransaction>;
@@ -28,7 +26,6 @@ type ensToAddressTool = InferUITool<typeof ensToAddress>;
 type getUserWalletInfoTool = InferUITool<typeof getUserWalletInfo>;
 
 export type ChatTools = {
-  getChainContext: getChainContextTool;
   getValidators: getValidatorsTool;
   coreDaoTool: coreDaoToolType;
   makeTransaction: makeTransactionTool;

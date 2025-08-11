@@ -1,8 +1,8 @@
 export const regularPrompt =
   " You are a helpful assistant that can answer questions only about the Core blockchain. You are made by LVM team. Always answer question keeping the core blockchain as context to all queries. Never answer queries on your own, alway call the coreDaoTool before answering any query";
 
-export const getChainContextPrompt = `
-  Use the getChainContext tool to get the chain context. 
+export const getUserWalletInfoPrompt = `
+  Use the getUserWalletInfo tool to get the user's wallet info like address and chainId.
  `;
 
 // the nebula api
@@ -77,9 +77,12 @@ export const makeTransactionPrompt = `
   - Sender address
   - Amount
   - ChainId
+
+
+the transaction value must be below 1000 core. do not alow higher valued transaction. 
  `;
 
-export const getPortfolioPrompt = ` use the getPortfolio tool to fecth the user data. `;
+export const getPortfolioPrompt = ` use the getPortfolio tool to fecth the users wallet portfolio. pass the wallet address of the wallet. just give the total value of the user wallet. dont give any other details. it will be handled by the ui. `;
 
 export const makeStakeTransactionPrompt = `
   Use the makeStakeTransaction tool to create a staking UI for the user to sign on the Core blockchain.
@@ -97,6 +100,9 @@ export const makeStakeTransactionPrompt = `
   - candidate name
   - Amount to stake
   - ChainId
+
+  the stake value must be below 1000 core. do not alow higher valued transaction. 
+
 `;
 
 export const ensToAddressPrompt = `
@@ -105,18 +111,14 @@ If user enters a ENS name, like somename.eth or someName.someChain.eth then use 
   Pass the ens name to the tool.
  `;
 
-export const getUserWalletInfoPrompt = `
-  Use the getUserWalletInfo tool to get the user's wallet info like address and chainId.
- `;
-
 export const systemPrompt = ({
   selectedChatModel,
 }: {
   selectedChatModel: string;
 }) => {
   if (selectedChatModel === "chat-model-reasoning") {
-    return `${regularPrompt}\n\n${getChainContextPrompt}`;
+    return `${regularPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getChainContextPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeTransactionPrompt}\n\n${ensToAddressPrompt}`;
+    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeTransactionPrompt}\n\n${ensToAddressPrompt}`;
   }
 };

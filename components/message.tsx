@@ -16,7 +16,6 @@ import { MessageReasoning } from "./message-reasoning";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import type { ChatMessage } from "@/lib/types";
 import { useDataStream } from "./data-stream-provider";
-import { ChainContext } from "@/lib/ai/tools/getChainContext";
 
 import TransactionComponent, {
   TransactionComponentProps,
@@ -168,17 +167,6 @@ const PurePreviewMessage = ({
                         setMessages={setMessages}
                         regenerate={regenerate}
                       />
-                    </div>
-                  );
-                }
-              }
-
-              if (type === "tool-getChainContext") {
-                const { toolCallId, state } = part;
-                if (state === "input-available") {
-                  return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Getting chain context...</p>
                     </div>
                   );
                 }

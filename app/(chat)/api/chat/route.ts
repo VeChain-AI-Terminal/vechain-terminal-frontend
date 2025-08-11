@@ -33,7 +33,6 @@ import { ChatSDKError } from "@/lib/errors";
 import type { ChatMessage } from "@/lib/types";
 import type { ChatModel } from "@/lib/ai/models";
 import type { VisibilityType } from "@/components/visibility-selector";
-import { getChainContext } from "@/lib/ai/tools/getChainContext";
 import { getValidators } from "@/lib/ai/tools/getValidators";
 import { coreDaoTool } from "@/lib/ai/tools/coreDaoTool";
 import { makeTransaction } from "@/lib/ai/tools/makeTransaction";
@@ -155,7 +154,6 @@ export async function POST(request: Request) {
             selectedChatModel === "chat-model-reasoning"
               ? []
               : [
-                  "getChainContext",
                   "getValidators",
                   "coreDaoTool",
                   "makeTransaction",
@@ -166,7 +164,6 @@ export async function POST(request: Request) {
                 ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
-            getChainContext,
             coreDaoTool,
             getValidators,
             makeTransaction,
