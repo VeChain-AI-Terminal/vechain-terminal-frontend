@@ -1,5 +1,5 @@
 import React from "react";
-import { PortfolioDataType } from "@/lib/types/portfolio-data";
+import { TokenData, NFTData, PortfolioData } from "@/lib/ai/tools/getPortfolio";
 
 const getPercentChangeColor = (percentChange: number) => {
   if (percentChange > 0) return "text-green-700";
@@ -7,22 +7,70 @@ const getPercentChangeColor = (percentChange: number) => {
   return "text-gray-400";
 };
 
-const PortfolioTable: React.FC<PortfolioDataType> = ({
+// Convert wei-like string to human units without external libs
+function toUnits(balanceStr: string, decimals: number): number {
+  try {
+    const b = BigInt(balanceStr);
+    const base = 10n ** BigInt(decimals);
+    const whole = b / base;
+    const frac = b % base;
+    return Number(whole) + Number(frac) / Number(base);
+  } catch {
+    // Fallback (precision may be off for very large numbers)
+    return parseFloat(balanceStr) / Math.pow(10, decimals);
+  }
+}
+
+interface PortfolioTableProps {
+  chainId: number;
+  walletAddress: string;
+  fungibleTokens: TokenData[];
+  nfts: NFTData[];
+  totalPortfolioValueUSD: number;
+}
+
+const PortfolioTable: React.FC<PortfolioTableProps> = ({
   chainId,
   walletAddress,
   fungibleTokens,
   nfts,
   totalPortfolioValueUSD,
 }) => {
+  const derived = (fungibleTokens ?? []).map((t) => {
+    const balanceHuman =
+      t.balance && typeof t.decimals === "number"
+        ? toUnits(t.balance, t.decimals)
+        : 0;
+
+    const price = t.price_data?.price_usd ?? 0;
+    const usdValue =
+      t.price_data?.usd_value ??
+      (price > 0 && balanceHuman > 0 ? balanceHuman * price : 0);
+
+    const change24hPercent = t.price_data?.percent_change_24h ?? 0;
+    const marketCap = t.price_data?.market_cap_usd;
+
+    return {
+      key: t.token_address,
+      name: t.name,
+      symbol: t.symbol,
+      balanceHuman,
+      price,
+      usdValue,
+      change24hPercent,
+      marketCap,
+    };
+  });
+
   const totalUSD =
     typeof totalPortfolioValueUSD === "number"
       ? totalPortfolioValueUSD
-      : fungibleTokens.reduce((sum, t) => sum + t.usdValue, 0);
+      : derived.reduce((s, t) => s + (t.usdValue || 0), 0);
 
   const weightedChangePercent =
     totalUSD > 0
-      ? fungibleTokens.reduce(
-          (sum, t) => sum + t.usdValue * t.change24hPercent,
+      ? derived.reduce(
+          (s, t) => s + (t.usdValue || 0) * (t.change24hPercent || 0),
           0
         ) / totalUSD
       : 0;
@@ -34,7 +82,7 @@ const PortfolioTable: React.FC<PortfolioDataType> = ({
       {/* Portfolio Header */}
       <div className="flex flex-col pb-2 border-b border-neutral-200 dark:border-neutral-700">
         <div className="flex flex-row gap-1 justify-between">
-          <h2 className="text-xl font-semibold ">Portfolio</h2>
+          <h2 className="text-xl font-semibold">Portfolio</h2>
           {totalUSD > 0 && (
             <div className="text-theme-orange">
               <span className="text-xl font-bold ">
@@ -45,14 +93,14 @@ const PortfolioTable: React.FC<PortfolioDataType> = ({
           )}
         </div>
 
-        {(chainId || walletAddress || nfts.length > 0) && (
+        {(chainId || walletAddress || (nfts?.length ?? 0) > 0) && (
           <div className="mt-1 text-xs text-gray-500">
-            {chainId && (
+            {chainId ? (
               <>
                 Chain ID: <span className="font-mono">{chainId}</span>
               </>
-            )}
-            {walletAddress && (
+            ) : null}
+            {walletAddress ? (
               <>
                 <span className="mx-2">|</span>
                 Wallet:{" "}
@@ -60,17 +108,17 @@ const PortfolioTable: React.FC<PortfolioDataType> = ({
                   {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
                 </span>
               </>
-            )}
-            {nfts.length > 0 && (
+            ) : null}
+            {nfts && nfts.length > 0 ? (
               <>
                 <span className="mx-2">|</span>
                 NFTs: <span>{nfts.length}</span>
               </>
-            )}
+            ) : null}
           </div>
         )}
 
-        {totalUSD > 0 && weightedChangePercent ? (
+        {totalUSD > 0 ? (
           <span className="text-sm text-gray-400 mt-1">
             24h Change:{" "}
             <span className={getPercentChangeColor(weightedChangePercent)}>
@@ -83,14 +131,14 @@ const PortfolioTable: React.FC<PortfolioDataType> = ({
 
       {/* Tokens */}
       <div className="max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-        {fungibleTokens.length === 0 ? (
+        {derived.length === 0 ? (
           <div className="text-gray-600 dark:text-gray-400">
             No holdings available.
           </div>
         ) : (
-          fungibleTokens.map((t) => (
+          derived.map((t) => (
             <div
-              key={t.tokenAddress}
+              key={t.key}
               className="flex justify-between items-center py-2 border-b border-neutral-200 dark:border-neutral-700 last:border-none"
             >
               <div className="flex flex-col">
@@ -100,28 +148,26 @@ const PortfolioTable: React.FC<PortfolioDataType> = ({
                     <span className="text-xs text-gray-500">({t.symbol})</span>
                   )}
                 </div>
-                {t.balance > 0 && (
+                {t.balanceHuman > 0 && (
                   <div className="text-sm text-gray-500">
-                    {t.balance.toFixed(4)} {t.symbol} @ $
-                    {t.currentPrice.toFixed(4)}
+                    {t.balanceHuman.toFixed(4)} {t.symbol} @ $
+                    {t.price.toFixed(4)}
                   </div>
                 )}
               </div>
 
               <div className="text-right">
-                {t.usdValue >= 0 && (
-                  <div className="font-semibold">${t.usdValue.toFixed(2)}</div>
-                )}
+                <div className="font-semibold">
+                  ${t.usdValue >= 0 ? t.usdValue.toFixed(2) : "0.00"}
+                </div>
 
-                {t.change24hPercent ? (
-                  <div
-                    className={`text-xs ${getPercentChangeColor(
-                      t.change24hPercent
-                    )}`}
-                  >
-                    {t.change24hPercent.toFixed(2)}%
-                  </div>
-                ) : null}
+                <div
+                  className={`text-xs ${getPercentChangeColor(
+                    t.change24hPercent
+                  )}`}
+                >
+                  {t.change24hPercent.toFixed(2)}%
+                </div>
 
                 {typeof t.marketCap === "number" && t.marketCap > 0 && (
                   <div className="text-[10px] text-gray-400">

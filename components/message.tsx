@@ -26,6 +26,7 @@ import StakeComponent, {
 } from "@/components/StakeComponent";
 import { PortfolioDataType } from "@/lib/types/portfolio-data";
 import PortfolioTable from "@/components/PortfolioTable";
+import { PortfolioData } from "@/lib/ai/tools/getPortfolio";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -226,34 +227,37 @@ const PurePreviewMessage = ({
                 }
               }
 
-              if (type === "tool-makePortfolioTable") {
+              if (type === "tool-getPortfolio") {
                 const { toolCallId, state } = part;
+
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId} className="skeleton">
-                      <p>Almost done...</p>
+                      <p>Fetching portfolio...</p>
                     </div>
                   );
                 }
 
                 if (state === "output-available") {
                   const { output } = part;
+
+                  // Make sure output has the right shape
                   const {
                     chainId,
                     walletAddress,
                     fungibleTokens,
                     nfts,
                     totalPortfolioValueUSD,
-                  } = output as PortfolioDataType;
+                  } = output as PortfolioData;
 
                   return (
                     <PortfolioTable
-                      chainId={chainId}
-                      walletAddress={walletAddress}
-                      fungibleTokens={fungibleTokens}
-                      nfts={nfts}
-                      totalPortfolioValueUSD={totalPortfolioValueUSD}
                       key={toolCallId}
+                      chainId={chainId ?? 0}
+                      walletAddress={walletAddress ?? ""}
+                      fungibleTokens={fungibleTokens ?? []}
+                      nfts={nfts ?? []}
+                      totalPortfolioValueUSD={totalPortfolioValueUSD ?? 0}
                     />
                   );
                 }
