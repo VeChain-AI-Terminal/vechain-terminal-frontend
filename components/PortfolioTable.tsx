@@ -1,5 +1,10 @@
 import React from "react";
-import { TokenData, NFTData, PortfolioData } from "@/lib/ai/tools/getPortfolio";
+import {
+  TokenData,
+  NFTData,
+  PortfolioData,
+  CleanedStakingPortfolio,
+} from "@/lib/ai/tools/getPortfolio";
 
 const getPercentChangeColor = (percentChange: number) => {
   if (percentChange > 0) return "text-green-700";
@@ -21,21 +26,18 @@ function toUnits(balanceStr: string, decimals: number): number {
   }
 }
 
-interface PortfolioTableProps {
-  chainId: number;
-  walletAddress: string;
-  fungibleTokens: TokenData[];
-  nfts: NFTData[];
-  totalPortfolioValueUSD: number;
-}
-
-const PortfolioTable: React.FC<PortfolioTableProps> = ({
+const PortfolioTable: React.FC<PortfolioData> = ({
   chainId,
   walletAddress,
   fungibleTokens,
   nfts,
   totalPortfolioValueUSD,
+  stakingPortfolio,
+  totalStakedValue,
+  totalClaimedValue,
+  totalPendingValue,
 }) => {
+  // console.log("staking portfolio ,", stakingPortfolio);
   const derived = (fungibleTokens ?? []).map((t) => {
     const balanceHuman =
       t.balance && typeof t.decimals === "number"
@@ -179,6 +181,108 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({
           ))
         )}
       </div>
+
+      {/* Staking Portfolio */}
+      {stakingPortfolio && (
+        <div className="mt-4 border-t border-neutral-200 dark:border-neutral-700 pt-3">
+          {/* Header */}
+          <div className="flex flex-row gap-1 justify-between mb-2">
+            <h2 className="text-xl font-semibold">Staked</h2>
+            {totalStakedValue > 0 && (
+              <div className="text-theme-orange">
+                <span className="text-xl font-bold">
+                  ${totalStakedValue.toFixed(2)}
+                </span>{" "}
+                <span className="text-sm">USD</span>
+              </div>
+            )}
+          </div>
+
+          {(() => {
+            const fmt = (n?: number, digits = 4) =>
+              typeof n === "number" && isFinite(n)
+                ? n.toLocaleString(undefined, { maximumFractionDigits: digits })
+                : "0";
+
+            const fmtUSD = (n?: number) =>
+              typeof n === "number" && isFinite(n)
+                ? `$${n.toLocaleString(undefined, {
+                    maximumFractionDigits: 2,
+                  })}`
+                : "$0.00";
+
+            return (
+              <div className="grid grid-cols-2 gap-y-1 text-sm">
+                {/* Staked */}
+                <div className="text-gray-400">Staked CORE</div>
+                <div className="text-right font-medium">
+                  {fmt(stakingPortfolio.stakedCORE, 4)} CORE
+                </div>
+
+                <div className="text-gray-400">Staked Hash</div>
+                <div className="text-right font-medium">
+                  {fmt(stakingPortfolio.stakedHash, 4)}
+                </div>
+
+                <div className="text-gray-400">Staked BTC</div>
+                <div className="text-right font-medium">
+                  {fmt(stakingPortfolio.stakedBTC, 8)} BTC
+                </div>
+
+                {/* Pending */}
+                <div className="col-span-2 mt-2 font-medium flex justify-between border-t border-neutral-200 dark:border-neutral-700 pt-3">
+                  <span>Pending Rewards</span>
+                  <span className="text-theme-orange">
+                    {fmtUSD(totalPendingValue)}
+                  </span>
+                </div>
+                <div className="text-gray-400">CORE</div>
+                <div className="text-right">
+                  {fmt(stakingPortfolio.pendingCOREReward, 6)} CORE
+                </div>
+                <div className="text-gray-400">Hash</div>
+                <div className="text-right">
+                  {fmt(stakingPortfolio.pendingHashReward, 6)}
+                </div>
+                <div className="text-gray-400">BTC</div>
+                <div className="text-right">
+                  {fmt(stakingPortfolio.pendingBTCReward, 8)} BTC
+                </div>
+
+                {/* Claimed */}
+                <div className="col-span-2 mt-2 font-medium flex justify-between border-t border-neutral-200 dark:border-neutral-700 pt-3">
+                  <span>Claimed Rewards</span>
+                  <span className="text-theme-orange">
+                    {fmtUSD(totalClaimedValue)}
+                  </span>
+                </div>
+                <div className="text-gray-400">CORE</div>
+                <div className="text-right">
+                  {fmt(stakingPortfolio.claimedCOREReward, 6)} CORE
+                </div>
+                <div className="text-gray-400">Hash</div>
+                <div className="text-right">
+                  {fmt(stakingPortfolio.claimedHashReward, 6)}
+                </div>
+                <div className="text-gray-400">BTC</div>
+                <div className="text-right">
+                  {fmt(stakingPortfolio.claimedBTCReward, 8)} BTC
+                </div>
+
+                {/* Totals */}
+                <div className="text-gray-400 mt-2">Total Pending</div>
+                <div className="text-right mt-2 font-semibold">
+                  {fmt(stakingPortfolio.totalPendingReward, 6)}
+                </div>
+                <div className="text-gray-400">Total Claimed</div>
+                <div className="text-right font-semibold">
+                  {fmt(stakingPortfolio.totalClaimedReward, 6)}
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      )}
     </div>
   );
 };

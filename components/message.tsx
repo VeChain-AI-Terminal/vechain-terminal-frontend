@@ -248,6 +248,10 @@ const PurePreviewMessage = ({
                     fungibleTokens,
                     nfts,
                     totalPortfolioValueUSD,
+                    stakingPortfolio,
+                    totalStakedValue,
+                    totalClaimedValue,
+                    totalPendingValue,
                   } = output as PortfolioData;
 
                   return (
@@ -258,6 +262,10 @@ const PurePreviewMessage = ({
                       fungibleTokens={fungibleTokens ?? []}
                       nfts={nfts ?? []}
                       totalPortfolioValueUSD={totalPortfolioValueUSD ?? 0}
+                      stakingPortfolio={stakingPortfolio}
+                      totalStakedValue={totalStakedValue}
+                      totalClaimedValue={totalClaimedValue}
+                      totalPendingValue={totalPendingValue}
                     />
                   );
                 }

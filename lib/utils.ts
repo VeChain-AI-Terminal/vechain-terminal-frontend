@@ -104,3 +104,55 @@ export function getTextFromMessage(message: ChatMessage): string {
     .map((part) => part.text)
     .join("");
 }
+
+/**
+ * Convert a big integer string with `decimals` to a human string without losing precision.
+ * Example: toUnit("2000000000000000000", 18) -> "2"
+ */
+export const toUnit = (value: string | undefined, decimals = 18): string => {
+  const v = (value ?? "0").replace(/^0+/, "") || "0";
+  if (v === "0") return "0";
+  if (decimals === 0) return v;
+
+  const pad = Math.max(decimals - v.length + 1, 0);
+  const whole = v.length > decimals ? v.slice(0, v.length - decimals) : "0";
+  const frac =
+    (pad ? "0".repeat(pad) : "") +
+    (v.length > decimals ? v.slice(v.length - decimals) : v);
+
+  // remove trailing zeros in fractional part
+  const fracTrimmed = frac.replace(/0+$/, "");
+  return fracTrimmed ? `${whole}.${fracTrimmed}` : whole;
+};
+
+export const addStrNums = (a: string, b: string): string => {
+  // add two decimal strings safely
+  const [ai, af = ""] = a.split(".");
+  const [bi, bf = ""] = b.split(".");
+  const maxF = Math.max(af.length, bf.length);
+  const A = ai + (af + "0".repeat(maxF - af.length));
+  const B = bi + (bf + "0".repeat(maxF - bf.length));
+
+  // big integer string add
+  let carry = 0,
+    res = "";
+  for (
+    let i = A.length - 1, j = B.length - 1;
+    i >= 0 || j >= 0 || carry;
+    i--, j--
+  ) {
+    const da = i >= 0 ? Number(A[i]) : 0;
+    const db = j >= 0 ? Number(B[j]) : 0;
+    const sum = da + db + carry;
+    res = String(sum % 10) + res;
+    carry = Math.floor(sum / 10);
+  }
+  // insert decimal point
+  if (maxF > 0) {
+    const head = res.slice(0, res.length - maxF) || "0";
+    let tail = res.slice(res.length - maxF);
+    tail = tail.replace(/0+$/, "");
+    return tail ? `${head}.${tail}` : head;
+  }
+  return res;
+};
