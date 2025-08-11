@@ -4,7 +4,8 @@ import type { InferUITool, UIMessage } from "ai";
 import type { getValidators } from "./ai/tools/getValidators";
 import type { coreDaoTool } from "./ai/tools/coreDaoTool";
 import type { makeTransaction } from "./ai/tools/makeTransaction";
-import type { makeStakeTransaction } from "./ai/tools/makeStakeTransaction";
+import type { makeStakeCoreTransaction } from "./ai/tools/coreStakeActions/makeStakeCoreTransaction";
+import type { makeUnDelegateCoreTransaction } from "./ai/tools/coreStakeActions/makeUnDelegateCoreTransaction";
 import type { getPortfolio } from "./ai/tools/getPortfolio";
 import type { ensToAddress } from "./ai/tools/ensToAddress";
 import type { getUserWalletInfo } from "./ai/tools/getUserWalletInfo";
@@ -21,7 +22,10 @@ type getValidatorsTool = InferUITool<typeof getValidators>;
 type coreDaoToolType = InferUITool<typeof coreDaoTool>;
 type makeTransactionTool = InferUITool<typeof makeTransaction>;
 type getPortfolioTool = InferUITool<typeof getPortfolio>;
-type makeStakeTransactionTool = InferUITool<typeof makeStakeTransaction>;
+type makeStakeTransactionTool = InferUITool<typeof makeStakeCoreTransaction>;
+type makeUnDelegateCoreTransactionTool = InferUITool<
+  typeof makeUnDelegateCoreTransaction
+>;
 type ensToAddressTool = InferUITool<typeof ensToAddress>;
 type getUserWalletInfoTool = InferUITool<typeof getUserWalletInfo>;
 
@@ -30,7 +34,8 @@ export type ChatTools = {
   coreDaoTool: coreDaoToolType;
   makeTransaction: makeTransactionTool;
   getPortfolio: getPortfolioTool;
-  makeStakeTransaction: makeStakeTransactionTool;
+  makeStakeCoreTransaction: makeStakeTransactionTool;
+  makeUnDelegateCoreTransaction: makeUnDelegateCoreTransactionTool;
   ensToAddress: ensToAddressTool;
   getUserWalletInfo: getUserWalletInfoTool;
 };

@@ -20,12 +20,12 @@ import { useDataStream } from "./data-stream-provider";
 import TransactionComponent, {
   TransactionComponentProps,
 } from "@/components/TransactionComponent";
-import StakeComponent, {
-  StakeComponentProps,
-} from "@/components/StakeComponent";
+import StakeComponent from "@/components/stake-actions-components/StakeComponent";
 import { PortfolioDataType } from "@/lib/types/portfolio-data";
 import PortfolioTable from "@/components/PortfolioTable";
 import { PortfolioData } from "@/lib/ai/tools/getPortfolio";
+import { StakeComponentProps } from "@/lib/ai/tools/coreStakeActions/makeStakeCoreTransaction";
+import UnDelegateComponent from "@/components/stake-actions-components/UnDelegateComponent";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -259,7 +259,7 @@ const PurePreviewMessage = ({
                 }
               }
 
-              if (type === "tool-makeStakeTransaction") {
+              if (type === "tool-makeStakeCoreTransaction") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
@@ -271,13 +271,47 @@ const PurePreviewMessage = ({
 
                 if (state === "output-available") {
                   const { output } = part;
-                  const { candidateAddress, candidateName, value, chainId } =
-                    output as StakeComponentProps;
+                  const {
+                    candidateAddress,
+                    candidateName,
+                    valueInWei,
+                    chainId,
+                  } = output as StakeComponentProps;
                   return (
                     <StakeComponent
                       candidateAddress={candidateAddress}
                       candidateName={candidateName}
-                      value={value}
+                      valueInWei={valueInWei}
+                      chainId={chainId}
+                      key={toolCallId}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-makeUnDelegateCoreTransaction") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId} className="skeleton">
+                      <p>Making un-delegate stake transaction...</p>
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+                  const {
+                    candidateAddress,
+                    candidateName,
+                    valueInWei,
+                    chainId,
+                  } = output as StakeComponentProps;
+                  return (
+                    <UnDelegateComponent
+                      candidateAddress={candidateAddress}
+                      candidateName={candidateName}
+                      valueInWei={valueInWei}
                       chainId={chainId}
                       key={toolCallId}
                     />
@@ -344,6 +378,12 @@ const PurePreviewMessage = ({
                     </div>
                   );
                 }
+              } else {
+                return (
+                  <div key={key}>
+                    <p>Gathering information to help with your request...</p>
+                  </div>
+                );
               }
             })}
 

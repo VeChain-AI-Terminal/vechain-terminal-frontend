@@ -50,6 +50,7 @@ export const getValidatorsPrompt = `
  The getValidators tool fetches a list of active validators from the Core DAO staking platform. It provides detailed information about each validator, including:
  
  - **Validator Name**
+ - **validator address**
  - **Commission Rate**
  - **APR (Annual Percentage Rate)**
  - **Staked CORE Amount**
@@ -84,8 +85,29 @@ the transaction value must be below 1000 core. do not alow higher valued transac
 
 export const getPortfolioPrompt = ` use the getPortfolio tool to fecth the users wallet portfolio. pass the wallet address of the wallet. just give the total value of the user wallet. dont give any other details. it will be handled by the ui. `;
 
-export const makeStakeTransactionPrompt = `
-  Use the makeStakeTransaction tool to create a staking UI for the user to sign on the Core blockchain.
+export const makeStakeCoreTransactionPrompt = `
+  Use the makeStakeCoreTransaction tool to create a staking UI for the user to sign on the Core blockchain.
+  Pass the candidate (validator) operator address, candidate name,, stake amount, and chainId. The chainId is 1116 for the Core blockchain.
+
+  if the user has not mentioned any particular validator/candidate, first show him the list of validator according to rewards and ask him to specify the candidate he wants to stake into. never choose the validator yourself
+
+  Then use the getValidators tool to gather relevant information about the staking transaction such as the validatores rewards, required minimum deposit, and candidate details.
+
+
+  Then, after getting all relevant data, pass the data to this tool.
+
+  The staking UI is a simple form with the following fields:
+  - Candidate address (validator operator)
+  - candidate name
+  - Amount to stake
+  - ChainId
+
+  the stake value must be below 1000 core. do not alow higher valued transaction. 
+
+`;
+
+export const makeUnDelegateCoreTransactionPrompt = `
+  Use the makeStakeCoreTransaction tool to create a staking UI for the user to sign on the Core blockchain.
   Pass the candidate (validator) operator address, candidate name,, stake amount, and chainId. The chainId is 1116 for the Core blockchain.
 
   if the user has not mentioned any particular validator/candidate, first show him the list of validator according to rewards and ask him to specify the candidate he wants to stake into. never choose the validator yourself
@@ -119,6 +141,6 @@ export const systemPrompt = ({
   if (selectedChatModel === "chat-model-reasoning") {
     return `${regularPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeTransactionPrompt}\n\n${ensToAddressPrompt}`;
+    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n${ensToAddressPrompt}`;
   }
 };

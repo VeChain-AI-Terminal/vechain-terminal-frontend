@@ -10,6 +10,7 @@ import type { DBMessage } from "@/lib/db/schema";
 import { ChatSDKError, type ErrorCode } from "./errors";
 import type { ChatMessage, ChatTools, CustomUIDataTypes } from "./types";
 import { formatISO } from "date-fns";
+import { parseUnits } from "viem";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -156,3 +157,17 @@ export const addStrNums = (a: string, b: string): string => {
   }
   return res;
 };
+
+/**
+ * Converts a human-readable CORE amount to wei (as a string).
+ * @param amount The amount in CORE (e.g., "1.5")
+ * @returns Amount in wei as a string
+ */
+export function toWei(amount: string): string {
+  try {
+    return parseUnits(amount, 18).toString();
+  } catch (err) {
+    console.error("Invalid amount passed to toWei:", amount);
+    return "0";
+  }
+}

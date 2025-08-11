@@ -36,7 +36,8 @@ import type { VisibilityType } from "@/components/visibility-selector";
 import { getValidators } from "@/lib/ai/tools/getValidators";
 import { coreDaoTool } from "@/lib/ai/tools/coreDaoTool";
 import { makeTransaction } from "@/lib/ai/tools/makeTransaction";
-import { makeStakeTransaction } from "@/lib/ai/tools/makeStakeTransaction";
+import { makeStakeCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeStakeCoreTransaction";
+import { makeUnDelegateCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeUnDelegateCoreTransaction";
 import { getPortfolio } from "@/lib/ai/tools/getPortfolio";
 import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
 import { getUserWalletInfo } from "@/lib/ai/tools/getUserWalletInfo";
@@ -157,7 +158,8 @@ export async function POST(request: Request) {
                   "getValidators",
                   "coreDaoTool",
                   "makeTransaction",
-                  "makeStakeTransaction",
+                  "makeStakeCoreTransaction",
+                  "makeUnDelegateCoreTransaction",
                   "getPortfolio",
                   "ensToAddress",
                   "getUserWalletInfo",
@@ -167,7 +169,8 @@ export async function POST(request: Request) {
             coreDaoTool,
             getValidators,
             makeTransaction,
-            makeStakeTransaction,
+            makeStakeCoreTransaction,
+            makeUnDelegateCoreTransaction,
             getPortfolio,
             ensToAddress,
             getUserWalletInfo,
