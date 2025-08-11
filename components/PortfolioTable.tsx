@@ -212,71 +212,79 @@ const PortfolioTable: React.FC<PortfolioData> = ({
                 : "$0.00";
 
             return (
-              <div className="grid grid-cols-2 gap-y-1 text-sm">
+              <div className="space-y-1 text-sm">
                 {/* Staked */}
-                <div className="text-gray-400">Staked CORE</div>
-                <div className="text-right font-medium">
-                  {fmt(stakingPortfolio.stakedCORE, 4)} CORE
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Staked CORE</span>
+                  <span className="font-medium">
+                    {fmt(stakingPortfolio.stakedCORE, 4)} CORE
+                  </span>
                 </div>
-
-                <div className="text-gray-400">Staked Hash</div>
-                <div className="text-right font-medium">
-                  {fmt(stakingPortfolio.stakedHash, 4)}
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Staked Hash</span>
+                  <span className="font-medium">
+                    {fmt(stakingPortfolio.stakedHash, 4)}
+                  </span>
                 </div>
-
-                <div className="text-gray-400">Staked BTC</div>
-                <div className="text-right font-medium">
-                  {fmt(stakingPortfolio.stakedBTC, 8)} BTC
+                <div className="flex justify-between pb-3">
+                  <span className="text-gray-400">Staked BTC</span>
+                  <span className="font-medium">
+                    {fmt(stakingPortfolio.stakedBTC, 8)} BTC
+                  </span>
                 </div>
 
                 {/* Pending */}
-                <div className="col-span-2 mt-2 font-medium flex justify-between border-t border-neutral-200 dark:border-neutral-700 pt-3">
+                <div className="flex justify-between font-medium border-t border-neutral-200 dark:border-neutral-700 pt-3 mt-2">
                   <span>Pending Rewards</span>
                   <span className="text-theme-orange">
                     {fmtUSD(totalPendingValue)}
                   </span>
                 </div>
-                <div className="text-gray-400">CORE</div>
-                <div className="text-right">
-                  {fmt(stakingPortfolio.pendingCOREReward, 6)} CORE
+                <div className="flex justify-between">
+                  <span className="text-gray-400">CORE</span>
+                  <span>{fmt(stakingPortfolio.pendingCOREReward, 6)} CORE</span>
                 </div>
-                <div className="text-gray-400">Hash</div>
-                <div className="text-right">
-                  {fmt(stakingPortfolio.pendingHashReward, 6)}
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Hash</span>
+                  <span>{fmt(stakingPortfolio.pendingHashReward, 6)}</span>
                 </div>
-                <div className="text-gray-400">BTC</div>
-                <div className="text-right">
-                  {fmt(stakingPortfolio.pendingBTCReward, 8)} BTC
+                <div className="flex justify-between pb-3">
+                  <span className="text-gray-400">BTC</span>
+                  <span>{fmt(stakingPortfolio.pendingBTCReward, 8)} BTC</span>
                 </div>
 
                 {/* Claimed */}
-                <div className="col-span-2 mt-2 font-medium flex justify-between border-t border-neutral-200 dark:border-neutral-700 pt-3">
+                <div className="flex justify-between font-medium border-t border-neutral-200 dark:border-neutral-700 pt-3 mt-2">
                   <span>Claimed Rewards</span>
                   <span className="text-theme-orange">
                     {fmtUSD(totalClaimedValue)}
                   </span>
                 </div>
-                <div className="text-gray-400">CORE</div>
-                <div className="text-right">
-                  {fmt(stakingPortfolio.claimedCOREReward, 6)} CORE
+                <div className="flex justify-between">
+                  <span className="text-gray-400">CORE</span>
+                  <span>{fmt(stakingPortfolio.claimedCOREReward, 6)} CORE</span>
                 </div>
-                <div className="text-gray-400">Hash</div>
-                <div className="text-right">
-                  {fmt(stakingPortfolio.claimedHashReward, 6)}
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Hash</span>
+                  <span>{fmt(stakingPortfolio.claimedHashReward, 6)}</span>
                 </div>
-                <div className="text-gray-400">BTC</div>
-                <div className="text-right">
-                  {fmt(stakingPortfolio.claimedBTCReward, 8)} BTC
+                <div className="flex justify-between pb-3">
+                  <span className="text-gray-400">BTC</span>
+                  <span>{fmt(stakingPortfolio.claimedBTCReward, 8)} BTC</span>
                 </div>
 
                 {/* Totals */}
-                <div className="text-gray-400 mt-2">Total Pending</div>
-                <div className="text-right mt-2 font-semibold">
-                  {fmt(stakingPortfolio.totalPendingReward, 6)}
+                <div className="flex justify-between border-t border-neutral-200 dark:border-neutral-700 pt-3 ">
+                  <span className="text-gray-400">Total Pending</span>
+                  <span className="font-semibold">
+                    {fmt(stakingPortfolio.totalPendingReward, 6)}
+                  </span>
                 </div>
-                <div className="text-gray-400">Total Claimed</div>
-                <div className="text-right font-semibold">
-                  {fmt(stakingPortfolio.totalClaimedReward, 6)}
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Total Claimed</span>
+                  <span className="font-semibold">
+                    {fmt(stakingPortfolio.totalClaimedReward, 6)}
+                  </span>
                 </div>
               </div>
             );
