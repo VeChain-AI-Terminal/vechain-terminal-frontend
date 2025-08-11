@@ -10,11 +10,12 @@ type ApiRecord = {
   coinPower: string; // wei
   apr: string;
   coinStatus: boolean;
+  commission: number; // validator commission rate in %
 };
 
 export const getDelegatedCoreForEachValidator = tool({
   description:
-    "Fetches a wallet's active CORE staking positions, listing each validator the wallet has delegated to along with the staked amount (in CORE), APR, active status, validator name, plus the wallet's total CORE staked",
+    "Fetches a wallet's active CORE staking positions, listing each validator the wallet has delegated to along with the staked amount (in CORE), validator name, APR, commission, active status, plus the wallet's total CORE staked.",
   inputSchema: z.object({
     walletAddress: z
       .string()
@@ -64,7 +65,8 @@ export const getDelegatedCoreForEachValidator = tool({
         validator: r.operatorAddressHash,
         validatorName: r.operatorAddress?.candidateName || null,
         stakeCORE: formatEther(BigInt(r.coinPower)), // human-readable CORE
-        apr: r.apr,
+        coreRewardRate: `${parseFloat(r.apr).toFixed(2)}%`, // formatted APR
+        commission: `${r.commission}%`, // commission in %
         coinStatus: Boolean(r.coinStatus),
       }));
 

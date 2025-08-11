@@ -85,7 +85,7 @@ the transaction value must be below 1000 core. do not alow higher valued transac
 
 export const getPortfolioPrompt = ` use the getPortfolio tool to fecth the users wallet portfolio. pass the wallet address of the wallet. just give the total value of the user wallet. dont give any other details. it will be handled by the ui. `;
 
-export const getDelegatedCoreForEachValidatorPrompt = ` use the getDelegatedCoreForEachValidator tool Fetches a wallet's active CORE staking positions, listing each validator the wallet has delegated to along with the staked amount (in CORE), APR, and active status, plus the wallet's total CORE staked. pass the wallet address of the wallet. `;
+export const getDelegatedCoreForEachValidatorPrompt = ` use the getDelegatedCoreForEachValidator tool Fetches a wallet's active CORE staking positions, listing each validator the wallet has delegated to along with the staked amount (in CORE), APR, and active status,commission plus the wallet's total CORE staked. pass the wallet address of the wallet. `;
 
 export const makeStakeCoreTransactionPrompt = `
   Use the makeStakeCoreTransaction tool to create a staking UI for the user to sign on the Core blockchain.
