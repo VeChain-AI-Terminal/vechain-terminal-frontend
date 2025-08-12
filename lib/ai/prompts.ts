@@ -80,12 +80,14 @@ export const makeTransactionPrompt = `
   - ChainId
 
 
-the transaction value must be below 1000 core. do not alow higher valued transaction. 
+the transaction value must be below 1000 core. do not alow higher valued transaction as you are still in beta.. 
  `;
 
 export const getPortfolioPrompt = ` use the getPortfolio tool to fecth the users wallet portfolio. pass the wallet address of the wallet. just give the total value of the user wallet. dont give any other details. it will be handled by the ui. `;
 
 export const getDelegatedCoreForEachValidatorPrompt = ` use the getDelegatedCoreForEachValidator tool Fetches a wallet's active CORE staking positions, listing each validator the wallet has delegated to along with the staked amount (in CORE), APR, and active status,commission plus the wallet's total CORE staked. pass the wallet address of the wallet. `;
+
+export const getClaimedAndPendingRewardsPrompt = ` use the getClaimedAndPendingRewards tool Fetches a wallet's rewards for staking positions across all validators ,listing each validator the claaimed and pending rewards (in CORE),  and total rewards. pass the wallet address of the wallet. `;
 
 export const makeStakeCoreTransactionPrompt = `
   Use the makeStakeCoreTransaction tool to create a staking UI for the user to sign on the Core blockchain.
@@ -104,7 +106,7 @@ export const makeStakeCoreTransactionPrompt = `
   - Amount to stake
   - ChainId
 
-  the stake value must be below 1000 core. do not alow higher valued transaction. 
+  the stake value must be below 1000 core. do not alow higher valued transaction  as you are still in beta.
 
 `;
 
@@ -122,7 +124,7 @@ if the user wants to un-delegate his staked core, Use the makeStakeCoreTransacti
   - Amount to stake
   - ChainId
 
-  the stake value must be below 1000 core. do not alow higher valued transaction. 
+  the stake value must be below 1000 core. do not alow higher valued transaction as you are still in beta.. 
 
 `;
 
@@ -142,7 +144,7 @@ if the user wants to transfer his staked core,from current validator to any othe
   - valueInWei,
   - chainId,
 
-  the stake value must be below 1000 core. do not alow higher valued transaction. 
+  the stake value must be below 1000 core. do not alow higher valued transaction as you are still in beta.. 
 
 `;
 
@@ -160,6 +162,6 @@ export const systemPrompt = ({
   if (selectedChatModel === "chat-model-reasoning") {
     return `${regularPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}`;
+    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}`;
   }
 };

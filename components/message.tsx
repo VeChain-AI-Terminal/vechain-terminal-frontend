@@ -26,6 +26,7 @@ import PortfolioTable from "@/components/PortfolioTable";
 import { PortfolioData } from "@/lib/ai/tools/getPortfolio";
 import { StakeComponentProps } from "@/lib/ai/tools/coreStakeActions/makeStakeCoreTransaction";
 import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";
+import { getClaimedAndPendingRewards } from "@/lib/ai/tools/coreStakeActions/getClaimedAndPendingRewards";
 import UnDelegateComponent from "@/components/stake-actions-components/UnDelegateComponent";
 import TransferComponent from "@/components/stake-actions-components/TransferComponent";
 import { TransferStakedCoreTransactionProps } from "@/lib/ai/tools/coreStakeActions/makeTransferStakedCoreTransaction";
@@ -384,6 +385,26 @@ const PurePreviewMessage = ({
                   return (
                     <div key={toolCallId} className="skeleton">
                       <p>Looking up your staked CORE across validators...</p>
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+
+                  return (
+                    <div key={toolCallId}>
+                      <p>Done</p>
+                    </div>
+                  );
+                }
+              }
+              if (type === "tool-getClaimedAndPendingRewards") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId} className="skeleton">
+                      <p>Looking up your rewards across validators...</p>
                     </div>
                   );
                 }

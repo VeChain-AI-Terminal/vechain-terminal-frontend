@@ -38,6 +38,7 @@ import { coreDaoTool } from "@/lib/ai/tools/coreDaoTool";
 import { makeTransaction } from "@/lib/ai/tools/makeTransaction";
 import { makeStakeCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeStakeCoreTransaction";
 import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";
+import { getClaimedAndPendingRewards } from "@/lib/ai/tools/coreStakeActions/getClaimedAndPendingRewards";
 import { makeUnDelegateCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeUnDelegateCoreTransaction";
 import { makeTransferStakedCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeTransferStakedCoreTransaction";
 import { getPortfolio } from "@/lib/ai/tools/getPortfolio";
@@ -162,6 +163,7 @@ export async function POST(request: Request) {
                   "makeTransaction",
                   "makeStakeCoreTransaction",
                   "getDelegatedCoreForEachValidator",
+                  "getClaimedAndPendingRewards",
                   "makeUnDelegateCoreTransaction",
                   "makeTransferStakedCoreTransaction",
                   "getPortfolio",
@@ -175,6 +177,7 @@ export async function POST(request: Request) {
             makeTransaction,
             makeStakeCoreTransaction,
             getDelegatedCoreForEachValidator,
+            getClaimedAndPendingRewards,
             makeUnDelegateCoreTransaction,
             makeTransferStakedCoreTransaction,
             getPortfolio,

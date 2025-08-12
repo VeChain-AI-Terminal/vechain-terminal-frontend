@@ -6,6 +6,7 @@ import type { coreDaoTool } from "./ai/tools/coreDaoTool";
 import type { makeTransaction } from "./ai/tools/makeTransaction";
 import type { makeStakeCoreTransaction } from "./ai/tools/coreStakeActions/makeStakeCoreTransaction";
 import type { getDelegatedCoreForEachValidator } from "./ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";
+import type { getClaimedAndPendingRewards } from "./ai/tools/coreStakeActions/getClaimedAndPendingRewards";
 import type { makeUnDelegateCoreTransaction } from "./ai/tools/coreStakeActions/makeUnDelegateCoreTransaction";
 import type { makeTransferStakedCoreTransaction } from "./ai/tools/coreStakeActions/makeTransferStakedCoreTransaction";
 import type { getPortfolio } from "./ai/tools/getPortfolio";
@@ -28,6 +29,9 @@ type makeStakeTransactionTool = InferUITool<typeof makeStakeCoreTransaction>;
 type getDelegatedCoreForEachValidatorTool = InferUITool<
   typeof getDelegatedCoreForEachValidator
 >;
+type getClaimedAndPendingRewardsTool = InferUITool<
+  typeof getClaimedAndPendingRewards
+>;
 type makeUnDelegateCoreTransactionTool = InferUITool<
   typeof makeUnDelegateCoreTransaction
 >;
@@ -44,6 +48,7 @@ export type ChatTools = {
   getPortfolio: getPortfolioTool;
   makeStakeCoreTransaction: makeStakeTransactionTool;
   getDelegatedCoreForEachValidator: getDelegatedCoreForEachValidatorTool;
+  getClaimedAndPendingRewards: getClaimedAndPendingRewardsTool;
   makeUnDelegateCoreTransaction: makeUnDelegateCoreTransactionTool;
   makeTransferStakedCoreTransaction: makeTransferStakedCoreTransactionTool;
   ensToAddress: ensToAddressTool;
