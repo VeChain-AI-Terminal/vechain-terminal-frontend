@@ -40,6 +40,7 @@ import { makeStakeCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeSt
 import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";
 import { getClaimedAndPendingRewards } from "@/lib/ai/tools/coreStakeActions/getClaimedAndPendingRewards";
 import { makeUnDelegateCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeUnDelegateCoreTransaction";
+import { makeClaimRewardsTransaction } from "@/lib/ai/tools/coreStakeActions/makeClaimRewardsTransaction";
 import { makeTransferStakedCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeTransferStakedCoreTransaction";
 import { getPortfolio } from "@/lib/ai/tools/getPortfolio";
 import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
@@ -165,6 +166,7 @@ export async function POST(request: Request) {
                   "getDelegatedCoreForEachValidator",
                   "getClaimedAndPendingRewards",
                   "makeUnDelegateCoreTransaction",
+                  "makeClaimRewardsTransaction",
                   "makeTransferStakedCoreTransaction",
                   "getPortfolio",
                   "ensToAddress",
@@ -179,6 +181,7 @@ export async function POST(request: Request) {
             getDelegatedCoreForEachValidator,
             getClaimedAndPendingRewards,
             makeUnDelegateCoreTransaction,
+            makeClaimRewardsTransaction,
             makeTransferStakedCoreTransaction,
             getPortfolio,
             ensToAddress,

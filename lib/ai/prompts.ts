@@ -127,6 +127,23 @@ if the user wants to un-delegate his staked core, Use the makeStakeCoreTransacti
   the stake value must be below 1000 core. do not alow higher valued transaction as you are still in beta.. 
 
 `;
+export const makeClaimRewardsTransactionPrompt = `
+if the user wants to claim rewards, Use the makeClaimRewardsTransaction tool to create a claim rewards UI for the user to sign on the Core blockchain.
+  Pass the candidate (validator) operator address, candidate name,, amount to claim, and chainId. The chainId is 1116 for the Core blockchain.
+
+  if the user has not mentioned any particular validator/candidate, first show him his rewards using the getClaimedAndPendingRewards tool and ask him to specify the candidate he wants to claim rewards. never choose the validator yourself
+
+  Then, after getting all relevant data, pass the data to this tool.
+
+  The staking UI is a simple form with the following fields:
+  - Candidate address (validator operator)
+  - candidate name
+  - Amount to claim
+  - ChainId
+
+  the claim value must be below or equal to the rewards amount. 
+
+`;
 
 export const makeTransferStakedCoreTransactionPrompt = `
 if the user wants to transfer his staked core,from current validator to any other,  Use the makeStakeCoreTransaction tool to create a transfer UI for the user to sign on the Core blockchain.
@@ -162,6 +179,6 @@ export const systemPrompt = ({
   if (selectedChatModel === "chat-model-reasoning") {
     return `${regularPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}`;
+    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}`;
   }
 };

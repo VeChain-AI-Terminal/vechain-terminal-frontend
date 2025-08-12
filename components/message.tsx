@@ -30,6 +30,7 @@ import { getClaimedAndPendingRewards } from "@/lib/ai/tools/coreStakeActions/get
 import UnDelegateComponent from "@/components/stake-actions-components/UnDelegateComponent";
 import TransferComponent from "@/components/stake-actions-components/TransferComponent";
 import { TransferStakedCoreTransactionProps } from "@/lib/ai/tools/coreStakeActions/makeTransferStakedCoreTransaction";
+import ClaimRewardsComponent from "@/components/stake-actions-components/ClaimRewards";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -313,6 +314,35 @@ const PurePreviewMessage = ({
                   } = output as StakeComponentProps;
                   return (
                     <UnDelegateComponent
+                      candidateAddress={candidateAddress}
+                      candidateName={candidateName}
+                      valueInWei={valueInWei}
+                      chainId={chainId}
+                      key={toolCallId}
+                    />
+                  );
+                }
+              }
+              if (type === "tool-makeClaimRewardsTransaction") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId} className="skeleton">
+                      <p>Making claim rewards transaction...</p>
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+                  const {
+                    candidateAddress,
+                    candidateName,
+                    valueInWei,
+                    chainId,
+                  } = output as StakeComponentProps;
+                  return (
+                    <ClaimRewardsComponent
                       candidateAddress={candidateAddress}
                       candidateName={candidateName}
                       valueInWei={valueInWei}
