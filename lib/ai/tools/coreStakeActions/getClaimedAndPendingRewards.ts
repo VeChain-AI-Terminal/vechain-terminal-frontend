@@ -116,13 +116,16 @@ export const getClaimedAndPendingRewards = tool({
       );
 
       // --- Enrich rewards with validator names ---
-      const enrichWithValidator = (list: any[], type: "claimed" | "pending") =>
+      const enrichWithValidator = (
+        list: any[],
+        type: "already_claimed" | "pending"
+      ) =>
         list.map((item) => {
           const val = validatorMap[item.candidateAddress.toLowerCase()];
           return {
             candidateAddress: item.candidateAddress,
             validatorName: val?.name || "Unknown",
-            ...(type === "claimed"
+            ...(type === "already_claimed"
               ? {
                   claimedCORE: toCore(item.claimedCoreReward),
                   claimedBTC: item.claimedBTCReward,
@@ -139,7 +142,10 @@ export const getClaimedAndPendingRewards = tool({
 
       console.log(
         "claimed rewareds : ",
-        enrichWithValidator(rewardsData.claimedRewardList || [], "claimed")
+        enrichWithValidator(
+          rewardsData.claimedRewardList || [],
+          "already_claimed"
+        )
       );
       return {
         summary: {
@@ -150,10 +156,7 @@ export const getClaimedAndPendingRewards = tool({
           totalPendingBTC: rewardsData.pendingBTCReward,
           totalPendingHash: rewardsData.pendingHashReward,
         },
-        claimedRewards: enrichWithValidator(
-          rewardsData.claimedRewardList || [],
-          "claimed"
-        ),
+
         pendingRewards: enrichWithValidator(
           rewardsData.pendingRewardList || [],
           "pending"

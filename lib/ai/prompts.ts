@@ -1,5 +1,7 @@
-export const regularPrompt =
-  " You are a helpful assistant that can answer questions only about the Core blockchain. You are made by LVM team. Always answer question keeping the core blockchain as context to all queries. Never answer queries on your own, alway call the coreDaoTool before answering any query";
+const todayStr = new Date().toLocaleDateString("en-GB"); // DD/MM/YYYY
+console.log(todayStr);
+
+export const regularPrompt = ` You are a helpful assistant that can answer questions only about the Core blockchain. You are made by LVM team. Always answer question keeping the core blockchain as context to all queries. Never answer queries on your own, alway call the coreDaoTool before answering any query. todays date is ${todayStr}`;
 
 export const getUserWalletInfoPrompt = `
   Use the getUserWalletInfo tool to get the user's wallet info like address and chainId.
@@ -79,8 +81,6 @@ export const makeTransactionPrompt = `
   - Amount
   - ChainId
 
-
-the transaction value must be below 1000 core. do not alow higher valued transaction as you are still in beta.. 
  `;
 
 export const getPortfolioPrompt = ` use the getPortfolio tool to fecth the users wallet portfolio. pass the wallet address of the wallet. just give the total value of the user wallet. dont give any other details. it will be handled by the ui. `;
@@ -141,7 +141,7 @@ if the user wants to claim rewards, Use the makeClaimRewardsTransaction tool to 
   - Amount to claim
   - ChainId
 
-  the claim value must be below or equal to the rewards amount. 
+  the claim value must be below or equal to the rewards amount. claimed rewards means the user has already claimed the rewards. they cannot be re claimed.
 
 `;
 
@@ -171,14 +171,22 @@ If user enters a ENS name, like somename.eth or someName.someChain.eth then use 
   Pass the ens name to the tool.
  `;
 
+export const getColendStatsPrompt = `
+The "getColendStats" tool retrieves Colend protocol statistics from an external API.
+It automatically filters the results to include only entries where the "chain" field equals "Core" (case-insensitive).
+The tool returns a JSON object containing:
+- status: string (e.g., "success" or "error")
+- data: an array of filtered pool objects with fields such as project, symbol, tvlUsd, apy, rewardTokens, etc.
+- error: optional string if an error occurred
+
+Use this tool when you need up-to-date lending and borrowing statistics for the Core chain from Colend.
+You do not need to provide any filtering parameters — filtering by chain is handled internally.
+`;
+
 export const systemPrompt = ({
   selectedChatModel,
 }: {
   selectedChatModel: string;
 }) => {
-  if (selectedChatModel === "chat-model-reasoning") {
-    return `${regularPrompt}`;
-  } else {
-    return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}`;
-  }
+  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${coreDaoToolPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}`;
 };

@@ -490,6 +490,27 @@ const PurePreviewMessage = ({
                   );
                 }
               }
+
+              if (type === "tool-getColendStats") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId} className="skeleton">
+                      <p>Fetching defi stats from protocols...</p>
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+
+                  return (
+                    <div key={toolCallId}>
+                      <p>Done</p>
+                    </div>
+                  );
+                }
+              }
             })}
 
             {!isReadonly && (

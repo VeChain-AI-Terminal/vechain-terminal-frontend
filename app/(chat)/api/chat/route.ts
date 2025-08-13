@@ -34,17 +34,27 @@ import type { ChatMessage } from "@/lib/types";
 import type { ChatModel } from "@/lib/ai/models";
 import type { VisibilityType } from "@/components/visibility-selector";
 import { getValidators } from "@/lib/ai/tools/coreStakeActions/getValidators";
+//utils
 import { coreDaoTool } from "@/lib/ai/tools/coreDaoTool";
+import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
+
+//send transaction
 import { makeTransaction } from "@/lib/ai/tools/makeTransaction";
+
+//staking
 import { makeStakeCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeStakeCoreTransaction";
 import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";
 import { getClaimedAndPendingRewards } from "@/lib/ai/tools/coreStakeActions/getClaimedAndPendingRewards";
 import { makeUnDelegateCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeUnDelegateCoreTransaction";
 import { makeClaimRewardsTransaction } from "@/lib/ai/tools/coreStakeActions/makeClaimRewardsTransaction";
 import { makeTransferStakedCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeTransferStakedCoreTransaction";
+
+//portfolio
 import { getPortfolio } from "@/lib/ai/tools/getPortfolio";
-import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
 import { getUserWalletInfo } from "@/lib/ai/tools/getUserWalletInfo";
+
+//defillama
+import { getColendStats } from "@/lib/ai/tools/defillama/get-colend-stats";
 
 export const maxDuration = 60;
 
@@ -171,6 +181,7 @@ export async function POST(request: Request) {
                   "getPortfolio",
                   "ensToAddress",
                   "getUserWalletInfo",
+                  "getColendStats",
                 ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
@@ -186,6 +197,7 @@ export async function POST(request: Request) {
             getPortfolio,
             ensToAddress,
             getUserWalletInfo,
+            getColendStats,
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,
