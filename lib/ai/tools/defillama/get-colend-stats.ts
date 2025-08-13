@@ -1,11 +1,11 @@
 import { tool } from "ai";
 import z from "zod";
 
-const API_URL = "https://yields.llama.fi/pools"; // replace with the real endpoint
+const API_URL = "https://yields.llama.fi/pools";
 
 export const getColendStats = tool({
   description:
-    "Fetch Colend protocol defi stats like tvlUsd, apy, apyReward, etc.",
+    "Fetch Colend protocol defi stats like tvlUsd, apy, apyReward, etc., filtered for Core chain and sorted by APY (highest first).",
   inputSchema: z.object({}),
   execute: async () => {
     try {
@@ -17,14 +17,16 @@ export const getColendStats = tool({
       const json = await res.json();
 
       const filtered = Array.isArray(json?.data)
-        ? json.data.filter(
-            (item: any) =>
-              typeof item?.chain === "string" &&
-              item.chain.toLowerCase() === "core"
-          )
+        ? json.data
+            .filter(
+              (item: any) =>
+                typeof item?.chain === "string" &&
+                item.chain.toLowerCase() === "core"
+            )
+            .sort((a: any, b: any) => (b.apy ?? 0) - (a.apy ?? 0))
         : [];
 
-      console.log("filtered colend stats ----- ", filtered);
+      console.log("filtered & sorted colend stats ----- ", filtered);
 
       return {
         status: json?.status ?? "success",
