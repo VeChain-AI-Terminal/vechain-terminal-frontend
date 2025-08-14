@@ -170,7 +170,7 @@ export async function POST(request: Request) {
               ? []
               : [
                   "getValidators",
-                  "coreDaoTool",
+                  // "coreDaoTool",
                   "makeTransaction",
                   "makeStakeCoreTransaction",
                   "getDelegatedCoreForEachValidator",
@@ -185,7 +185,7 @@ export async function POST(request: Request) {
                 ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
-            coreDaoTool,
+            // coreDaoTool,
             getValidators,
             makeTransaction,
             makeStakeCoreTransaction,
