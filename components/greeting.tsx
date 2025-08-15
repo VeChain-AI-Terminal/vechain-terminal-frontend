@@ -29,7 +29,7 @@ export const Greeting = () => {
         transition={{ delay: 0.6 }}
         className="text-2xl text-zinc-500"
       >
-        AI co-pilot for the Bitcoin on CORE
+        AI co-pilot for Bitcoin on CORE
       </motion.div>
     </div>
   );

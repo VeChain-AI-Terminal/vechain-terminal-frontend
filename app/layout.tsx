@@ -15,7 +15,7 @@ import AppKitProvider from "@/context";
 export const metadata: Metadata = {
   metadataBase: new URL("https://chat.vercel.ai"),
   title: "Orange Terminal",
-  description: "AI co-pilot for the Bitcoin on CORE",
+  description: "AI co-pilot for Bitcoin on CORE",
 };
 
 export const viewport = {

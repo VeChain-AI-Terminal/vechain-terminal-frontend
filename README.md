@@ -1,27 +1,135 @@
 # Orange Terminal
 
-AI co-pilot for the Bitcoin on CORE
+AI co-pilot for Bitcoin on CORE blockchain, built with **Next.js**.
 
-## Features
+Orange Terminal solves the problem of fragmented, hard-to-navigate DeFi opportunities for BTC holders by integrating with the CORE protocol:
 
-- [x] Send transactions
-- [x] View wallet balance
-- [x] View wallet address
-- [x] View wallet history
-- [x] View wallet transactions
-- [x] View wallet balance
-- [x] View wallet address
-- [x] View wallet history
-- [x] View wallet transactions
+- Real-time DeFi data aggregation for staking, dual staking, lending/borrowing, and liquidity pools.
+- AI-powered insights to analyze yield opportunities and recommend optimal strategies.
+- One-click transactions that let users execute DeFi actions directly from the AI interface.
 
-WCORE = 0x40375C92d9FAf44d2f9db9Bd9ba41a3317a2404f
-usdt - 0x900101d06A7426441Ae63e9AB3B9b0F63Be145F1
-Free Bridged SolvBTC.b = 0x5B1Fb849f1F76217246B8AAAC053b5C7b15b7dc3
-Free Bridged SolvBTC (SolvBTC.m)= 0xe04d21d999FaEDf1e72AdE6629e20A11a1ed14FA
-stCore - 0xb3A8F0f0da9ffC65318aA39E55079796093029AD
-BTCB (BTCB) = 0x7A6888c85eDBA8E38F6C7E0485212da602761C08
-WBTC (WBTC)=0x5832f53d147b3d6Cd4578B9CBD62425C7ea9d0Bd
-USDC - 0xa4151B2B3e269645181dCcF2D426cE75fcbDeca9
-WETH -0xeAB3aC417c4d6dF6b143346a46fEe1B847B50296
-COLEND (CLND) = 0x30A540B05468A250fCc17Da2D9D4aaa84B358eA7
-Core Wrapped BTC Token (COREBTC) = 0x8034aB88C3512246Bf7894f57C834DdDBd1De01F
+---
+
+## 1) Prerequisites
+
+- **Node.js** ≥ 18.17 (LTS recommended)
+- **pnpm** ≥ 8 (or npm ≥ 9 / yarn ≥ 1.22)
+- **Git**
+- **Env Variables as mentioned in `.env.example`**
+
+---
+
+## 2) Quick Start
+
+```bash
+# 1) Install dependencies
+pnpm install
+
+# 2) Copy environment variables
+cp .env.example .env.local
+# Fill in values as per your configuration
+
+# 3) Start the development server
+pnpm dev
+# Runs on http://localhost:3000
+
+# 4) Optional checks
+pnpm typecheck
+pnpm lint
+```
+
+---
+
+## 3) Scripts
+
+```jsonc
+{
+  "scripts": {
+    "dev": "next dev --turbo",
+    "build": "tsx lib/db/migrate && next build",
+    "start": "next start",
+    "lint": "next lint && biome lint --write --unsafe",
+    "lint:fix": "next lint --fix && biome lint --write --unsafe",
+    "format": "biome format --write",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "npx tsx lib/db/migrate.ts",
+    "db:studio": "drizzle-kit studio",
+    "db:push": "drizzle-kit push",
+    "db:pull": "drizzle-kit pull",
+    "db:check": "drizzle-kit check",
+    "db:up": "drizzle-kit up",
+    "test": "export PLAYWRIGHT=True && pnpm exec playwright test"
+  }
+}
+```
+
+---
+
+## 4) Project Architecture
+
+**Framework**
+
+- Next.js (App Router)
+- TypeScript
+- Tailwind CSS
+- lucide-react, framer-motion
+
+**AI Layer**
+
+- Vercel AI SDK for streaming AI responses.
+- GPT fine-tuned for Core DeFi context integrated with real-time data tools
+
+**Blockchain Tools**
+
+- wagmi + viem for on-chain reads/writes
+- Reown AppKit for wallet connection
+
+**DeFi Integrations**
+
+- Staking (Core staking APIs + CoreAgent contract).
+- Lending/borrowing.
+- Liquidity pool stats and transaction builders.
+- Transactions via smart contract calls through connected wallets.
+
+---
+
+## 5) Development Notes
+
+- **Auth**: Current flow uses NextAuth + Reown SIWE.
+- **Chain Safety**: Default to mainnet (`1116`). Cap certain actions in beta.
+
+---
+
+## 6) Tool & Action Conventions
+
+Each blockchain/DeFi action is implemented as a “tool”:
+
+- Validate inputs and chain id
+- Never assume amounts — ask the user explicitly
+- Return both machine-readable payloads and human-readable UI fields
+
+---
+
+## 7) Deployment
+
+### Vercel
+
+1. Connect repo to Vercel
+2. Add all env vars from `.env` to Vercel Project Settings
+3. Configure domain/DNS:
+4. Deploy:
+
+---
+
+## 8) Troubleshooting
+
+- **Wallet connect loops**: Check env variables, Reown Project ID and its domain.
+- **Empty portfolio**: Ensure correct API keys and chain ids.
+
+---
+
+## 9) Security
+
+- Do not commit `.env*` files
+- Rotate keys if exposed
+- Validate all transaction data before signing
