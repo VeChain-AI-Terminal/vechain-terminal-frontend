@@ -29,7 +29,7 @@ function PureChatHeader() {
       <div className="flex items-center gap-2">
         <SidebarToggle />
 
-        {(!open || windowWidth < 768) && (
+        {/* {(!open || windowWidth < 768) && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -46,7 +46,7 @@ function PureChatHeader() {
             </TooltipTrigger>
             <TooltipContent>New Chat</TooltipContent>
           </Tooltip>
-        )}
+        )} */}
 
         {/* {!isReadonly && (
           <ModelSelector
