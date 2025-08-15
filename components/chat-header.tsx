@@ -16,13 +16,14 @@ import type { Session } from "next-auth";
 import { ConnectButton } from "@/components/ConnectButton";
 import { FaSuitcase } from "react-icons/fa";
 import { Wallet } from "lucide-react";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 function PureChatHeader() {
   const router = useRouter();
   const { open } = useSidebar();
 
   const { width: windowWidth } = useWindowSize();
-
+  const { address, isConnected } = useAppKitAccount();
   return (
     <header className="flex sticky top-0 bg-background py-1.5 items-center justify-between px-2 md:px-2 gap-2">
       <div className="flex items-center gap-2">
@@ -64,12 +65,14 @@ function PureChatHeader() {
         )} */}
       </div>
       <div className="flex flex-row gap-3 items-center">
-        <Link
-          href={"/portfolio"}
-          className="flex flex-row gap-2 border-2 border-theme-orange rounded-full px-3 py-2 items-center hover:bg-zinc-900 h-full"
-        >
-          <Wallet size={20} /> <span className="text-sm">Portfolio</span>
-        </Link>
+        {isConnected && (
+          <Link
+            href={"/portfolio"}
+            className="flex flex-row gap-2 border-2 border-theme-orange rounded-full px-3 py-2 items-center hover:bg-zinc-900 h-full"
+          >
+            <Wallet size={20} /> <span className="text-sm">Portfolio</span>
+          </Link>
+        )}
 
         <ConnectButton />
       </div>
