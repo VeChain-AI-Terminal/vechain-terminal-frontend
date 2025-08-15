@@ -64,12 +64,12 @@ function PureChatHeader() {
         )} */}
       </div>
       <div className="flex flex-row gap-3 items-center">
-        {/* <Link
+        <Link
           href={"/portfolio"}
           className="flex flex-row gap-2 border-2 border-theme-orange rounded-full px-3 py-2 items-center hover:bg-zinc-900 h-full"
         >
           <Wallet size={20} /> <span className="text-sm">Portfolio</span>
-        </Link> */}
+        </Link>
 
         <ConnectButton />
       </div>
