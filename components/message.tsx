@@ -35,6 +35,7 @@ import ColendSupplyCore from "@/components/colend/colend-supply-core";
 import { ColendSupplyCoreTxProps } from "@/lib/ai/tools/colend/colendSupplyCore";
 import { ColendSupplyErc20TxProps } from "@/lib/ai/tools/colend/colendSupplyErc20";
 import ColendSupplyErc20 from "@/components/colend/colent-supply-erc20";
+import ColendTable from "@/components/colend/colend-stats-table";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -506,12 +507,22 @@ const PurePreviewMessage = ({
                 }
 
                 if (state === "output-available") {
-                  const { output } = part;
-
+                  const { output } = part; // output.data is the array
                   return (
-                    <div key={toolCallId}>
-                      <p>Done</p>
-                    </div>
+                    <ColendTable
+                      data={output.data.map((item: any) => ({
+                        symbol: item.symbol,
+                        poolMeta: item.poolMeta,
+                        project: item.project,
+                        tvlUsd: item.tvlUsd,
+                        apy: item.apy,
+                        apyBase: item.apyBase,
+                        apyReward: item.apyReward,
+                        apyMean30d: item.apyMean30d,
+                        apyPct1D: item.apyPct1D,
+                        apyPct7D: item.apyPct7D,
+                      }))}
+                    />
                   );
                 }
               }
