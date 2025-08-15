@@ -18,8 +18,8 @@ export const projectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID;
 export const metadata = {
   name: "Orange Terminal",
   description: "AI co-pilot for the Bitcoin on CORE",
-  url: "https://www.orangeterminal.com/", // origin must match your domain & subdomain
-  icons: ["https://www.orangeterminal.com/favicon.ico"],
+  url: "https://app.orangeterminal.com/", // origin must match your domain & subdomain
+  icons: ["https://app.orangeterminal.com/favicon.ico"],
 };
 
 if (!projectId) {
