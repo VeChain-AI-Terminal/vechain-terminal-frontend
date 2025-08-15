@@ -35,7 +35,6 @@ import type { ChatModel } from "@/lib/ai/models";
 import type { VisibilityType } from "@/components/visibility-selector";
 import { getValidators } from "@/lib/ai/tools/coreStakeActions/getValidators";
 //utils
-import { coreDaoTool } from "@/lib/ai/tools/coreDaoTool";
 import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
 
 //send transaction
@@ -172,7 +171,6 @@ export async function POST(request: Request) {
               ? []
               : [
                   "getValidators",
-                  // "coreDaoTool",
                   "makeSendTransaction",
                   "makeStakeCoreTransaction",
                   "getDelegatedCoreForEachValidator",
@@ -189,7 +187,6 @@ export async function POST(request: Request) {
                 ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
-            // coreDaoTool,
             getValidators,
             makeSendTransaction,
             makeStakeCoreTransaction,

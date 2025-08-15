@@ -2,7 +2,6 @@ import { z } from "zod";
 import type { InferUITool, UIMessage } from "ai";
 
 import type { getValidators } from "./ai/tools/coreStakeActions/getValidators";
-import type { coreDaoTool } from "./ai/tools/coreDaoTool";
 import type { makeSendTransaction } from "./ai/tools/makeSendTransaction";
 import type { makeStakeCoreTransaction } from "./ai/tools/coreStakeActions/makeStakeCoreTransaction";
 import type { getDelegatedCoreForEachValidator } from "./ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";
@@ -26,7 +25,6 @@ export const messageMetadataSchema = z.object({
 export type MessageMetadata = z.infer<typeof messageMetadataSchema>;
 
 type getValidatorsTool = InferUITool<typeof getValidators>;
-type coreDaoToolType = InferUITool<typeof coreDaoTool>;
 type getColendStatsTool = InferUITool<typeof getColendStats>;
 type colendSupplyCoreTool = InferUITool<typeof colendSupplyCore>;
 type colendSupplyErc20Tool = InferUITool<typeof colendSupplyErc20>;
@@ -53,7 +51,6 @@ type getUserWalletInfoTool = InferUITool<typeof getUserWalletInfo>;
 
 export type ChatTools = {
   getValidators: getValidatorsTool;
-  coreDaoTool: coreDaoToolType;
   makeSendTransaction: makeSendTransactionTool;
   getPortfolio: getPortfolioTool;
   makeStakeCoreTransaction: makeStakeTransactionTool;

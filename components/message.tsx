@@ -455,26 +455,6 @@ const PurePreviewMessage = ({
                 }
               }
 
-              if (type === "tool-coreDaoTool") {
-                const { toolCallId, state } = part;
-                if (state === "input-available") {
-                  return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Finding info...</p>
-                    </div>
-                  );
-                }
-
-                if (state === "output-available") {
-                  const { output } = part;
-
-                  return (
-                    <div key={toolCallId}>
-                      <p>Done</p>
-                    </div>
-                  );
-                }
-              }
               if (type === "tool-ensToAddress") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
