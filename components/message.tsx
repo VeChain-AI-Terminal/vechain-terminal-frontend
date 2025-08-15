@@ -510,6 +510,7 @@ const PurePreviewMessage = ({
                   const { output } = part; // output.data is the array
                   return (
                     <ColendTable
+                      key={toolCallId}
                       data={output.data.map((item: any) => ({
                         symbol: item.symbol,
                         poolMeta: item.poolMeta,
