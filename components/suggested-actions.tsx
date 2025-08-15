@@ -29,9 +29,9 @@ function PureSuggestedActions({
       action: "Find me the highest CORE staking yields available on Core.",
     },
     {
-      title: "Show my portfolio",
-      label: "for checking your portfolio",
-      action: "Show me my portfolio",
+      title: "Best yeilds in lending-borrowing markets",
+      label: "for getting highest rewards",
+      action: "Show me best yeilds in lending-borrowing markets",
     },
     {
       title: "What is dual staking?",
