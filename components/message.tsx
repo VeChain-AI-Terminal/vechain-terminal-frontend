@@ -31,6 +31,8 @@ import UnDelegateComponent from "@/components/stake-actions-components/UnDelegat
 import TransferComponent from "@/components/stake-actions-components/TransferComponent";
 import { TransferStakedCoreTransactionProps } from "@/lib/ai/tools/coreStakeActions/makeTransferStakedCoreTransaction";
 import ClaimRewardsComponent from "@/components/stake-actions-components/ClaimRewards";
+import ColendSupplyCore from "@/components/colend/colend-supply-core";
+import { ColendSupplyCoreTxProps } from "@/lib/ai/tools/colend/colendSupplyCore";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -496,7 +498,7 @@ const PurePreviewMessage = ({
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId} className="skeleton">
-                      <p>Fetching defi stats from protocols...</p>
+                      <p>Fetching defi stats from colend protocol...</p>
                     </div>
                   );
                 }
@@ -509,6 +511,24 @@ const PurePreviewMessage = ({
                       <p>Done</p>
                     </div>
                   );
+                }
+              }
+
+              if (type === "tool-colendSupplyCore") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId} className="skeleton">
+                      <p>Making supply core transaction on colend...</p>
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+                  const tx = output as ColendSupplyCoreTxProps; // from your supplyCore tool
+                  console.log(" ts in supply ---", tx);
+                  return <ColendSupplyCore tx={tx} key={toolCallId} />;
                 }
               }
             })}

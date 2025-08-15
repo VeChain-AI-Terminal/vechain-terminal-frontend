@@ -21,7 +21,8 @@ export const getColendStats = tool({
             .filter(
               (item: any) =>
                 typeof item?.chain === "string" &&
-                item.chain.toLowerCase() === "core"
+                item.chain.toLowerCase() === "core" &&
+                item.project === "colend-protocol"
             )
             .sort((a: any, b: any) => (b.apy ?? 0) - (a.apy ?? 0))
         : [];

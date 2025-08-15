@@ -54,7 +54,8 @@ import { getPortfolio } from "@/lib/ai/tools/getPortfolio";
 import { getUserWalletInfo } from "@/lib/ai/tools/getUserWalletInfo";
 
 //defillama
-import { getColendStats } from "@/lib/ai/tools/defillama/get-colend-stats";
+import { getColendStats } from "@/lib/ai/tools/colend/get-colend-stats";
+import { colendSupplyCore } from "@/lib/ai/tools/colend/colendSupplyCore";
 
 export const maxDuration = 60;
 
@@ -182,6 +183,7 @@ export async function POST(request: Request) {
                   "ensToAddress",
                   "getUserWalletInfo",
                   "getColendStats",
+                  "colendSupplyCore",
                 ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
@@ -198,6 +200,7 @@ export async function POST(request: Request) {
             ensToAddress,
             getUserWalletInfo,
             getColendStats,
+            colendSupplyCore,
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,

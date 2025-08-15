@@ -294,10 +294,29 @@ Use this tool when you need up-to-date lending and borrowing statistics for the 
 You do not need to provide any filtering parameters — filtering by chain is handled internally.
 `;
 
+export const colendSupplyCorePrompt = `
+  Use the supplyCore tool to create a CORE supply UI for the user to sign on the Core blockchain with Colend Protocol.
+  Pass the human-readable CORE amount (in string form) and the chainId. The chainId is 1116 for the Core blockchain.
+
+  If the user has not mentioned the amount to supply, first ask them how much CORE they want to supply. 
+  Never assume an amount yourself.
+
+  Then, after getting the amount, pass it to the supplyCore tool to prepare the transaction payload.
+
+  The supply UI is a simple form that shows:
+  - Gateway address (from tool output)
+  - Pool address (from tool output)
+  - Referral code (from tool output)
+  - Amount in CORE
+  - ChainId
+
+  The supply amount must be below 1000 CORE. Do not allow higher-valued transactions as you are still in beta.
+`;
+
 export const systemPrompt = ({
   selectedChatModel,
 }: {
   selectedChatModel: string;
 }) => {
-  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}`;
+  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}`;
 };

@@ -13,7 +13,8 @@ import type { makeTransferStakedCoreTransaction } from "./ai/tools/coreStakeActi
 import type { getPortfolio } from "./ai/tools/getPortfolio";
 import type { ensToAddress } from "./ai/tools/ensToAddress";
 import type { getUserWalletInfo } from "./ai/tools/getUserWalletInfo";
-import type { getColendStats } from "./ai/tools/defillama/get-colend-stats";
+import type { getColendStats } from "./ai/tools/colend/get-colend-stats";
+import type { colendSupplyCore } from "./ai/tools/colend/colendSupplyCore";
 
 export type DataPart = { type: "append-message"; message: string };
 
@@ -26,6 +27,7 @@ export type MessageMetadata = z.infer<typeof messageMetadataSchema>;
 type getValidatorsTool = InferUITool<typeof getValidators>;
 type coreDaoToolType = InferUITool<typeof coreDaoTool>;
 type getColendStatsTool = InferUITool<typeof getColendStats>;
+type colendSupplyCoreTool = InferUITool<typeof colendSupplyCore>;
 type makeTransactionTool = InferUITool<typeof makeTransaction>;
 type getPortfolioTool = InferUITool<typeof getPortfolio>;
 type makeStakeTransactionTool = InferUITool<typeof makeStakeCoreTransaction>;
@@ -61,6 +63,7 @@ export type ChatTools = {
   ensToAddress: ensToAddressTool;
   getUserWalletInfo: getUserWalletInfoTool;
   getColendStats: getColendStatsTool;
+  colendSupplyCore: colendSupplyCoreTool;
 };
 
 export type CustomUIDataTypes = {
