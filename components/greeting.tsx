@@ -19,6 +19,7 @@ export const Greeting = () => {
           alt="Orange Terminal"
           width={40}
           height={40}
+          className=" md:w-10 md:h-10"
         />
         <h1 className=" font-semibold text-theme-orange">Orange Terminal</h1>
       </motion.div>
@@ -27,7 +28,7 @@ export const Greeting = () => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.6 }}
-        className="text-2xl text-zinc-500"
+        className="text-lg md:text-xl text-zinc-500"
       >
         AI co-pilot for Bitcoin on CORE
       </motion.div>
