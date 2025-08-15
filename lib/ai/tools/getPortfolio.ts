@@ -15,7 +15,7 @@ export interface TokenPriceData {
   usd_value?: number;
 }
 
-export interface TokenData {
+interface RawTokenData {
   chain_id: number;
   token_address: string;
   owner_address: string;
@@ -24,6 +24,11 @@ export interface TokenData {
   symbol: string;
   decimals: number;
   price_data?: TokenPriceData;
+}
+
+// Add balanceHuman to TokenData
+export interface TokenData extends RawTokenData {
+  balanceHuman: number; // parsed using decimals
 }
 
 export interface NFTAttribute {
@@ -95,6 +100,20 @@ export type CleanedStakingPortfolio = {
   totalPendingReward: number;
   totalClaimedReward: number;
 };
+
+// Convert wei-like string to human units without external libs
+function toUnits(balanceStr: string, decimals: number): number {
+  try {
+    const b = BigInt(balanceStr);
+    const base = 10n ** BigInt(decimals);
+    const whole = b / base;
+    const frac = b % base;
+    return Number(whole) + Number(frac) / Number(base);
+  } catch {
+    // Fallback (precision may be off for very large numbers)
+    return parseFloat(balanceStr) / Math.pow(10, decimals);
+  }
+}
 
 async function getStakingPortfolio(
   walletAddress: string
@@ -178,21 +197,30 @@ async function getStakingPortfolio(
 }
 
 /** ---------- Fetch helpers (try/catch) ---------- */
+
 async function getTokensData(walletAddress: string): Promise<TokenData[]> {
   try {
     const url = `https://api.thirdweb.com/v1/wallets/${walletAddress}/tokens?chainId=${CHAIN_ID}&limit=20&page=1`;
     const res = await fetch(url, {
       headers: { "x-secret-key": process.env.THIRDWEB_SECRET_KEY as string },
     });
+
     if (!res.ok) {
       console.error(`Token fetch failed: ${res.status} ${res.statusText}`);
-      return {
-        //@ts-ignore
-        error: `Token fetch failed: ${res.status} ${res.statusText}`,
-      };
+      return [];
     }
+
     const json = (await res.json()) as any;
-    return (json?.result?.tokens ?? []) as TokenData[];
+    const rawTokens: RawTokenData[] = (json?.result?.tokens ??
+      []) as RawTokenData[];
+
+    const tokens: TokenData[] = rawTokens.map((t) => {
+      const decimals = typeof t.decimals === "number" ? t.decimals : 18;
+      const balanceHuman = toUnits(t.balance, decimals);
+      return { ...t, balanceHuman };
+    });
+
+    return tokens;
   } catch (err) {
     console.error("Error fetching token data:", err);
     return [];

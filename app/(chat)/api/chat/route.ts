@@ -39,7 +39,7 @@ import { coreDaoTool } from "@/lib/ai/tools/coreDaoTool";
 import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
 
 //send transaction
-import { makeTransaction } from "@/lib/ai/tools/makeTransaction";
+import { makeSendTransaction } from "@/lib/ai/tools/makeSendTransaction";
 
 //staking
 import { makeStakeCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeStakeCoreTransaction";
@@ -53,9 +53,10 @@ import { makeTransferStakedCoreTransaction } from "@/lib/ai/tools/coreStakeActio
 import { getPortfolio } from "@/lib/ai/tools/getPortfolio";
 import { getUserWalletInfo } from "@/lib/ai/tools/getUserWalletInfo";
 
-//defillama
+//colend
 import { getColendStats } from "@/lib/ai/tools/colend/get-colend-stats";
 import { colendSupplyCore } from "@/lib/ai/tools/colend/colendSupplyCore";
+import { colendSupplyErc20 } from "@/lib/ai/tools/colend/colendSupplyErc20";
 
 export const maxDuration = 60;
 
@@ -172,7 +173,7 @@ export async function POST(request: Request) {
               : [
                   "getValidators",
                   // "coreDaoTool",
-                  "makeTransaction",
+                  "makeSendTransaction",
                   "makeStakeCoreTransaction",
                   "getDelegatedCoreForEachValidator",
                   "getClaimedAndPendingRewards",
@@ -184,12 +185,13 @@ export async function POST(request: Request) {
                   "getUserWalletInfo",
                   "getColendStats",
                   "colendSupplyCore",
+                  "colendSupplyErc20",
                 ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
             // coreDaoTool,
             getValidators,
-            makeTransaction,
+            makeSendTransaction,
             makeStakeCoreTransaction,
             getDelegatedCoreForEachValidator,
             getClaimedAndPendingRewards,
@@ -201,6 +203,7 @@ export async function POST(request: Request) {
             getUserWalletInfo,
             getColendStats,
             colendSupplyCore,
+            colendSupplyErc20,
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,

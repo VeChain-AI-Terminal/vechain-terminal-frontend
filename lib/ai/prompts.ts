@@ -120,8 +120,8 @@ export const getUserWalletInfoPrompt = `
   Use the getUserWalletInfo tool to get the user's wallet info like address and chainId.
  `;
 
-export const makeTransactionPrompt = `
-  Use the makeTransaction tool to make a transaction ui for the user to sign on the Core blockchain.
+export const makeSendTransactionPrompt = `
+  Use the makeSendTransaction tool to when user want to send tokens to other people on core blockchain.
   Pass the receiver,recever ens name if avalaible,  sender, amount, and chainId. The chainId is 1116 for the Core blockchain.
   if user has mentioned the ens name of receiver in his prompt, always pass the ens name as well, with the adress
 
@@ -295,6 +295,7 @@ You do not need to provide any filtering parameters — filtering by chain is ha
 `;
 
 export const colendSupplyCorePrompt = `
+if user want to lend CORE token on colend, user this tool.
   Use the supplyCore tool to create a CORE supply UI for the user to sign on the Core blockchain with Colend Protocol.
   Pass the human-readable CORE amount (in string form) and the chainId. The chainId is 1116 for the Core blockchain.
 
@@ -313,10 +314,27 @@ export const colendSupplyCorePrompt = `
   The supply amount must be below 1000 CORE. Do not allow higher-valued transactions as you are still in beta.
 `;
 
+export const colendSupplyErc20Prompt = `
+if user wants to lend and erc20 token on colend (other than CORE), use this tool.
+Use the colendSupplyErc20 tool to create a two-step ERC20 supply flow on the Core blockchain for Colend.
+
+Inputs to the tool:
+- value (string, human-readable amount like "25.5")
+- tokenAddress (ERC20 address)
+- tokenName (display name like "stCORE")
+
+If the user has not provided both the token and the amount, ask for them. Never pick a token yourself.
+
+
+Limits and safety:
+- Do not allow amounts above 1000 units (based on the token's human-readable units). Show a helpful error if exceeded.
+
+Only after the user confirms the token and amount should you call the tool and render the supply UI.`;
+
 export const systemPrompt = ({
   selectedChatModel,
 }: {
   selectedChatModel: string;
 }) => {
-  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}`;
+  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}`;
 };

@@ -12,20 +12,6 @@ const getPercentChangeColor = (percentChange: number) => {
   return "text-gray-400";
 };
 
-// Convert wei-like string to human units without external libs
-function toUnits(balanceStr: string, decimals: number): number {
-  try {
-    const b = BigInt(balanceStr);
-    const base = 10n ** BigInt(decimals);
-    const whole = b / base;
-    const frac = b % base;
-    return Number(whole) + Number(frac) / Number(base);
-  } catch {
-    // Fallback (precision may be off for very large numbers)
-    return parseFloat(balanceStr) / Math.pow(10, decimals);
-  }
-}
-
 const PortfolioTable: React.FC<PortfolioData> = ({
   chainId,
   walletAddress,
@@ -37,17 +23,13 @@ const PortfolioTable: React.FC<PortfolioData> = ({
   totalClaimedValue,
   totalPendingValue,
 }) => {
-  // console.log("staking portfolio ,", stakingPortfolio);
+  // console.log("fungibleTokens -------  ,", fungibleTokens);
+  // console.log("nfts -------  ,", nfts);
   const derived = (fungibleTokens ?? []).map((t) => {
-    const balanceHuman =
-      t.balance && typeof t.decimals === "number"
-        ? toUnits(t.balance, t.decimals)
-        : 0;
-
     const price = t.price_data?.price_usd ?? 0;
     const usdValue =
       t.price_data?.usd_value ??
-      (price > 0 && balanceHuman > 0 ? balanceHuman * price : 0);
+      (price > 0 && t.balanceHuman > 0 ? t.balanceHuman * price : 0);
 
     const change24hPercent = t.price_data?.percent_change_24h ?? 0;
     const marketCap = t.price_data?.market_cap_usd;
@@ -56,7 +38,7 @@ const PortfolioTable: React.FC<PortfolioData> = ({
       key: t.token_address,
       name: t.name,
       symbol: t.symbol,
-      balanceHuman,
+      balanceHuman: t.balanceHuman,
       price,
       usdValue,
       change24hPercent,

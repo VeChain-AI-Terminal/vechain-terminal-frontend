@@ -3,7 +3,7 @@ import type { InferUITool, UIMessage } from "ai";
 
 import type { getValidators } from "./ai/tools/coreStakeActions/getValidators";
 import type { coreDaoTool } from "./ai/tools/coreDaoTool";
-import type { makeTransaction } from "./ai/tools/makeTransaction";
+import type { makeSendTransaction } from "./ai/tools/makeSendTransaction";
 import type { makeStakeCoreTransaction } from "./ai/tools/coreStakeActions/makeStakeCoreTransaction";
 import type { getDelegatedCoreForEachValidator } from "./ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";
 import type { getClaimedAndPendingRewards } from "./ai/tools/coreStakeActions/getClaimedAndPendingRewards";
@@ -15,6 +15,7 @@ import type { ensToAddress } from "./ai/tools/ensToAddress";
 import type { getUserWalletInfo } from "./ai/tools/getUserWalletInfo";
 import type { getColendStats } from "./ai/tools/colend/get-colend-stats";
 import type { colendSupplyCore } from "./ai/tools/colend/colendSupplyCore";
+import type { colendSupplyErc20 } from "./ai/tools/colend/colendSupplyErc20";
 
 export type DataPart = { type: "append-message"; message: string };
 
@@ -28,7 +29,8 @@ type getValidatorsTool = InferUITool<typeof getValidators>;
 type coreDaoToolType = InferUITool<typeof coreDaoTool>;
 type getColendStatsTool = InferUITool<typeof getColendStats>;
 type colendSupplyCoreTool = InferUITool<typeof colendSupplyCore>;
-type makeTransactionTool = InferUITool<typeof makeTransaction>;
+type colendSupplyErc20Tool = InferUITool<typeof colendSupplyErc20>;
+type makeSendTransactionTool = InferUITool<typeof makeSendTransaction>;
 type getPortfolioTool = InferUITool<typeof getPortfolio>;
 type makeStakeTransactionTool = InferUITool<typeof makeStakeCoreTransaction>;
 type getDelegatedCoreForEachValidatorTool = InferUITool<
@@ -52,7 +54,7 @@ type getUserWalletInfoTool = InferUITool<typeof getUserWalletInfo>;
 export type ChatTools = {
   getValidators: getValidatorsTool;
   coreDaoTool: coreDaoToolType;
-  makeTransaction: makeTransactionTool;
+  makeSendTransaction: makeSendTransactionTool;
   getPortfolio: getPortfolioTool;
   makeStakeCoreTransaction: makeStakeTransactionTool;
   getDelegatedCoreForEachValidator: getDelegatedCoreForEachValidatorTool;
@@ -64,6 +66,7 @@ export type ChatTools = {
   getUserWalletInfo: getUserWalletInfoTool;
   getColendStats: getColendStatsTool;
   colendSupplyCore: colendSupplyCoreTool;
+  colendSupplyErc20: colendSupplyErc20Tool;
 };
 
 export type CustomUIDataTypes = {

@@ -1,7 +1,7 @@
 import { tool } from "ai";
 import z from "zod";
 
-export const makeTransaction = tool({
+export const makeSendTransaction = tool({
   description:
     "Make a transaction object on the Core blockchain. Pass the receiver,recever ens name if avalaible, sender, amount, and chainId. The chainId is 1116 for the Core blockchain.",
   inputSchema: z.object({
@@ -29,7 +29,7 @@ export const makeTransaction = tool({
       chainId,
     };
 
-    console.log("transaction in makeTransaction", transaction);
+    console.log("transaction in makeSendTransaction", transaction);
 
     return transaction;
   },
