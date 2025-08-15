@@ -102,14 +102,14 @@ const ColendSupplyCore: React.FC<Props> = ({ tx }) => {
 
         {/* Read-only summary from tool payload */}
         <div className="text-sm grid grid-cols-2 gap-y-2 mb-6">
-          <span className="text-gray-400">Gateway</span>
+          {/* <span className="text-gray-400">Gateway</span>
           <span className="text-right break-all">{tx.gatewayAddress}</span>
 
           <span className="text-gray-400">Pool</span>
           <span className="text-right break-all">{tx.poolAddress}</span>
 
           <span className="text-gray-400">Referral</span>
-          <span className="text-right">{tx.referralCode}</span>
+          <span className="text-right">{tx.referralCode}</span> */}
 
           <span className="text-gray-400">Amount</span>
           <span className="text-right font-medium">

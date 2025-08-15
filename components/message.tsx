@@ -529,7 +529,7 @@ const PurePreviewMessage = ({
                 if (state === "output-available") {
                   const { output } = part;
                   const tx = output as ColendSupplyCoreTxProps; // from your supplyCore tool
-                  console.log(" ts in supply ---", tx);
+                  // console.log(" ts in supply ---", tx);
                   return <ColendSupplyCore tx={tx} key={toolCallId} />;
                 }
               }
@@ -547,7 +547,7 @@ const PurePreviewMessage = ({
                 if (state === "output-available") {
                   const { output } = part;
                   const tx = output as ColendSupplyErc20TxProps; // from your supplyCore tool
-                  console.log(" ts in supply ---", tx);
+                  // console.log(" ts in supply ---", tx);
                   return <ColendSupplyErc20 tx={tx} key={toolCallId} />;
                 }
               }
