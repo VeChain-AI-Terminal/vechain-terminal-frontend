@@ -17,7 +17,7 @@ export type ColendSupplyCoreTxProps = {
 
 export const colendSupplyCore = tool({
   description:
-    "Create a Colend supply CORE transaction payload (depositETH -> aCoreWCORE). Input: human-readable CORE amount (e.g., '1.0').",
+    "Create a Colend supply CORE supply payload (depositETH -> aCoreWCORE). Input: human-readable CORE amount (e.g., '1.0').",
   inputSchema: z.object({
     value: z
       .string()

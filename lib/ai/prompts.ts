@@ -295,41 +295,52 @@ You do not need to provide any filtering parameters — filtering by chain is ha
 `;
 
 export const colendSupplyCorePrompt = `
-if user want to lend CORE token on colend, user this tool.
-  Use the supplyCore tool to create a CORE supply UI for the user to sign on the Core blockchain with Colend Protocol.
-  Pass the human-readable CORE amount (in string form) and the chainId. The chainId is 1116 for the Core blockchain.
+If and ONLY if the user explicitly wants to lend **CORE** tokens on Colend, use the supplyCore tool.
 
-  If the user has not mentioned the amount to supply, first ask them how much CORE they want to supply. 
-  Never assume an amount yourself.
+✅ colendSupplyCore tool is for CORE token ONLY — not stCORE, not WCORE, not any other token.
 
-  Then, after getting the amount, pass it to the supplyCore tool to prepare the transaction payload.
+Rules:
+- CORE token = native CORE coin on the Core blockchain (chainId 1116).
+- If the user mentions stCORE, WCORE, or any ERC20 token, DO NOT use colendSupplyCore. Use colendSupplyErc20 instead.
 
-  The supply UI is a simple form that shows:
-  - Gateway address (from tool output)
-  - Pool address (from tool output)
-  - Referral code (from tool output)
-  - Amount in CORE
-  - ChainId
+Process:
+1. If the amount of CORE to supply is not given, ask: "How much CORE do you want to supply?"
+2. Never assume the amount.
+3. Once you have the amount, call colendSupplyCore with:
+   - amount (human-readable string, e.g., "25.5")
+   - chainId = 1116
+4. Render the supply UI with:
+   - Gateway address (from tool output)
+   - Pool address (from tool output)
+   - Referral code (from tool output)
+   - Amount in CORE
+   - ChainId
 
-  The supply amount must be below 1000 CORE. Do not allow higher-valued transactions as you are still in beta.
+Limits:
+- Amount must be less than 1000 CORE.
+- Reject and warn if amount is >= 1000 CORE (beta limit).
 `;
 
 export const colendSupplyErc20Prompt = `
-if user wants to lend and erc20 token on colend (other than CORE), use this tool.
-Use the colendSupplyErc20 tool to create a two-step ERC20 supply flow on the Core blockchain for Colend.
+If the user wants to lend ANY token other than the native CORE coin (e.g., stCORE, WCORE, USDT, SOLVBTC, etc.) on Colend, use the colendSupplyErc20 tool.
 
-Inputs to the tool:
-- value (string, human-readable amount like "25.5")
-- tokenAddress (ERC20 address)
-- tokenName (display name like "stCORE")
+✅ colendSupplyErc20 is for ALL ERC20 tokens (non-native CORE), including wrapped versions of CORE.
 
-If the user has not provided both the token and the amount, ask for them. Never pick a token yourself.
+Process:
+1. If the token and/or amount are missing, ask the user for:
+   - Which token they want to supply.
+   - The amount they want to supply.
+2. Never pick a token yourself.
+3. Once you have both token and amount, call colendSupplyErc20 with:
+   - value (human-readable string, e.g., "25.5")
+   - tokenAddress (ERC20 address)
+   - tokenName (e.g., "stCORE")
+4. Render the ERC20 supply UI.
 
-
-Limits and safety:
-- Do not allow amounts above 1000 units (based on the token's human-readable units). Show a helpful error if exceeded.
-
-Only after the user confirms the token and amount should you call the tool and render the supply UI.`;
+Limits:
+- Amount must be less than 1000 units (in human-readable token units).
+- Reject and warn if amount is >= 1000 (beta limit).
+`;
 
 export const systemPrompt = ({
   selectedChatModel,
