@@ -48,7 +48,7 @@ function PureSuggestedActions({
   return (
     <div
       data-testid="suggested-actions"
-      className="grid sm:grid-cols-2 gap-2 w-full"
+      className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full"
     >
       {suggestedActions.map((suggestedAction, index) => (
         <motion.div
@@ -57,7 +57,7 @@ function PureSuggestedActions({
           exit={{ opacity: 0, y: 20 }}
           transition={{ delay: 0.05 * index }}
           key={`suggested-action-${suggestedAction.title}-${index}`}
-          className={index > 1 ? "hidden sm:block" : "block"}
+          className="block"
         >
           <Button
             variant="ghost"
@@ -75,7 +75,7 @@ function PureSuggestedActions({
                 parts: [{ type: "text", text: suggestedAction.action }],
               });
             }}
-            className="text-left border rounded-xl px-4 py-3.5 text-sm flex-1 gap-1 sm:flex-col w-full h-auto justify-start items-start"
+            className="text-left border rounded-xl px-4 py-3.5 text-sm flex flex-col gap-1 w-full h-auto justify-start items-start"
           >
             <span className="font-medium">{suggestedAction.title}</span>
             <span className="text-muted-foreground">
