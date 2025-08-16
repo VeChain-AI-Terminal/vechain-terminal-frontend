@@ -100,36 +100,14 @@ pnpm lint
 
 ---
 
-## 6) Tool & Action Conventions
+## 6) For Adding Tool & Action Conventions
 
 Each blockchain/DeFi action is implemented as a “tool”:
+For adding a new tool follow the below steps:
 
-- Validate inputs and chain id
-- Never assume amounts — ask the user explicitly
-- Return both machine-readable payloads and human-readable UI fields
-
----
-
-## 7) Deployment
-
-### Vercel
-
-1. Connect repo to Vercel
-2. Add all env vars from `.env` to Vercel Project Settings
-3. Configure domain/DNS:
-4. Deploy:
+1. Make your tool using ai sdk in the `/lib/ai/tools` folder
+2. add the tool to the ai agent in the `/app/(chat)/api/chat/route.ts` file
+3. add an appropriate prompt to tell the ai about this tool in the `/lib/ai/prompts.ts` file
+4. for showing messages while the tool is being called or after the tool has finished, you can add it in the `/components/message.tsx` file.
 
 ---
-
-## 8) Troubleshooting
-
-- **Wallet connect loops**: Check env variables, Reown Project ID and its domain.
-- **Empty portfolio**: Ensure correct API keys and chain ids.
-
----
-
-## 9) Security
-
-- Do not commit `.env*` files
-- Rotate keys if exposed
-- Validate all transaction data before signing
