@@ -29,7 +29,7 @@ function PureChatHeader() {
       <div className="flex items-center gap-2">
         <SidebarToggle />
 
-        {/* {(!open || windowWidth < 768) && (
+        {(!open || windowWidth < 768) && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -41,12 +41,12 @@ function PureChatHeader() {
                 }}
               >
                 <PlusIcon />
-                <span className="md:sr-only">New Chat</span>
+                <span className="hidden md:block">New Chat</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>New Chat</TooltipContent>
           </Tooltip>
-        )} */}
+        )}
 
         {/* {!isReadonly && (
           <ModelSelector
@@ -64,13 +64,14 @@ function PureChatHeader() {
           />
         )} */}
       </div>
-      <div className="flex flex-row gap-3 items-center">
+      <div className="flex flex-row gap-2 items-center">
         {isConnected && (
           <Link
             href={"/portfolio"}
-            className="flex flex-row gap-2 border-2 border-theme-orange rounded-full px-3 py-2 items-center hover:bg-zinc-900 h-full"
+            className="flex flex-row gap-2 border border-theme-orange rounded-full px-3 py-2 items-center hover:bg-zinc-900 h-full"
           >
-            <Wallet size={20} /> <span className="text-sm">Portfolio</span>
+            <Wallet size={20} className="w-4 h-4 md:w-5 md:h-5" />{" "}
+            <span className="text-xs md:text-sm">Portfolio</span>
           </Link>
         )}
 
