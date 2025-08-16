@@ -25,24 +25,31 @@ function TokensSection({ address }: { address: string }) {
 
   const derived = useMemo(() => {
     const list = data?.tokens ?? [];
-    return list.map((t) => {
-      const price = t.price_data?.price_usd ?? 0;
-      const usdValue =
-        t.price_data?.usd_value ??
-        (price > 0 && t.balanceHuman > 0 ? t.balanceHuman * price : 0);
-      const change24hPercent = t.price_data?.percent_change_24h ?? 0;
-      const marketCap = t.price_data?.market_cap_usd;
-      return {
-        key: `${t.chain_id}:${t.token_address}`,
-        name: t.name,
-        symbol: t.symbol,
-        balanceHuman: t.balanceHuman,
-        price,
-        usdValue,
-        change24hPercent,
-        marketCap,
-      };
-    });
+    return list
+      .map((t) => {
+        const price = t.price_data?.price_usd ?? 0;
+        const usdValue =
+          t.price_data?.usd_value ??
+          (price > 0 && t.balanceHuman > 0 ? t.balanceHuman * price : 0);
+        const change24hPercent = t.price_data?.percent_change_24h ?? 0;
+        const marketCap = t.price_data?.market_cap_usd;
+        return {
+          key: `${t.chain_id}:${t.token_address}`,
+          name: t.name,
+          symbol: t.symbol,
+          balanceHuman: t.balanceHuman,
+          price,
+          usdValue,
+          change24hPercent,
+          marketCap,
+        };
+      })
+      .sort((a, b) => {
+        if (b.usdValue !== a.usdValue) {
+          return b.usdValue - a.usdValue; // sort by usdValue first
+        }
+        return b.balanceHuman - a.balanceHuman; // then by balanceHuman
+      });
   }, [data]);
 
   const totals = useMemo(() => {
@@ -110,8 +117,10 @@ function TokensSection({ address }: { address: string }) {
                   </div>
                   {t.balanceHuman > 0 && (
                     <div className="text-sm text-gray-500">
-                      {t.balanceHuman.toFixed(4)} {t.symbol} @ $
-                      {t.price.toFixed(4)}
+                      <span className="text-white">
+                        {t.balanceHuman.toFixed(4)}
+                      </span>{" "}
+                      {t.symbol} @ ${t.price.toFixed(4)}
                     </div>
                   )}
                 </div>
