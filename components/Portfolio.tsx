@@ -67,7 +67,7 @@ function TokensSection({ address }: { address: string }) {
 
   return (
     <section className="bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-white px-4 py-4 rounded-lg w-full max-w-2xl">
-      <div className="flex items-end justify-between border-b border-neutral-200 dark:border-neutral-700 pb-2">
+      <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-700 pb-2">
         <h2 className="text-xl font-semibold">Tokens</h2>
         {totals.totalUSD > 0 && (
           <div className="text-theme-orange text-right">
