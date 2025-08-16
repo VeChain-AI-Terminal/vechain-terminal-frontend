@@ -1,7 +1,6 @@
+import { CHAIN_ID } from "@/lib/constants";
 import { tool } from "ai";
 import { z } from "zod";
-
-const CHAIN_ID = 1116;
 
 // ---------- types ----------
 export interface TokenPriceData {

@@ -96,7 +96,7 @@ pnpm lint
 ## 5) Development Notes
 
 - **Auth**: Current flow uses NextAuth + Reown SIWE.
-- **Chain Safety**: Default to mainnet (`1116`). Cap certain actions in beta.
+- **Chain Safety**: Default to mainnet (`1116`). You can change it by changing the CHAIN_ID var in `lib/constants.ts` file.
 
 ---
 

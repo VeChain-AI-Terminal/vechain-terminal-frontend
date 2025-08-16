@@ -12,8 +12,8 @@ import { Address, erc20Abi, parseUnits } from "viem";
 import { useAppKitAccount } from "@reown/appkit/react";
 import Link from "next/link";
 import { ColendSupplyErc20TxProps } from "@/lib/ai/tools/colend/colendSupplyErc20";
+import { CHAIN_ID } from "@/lib/constants";
 
-const CORE_CHAIN_ID = 1116;
 const CORE_SCAN_TX = "https://scan.coredao.org/tx/";
 
 const poolAbi = [
@@ -83,13 +83,13 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
     contracts: [
       {
         address: asset,
-        chainId: CORE_CHAIN_ID,
+        chainId: CHAIN_ID,
         abi: erc20MetaAbi,
         functionName: "decimals",
       },
       {
         address: asset,
-        chainId: CORE_CHAIN_ID,
+        chainId: CHAIN_ID,
         abi: erc20MetaAbi,
         functionName: "symbol",
       },
@@ -123,7 +123,7 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
     data: receipt,
   } = useWaitForTransactionReceipt({
     hash: currentHash,
-    chainId: CORE_CHAIN_ID,
+    chainId: CHAIN_ID,
     confirmations: 1,
     query: { enabled: !!currentHash },
   });
@@ -197,7 +197,7 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
         abi: erc20Abi,
         functionName: "approve",
         args: [spender, parsedAmount], // parsed from supply.amount + decimals
-        chainId: CORE_CHAIN_ID,
+        chainId: CHAIN_ID,
         account: from as Address,
       });
       setPhase("approving");
@@ -225,7 +225,7 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
           abi: poolAbi,
           functionName: "supply",
           args: [asset, parsedAmount, from as Address, referralCode],
-          chainId: CORE_CHAIN_ID,
+          chainId: CHAIN_ID,
           account: from as Address,
         });
         // moves to success in receipt effect

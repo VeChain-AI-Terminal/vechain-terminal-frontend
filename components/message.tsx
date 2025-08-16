@@ -487,7 +487,7 @@ const PurePreviewMessage = ({
                 }
 
                 if (state === "output-available") {
-                  const { output } = part; // output.data is the array
+                  const { output } = part as any; // output.data is the array
                   return (
                     <ColendTable
                       key={toolCallId}

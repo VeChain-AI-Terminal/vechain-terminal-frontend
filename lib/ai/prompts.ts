@@ -1,3 +1,5 @@
+import { CHAIN_ID } from "@/lib/constants";
+
 const todayStr = new Date().toLocaleDateString("en-GB"); // DD/MM/YYYY
 console.log(todayStr);
 
@@ -68,7 +70,7 @@ For liquidity and lending data, fetch from:
 - Activity: Lending/Borrowing.  
 - Data:  
   - https://defillama.com/protocol/sumer.money  
-  - https://app.sumer.money/?chain=1116
+  - https://app.sumer.money/?chain=${CHAIN_ID}
 
 ### Pell Network  
 - Activity: Restaking liquid staked tokens (e.g., stCORE).  
@@ -121,7 +123,7 @@ export const getUserWalletInfoPrompt = `
 
 export const makeSendTransactionPrompt = `
   Use the makeSendTransaction tool to when user want to send tokens to other people on core blockchain.
-  Pass the receiver,recever ens name if avalaible,  sender, amount, and chainId. The chainId is 1116 for the Core blockchain.
+  Pass the receiver,recever ens name if avalaible,  sender, amount, and chainId. The chainId is ${CHAIN_ID} for the Core blockchain.
   if user has mentioned the ens name of receiver in his prompt, always pass the ens name as well, with the adress
 
   The transaction ui is a simple form with the following fields:
@@ -141,7 +143,7 @@ export const getClaimedAndPendingRewardsPrompt = ` use the getClaimedAndPendingR
 
 export const makeStakeCoreTransactionPrompt = `
   Use the makeStakeCoreTransaction tool to create a staking UI for the user to sign on the Core blockchain.
-  Pass the candidate (validator) operator address, candidate name, stake amount, and chainId. The chainId is 1116 for the Core blockchain.
+  Pass the candidate (validator) operator address, candidate name, stake amount, and chainId. The chainId is ${CHAIN_ID} for the Core blockchain.
 
   if the user has not mentioned any particular validator/candidate, first show him the list of validator according to rewards and ask him to specify the candidate he wants to stake into. never choose the validator yourself
 
@@ -162,7 +164,7 @@ export const makeStakeCoreTransactionPrompt = `
 
 export const makeUnDelegateCoreTransactionPrompt = `
 if the user wants to un-delegate his staked core, Use the makeStakeCoreTransaction tool to create a un-staking UI for the user to sign on the Core blockchain.
-  Pass the candidate (validator) operator address, candidate name,, stake amount, and chainId. The chainId is 1116 for the Core blockchain.
+  Pass the candidate (validator) operator address, candidate name,, stake amount, and chainId. The chainId is ${CHAIN_ID} for the Core blockchain.
 
   if the user has not mentioned any particular validator/candidate, first show him the list of his staked core validators using the getDelegatedCoreForEachValidator tool and ask him to specify the candidate he wants to un-stake. never choose the validator yourself
 
@@ -179,7 +181,7 @@ if the user wants to un-delegate his staked core, Use the makeStakeCoreTransacti
 `;
 export const makeClaimRewardsTransactionPrompt = `
 if the user wants to claim rewards, Use the makeClaimRewardsTransaction tool to create a claim rewards UI for the user to sign on the Core blockchain.
-  Pass the candidate (validator) operator address, candidate name,, amount to claim, and chainId. The chainId is 1116 for the Core blockchain.
+  Pass the candidate (validator) operator address, candidate name,, amount to claim, and chainId. The chainId is ${CHAIN_ID} for the Core blockchain.
 
   if the user has not mentioned any particular validator/candidate, first show him his rewards using the getClaimedAndPendingRewards tool and ask him to specify the candidate he wants to claim rewards. never choose the validator yourself
 
@@ -197,7 +199,7 @@ if the user wants to claim rewards, Use the makeClaimRewardsTransaction tool to 
 
 export const makeTransferStakedCoreTransactionPrompt = `
 if the user wants to transfer his staked core,from current validator to any other,  Use the makeStakeCoreTransaction tool to create a transfer UI for the user to sign on the Core blockchain.
-  Pass the   sourceCandidateAddress, sourceCandidateName, targetCandidateAddress, targetCandidateName, valueInWei, chainId,. The chainId is 1116 for the Core blockchain.
+  Pass the   sourceCandidateAddress, sourceCandidateName, targetCandidateAddress, targetCandidateName, valueInWei, chainId,. The chainId is ${CHAIN_ID} for the Core blockchain.
 
   if the user has not mentioned any particular validator/candidate, first show him the list of his staked core validators using the getDelegatedCoreForEachValidator tool and also fetch the available validators and ask him to specify the candidate he wants to transfer. never choose the validator yourself
 
@@ -255,7 +257,7 @@ If and ONLY if the user explicitly wants to lend **CORE** tokens on Colend, use 
 ✅ colendSupplyCore tool is for CORE token ONLY — not stCORE, not WCORE, not any other token.
 
 Rules:
-- CORE token = native CORE coin on the Core blockchain (chainId 1116).
+- CORE token = native CORE coin on the Core blockchain (chainId ${CHAIN_ID}).
 - If the user mentions stCORE, WCORE, or any ERC20 token, DO NOT use colendSupplyCore. Use colendSupplyErc20 instead.
 
 Process:
@@ -263,7 +265,7 @@ Process:
 2. Never assume the amount.
 3. Once you have the amount, call colendSupplyCore with:
    - amount (human-readable string, e.g., "25.5")
-   - chainId = 1116
+   - chainId = ${CHAIN_ID}
 4. Render the supply UI with:
    - Gateway address (from tool output)
    - Pool address (from tool output)
