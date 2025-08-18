@@ -22,7 +22,7 @@ import TransactionComponent, {
 } from "@/components/TransactionComponent";
 import StakeComponent from "@/components/stake-actions-components/StakeComponent";
 import { PortfolioDataType } from "@/lib/types/portfolio-data";
-import PortfolioTable from "@/components/PortfolioTable";
+import PortfolioTable from "@/components/portfolio/PortfolioTable";
 import { PortfolioData } from "@/lib/ai/tools/getPortfolio";
 import { StakeComponentProps } from "@/lib/ai/tools/coreStakeActions/makeStakeCoreTransaction";
 import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";

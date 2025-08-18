@@ -1,5 +1,5 @@
 import { ChatHeader } from "@/components/chat-header";
-import Portfolio from "@/components/Portfolio";
+import Portfolio from "@/components/portfolio/Portfolio";
 import React from "react";
 
 export default function page() {

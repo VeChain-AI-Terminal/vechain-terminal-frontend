@@ -1,68 +1,64 @@
 // app/api/portfolio/tokens/route.ts
-import { CHAIN_ID } from "@/lib/constants";
-import { toUnits } from "@/lib/utils/to-units";
 import { NextResponse } from "next/server";
 
-export interface TokenPriceData {
-  price_usd?: number;
-  volume_24h_usd?: number;
-  market_cap_usd?: number;
-  circulating_supply?: number;
-  total_supply?: number;
-  percent_change_24h?: number;
-  price_timestamp?: string;
-  usd_value?: number;
-}
+const DEBANK_API_BASE_URL = process.env.DEBANK_API_BASE_URL as string;
+const DEBANK_API_KEY = process.env.DEBANK_API_KEY as string;
+const DEBANK_CHAIN_ID = process.env.DEBANK_CHAIN_ID as string;
 
-interface RawTokenData {
-  chain_id: number;
+export interface TokenData {
   token_address: string;
-  owner_address: string;
-  balance: string;
   name: string;
   symbol: string;
   decimals: number;
-  price_data?: TokenPriceData;
-}
-
-export interface TokenData extends RawTokenData {
-  balanceHuman: number;
+  logo_url?: string | null;
+  balance: string; // raw_amount as string
+  price?: number;
+  price_24h_change?: number | null;
+  total_supply?: number;
+  usd_value?: number;
 }
 
 async function getTokensData(walletAddress: string): Promise<TokenData[]> {
   try {
-    const url = `https://api.thirdweb.com/v1/wallets/${walletAddress}/tokens?chainId=${CHAIN_ID}&limit=20&page=1`;
+    const url = `${DEBANK_API_BASE_URL}/user/token_list?id=${walletAddress}&chain_id=${DEBANK_CHAIN_ID}`;
     const res = await fetch(url, {
-      headers: { "x-secret-key": process.env.THIRDWEB_SECRET_KEY as string },
-      cache: "no-store",
+      headers: { AccessKey: DEBANK_API_KEY },
     });
 
-    if (!res.ok) {
-      console.error(`Token fetch failed: ${res.status} ${res.statusText}`);
-      return [];
-    }
+    const rawTokens = await res.json();
+    // console.log("rawtokens", rawTokens);
 
-    const json = (await res.json()) as any;
-    const rawTokens: RawTokenData[] = (json?.result?.tokens ??
-      []) as RawTokenData[];
-
-    const tokens: TokenData[] = rawTokens.map((t) => {
-      const decimals = typeof t.decimals === "number" ? t.decimals : 18;
-      const balanceHuman = toUnits(t.balance, decimals);
-      return { ...t, balanceHuman };
-    });
-
-    return tokens;
+    return rawTokens.map((t: any) => ({
+      token_address: t.id,
+      name: t.name,
+      symbol: t.symbol,
+      decimals: t.decimals,
+      logo_url: t.logo_url,
+      balance: String(t.raw_amount ?? "0"),
+      price: t.price,
+      price_24h_change: t.price_24h_change,
+      total_supply: t.total_supply,
+      usd_value: (t.amount ?? 0) * (t.price ?? 0),
+    }));
   } catch (err) {
-    console.error("Error fetching token data:", err);
+    console.error("Error fetching token data from Debank:", err);
     return [];
   }
 }
+
 export async function GET(req: Request) {
+  if (!DEBANK_API_BASE_URL || !DEBANK_API_KEY || !DEBANK_CHAIN_ID) {
+    return NextResponse.json(
+      { error: "Missing environment configuration" },
+      { status: 500 }
+    );
+  }
+
   const { searchParams } = new URL(req.url);
   const address = searchParams.get("address");
-  if (!address)
+  if (!address) {
     return NextResponse.json({ error: "Missing address" }, { status: 400 });
+  }
 
   const tokens = await getTokensData(address);
   return NextResponse.json({ tokens });
