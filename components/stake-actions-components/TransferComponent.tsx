@@ -10,7 +10,7 @@ import {
   MAINNET_COREAGENT_CONTRACT_ADDRESS,
   TESTNET_COREAGENT_CONTRACT_ADDRESS,
 } from "@/lib/constants";
-import { TransferStakedCoreTransactionProps } from "@/lib/ai/tools/coreStakeActions/makeTransferStakedCoreTransaction";
+import { TransferStakedCoreTransactionProps } from "@/lib/ai/tools/core-staking-actions/makeTransferStakedCoreTransaction";
 
 const chainIdToCoreAgent: Record<number, string> = {
   1114: TESTNET_COREAGENT_CONTRACT_ADDRESS,

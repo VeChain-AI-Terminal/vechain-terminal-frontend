@@ -12,7 +12,7 @@ import {
   MAINNET_COREAGENT_CONTRACT_ADDRESS,
   TESTNET_COREAGENT_CONTRACT_ADDRESS,
 } from "@/lib/constants";
-import { UnDelegateComponentProps } from "@/lib/ai/tools/coreStakeActions/makeUnDelegateCoreTransaction";
+import { UnDelegateComponentProps } from "@/lib/ai/tools/core-staking-actions/makeUnDelegateCoreTransaction";
 import { toast } from "sonner";
 
 const chainIdToCoreAgent: Record<number, string> = {

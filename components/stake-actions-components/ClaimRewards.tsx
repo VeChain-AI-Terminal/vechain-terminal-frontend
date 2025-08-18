@@ -9,7 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CheckCircleFillIcon } from "@/components/icons";
 import { toast } from "sonner";
-import { ClaimRewardsComponentProps } from "@/lib/ai/tools/coreStakeActions/makeClaimRewardsTransaction";
+import { ClaimRewardsComponentProps } from "@/lib/ai/tools/core-staking-actions/makeClaimRewardsTransaction";
 import {
   MAINNET_PLEDGEAGENT_CONTRACT_ADDRESS,
   TESTNET_PLEDGEAGENT_CONTRACT_ADDRESS,

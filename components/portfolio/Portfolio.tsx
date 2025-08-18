@@ -5,15 +5,17 @@ import React, { useMemo, useState } from "react";
 import { useAppKitAccount } from "@reown/appkit/react";
 import dynamic from "next/dynamic";
 import { TotalChainBalance } from "@/components/portfolio/TotalChainBalance";
+import CoreOfficialStakingStats from "@/components/portfolio/CoreOfficialStakingStats";
 
 export const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
-type TabKey = "tokens" | "protocols" | "nfts";
+type TabKey = "tokens" | "protocols" | "nfts" | "staking";
 
 const Tabs: { key: TabKey; label: string }[] = [
   { key: "tokens", label: "Tokens" },
   { key: "protocols", label: "Protocols" },
   { key: "nfts", label: "NFTs" },
+  { key: "staking", label: "Core Staking" },
 ];
 
 // Lazy-load each section so we don’t even ship their code until needed.
@@ -58,6 +60,8 @@ export default function Portfolio() {
         return <ProtocolList address={address} />;
       case "nfts":
         return <NFTList address={address} />;
+      case "staking":
+        return <CoreOfficialStakingStats address={address} />;
       default:
         return null;
     }

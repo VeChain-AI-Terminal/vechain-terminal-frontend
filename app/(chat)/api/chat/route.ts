@@ -33,7 +33,7 @@ import { ChatSDKError } from "@/lib/errors";
 import type { ChatMessage } from "@/lib/types";
 import type { ChatModel } from "@/lib/ai/models";
 import type { VisibilityType } from "@/components/visibility-selector";
-import { getValidators } from "@/lib/ai/tools/coreStakeActions/getValidators";
+import { getValidators } from "@/lib/ai/tools/core-staking-actions/getValidators";
 //utils
 import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
 
@@ -41,12 +41,12 @@ import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
 import { makeSendTransaction } from "@/lib/ai/tools/makeSendTransaction";
 
 //staking
-import { makeStakeCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeStakeCoreTransaction";
-import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";
-import { getClaimedAndPendingRewards } from "@/lib/ai/tools/coreStakeActions/getClaimedAndPendingRewards";
-import { makeUnDelegateCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeUnDelegateCoreTransaction";
-import { makeClaimRewardsTransaction } from "@/lib/ai/tools/coreStakeActions/makeClaimRewardsTransaction";
-import { makeTransferStakedCoreTransaction } from "@/lib/ai/tools/coreStakeActions/makeTransferStakedCoreTransaction";
+import { makeStakeCoreTransaction } from "@/lib/ai/tools/core-staking-actions/makeStakeCoreTransaction";
+import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/core-staking-actions/getDelegatedCoreForEachValidator";
+import { getClaimedAndPendingRewards } from "@/lib/ai/tools/core-staking-actions/getClaimedAndPendingRewards";
+import { makeUnDelegateCoreTransaction } from "@/lib/ai/tools/core-staking-actions/makeUnDelegateCoreTransaction";
+import { makeClaimRewardsTransaction } from "@/lib/ai/tools/core-staking-actions/makeClaimRewardsTransaction";
+import { makeTransferStakedCoreTransaction } from "@/lib/ai/tools/core-staking-actions/makeTransferStakedCoreTransaction";
 
 //portfolio
 import { getPortfolio } from "@/lib/ai/tools/getPortfolio";

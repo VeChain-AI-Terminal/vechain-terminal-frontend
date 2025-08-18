@@ -14,7 +14,7 @@ import {
   MAINNET_COREAGENT_CONTRACT_ADDRESS,
   TESTNET_COREAGENT_CONTRACT_ADDRESS,
 } from "@/lib/constants";
-import { StakeComponentProps } from "@/lib/ai/tools/coreStakeActions/makeStakeCoreTransaction";
+import { StakeComponentProps } from "@/lib/ai/tools/core-staking-actions/makeStakeCoreTransaction";
 
 // CoreAgent contract address on each chain
 const chainIdToCoreAgent: Record<number, string> = {

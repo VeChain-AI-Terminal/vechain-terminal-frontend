@@ -24,12 +24,12 @@ import StakeComponent from "@/components/stake-actions-components/StakeComponent
 import { PortfolioDataType } from "@/lib/types/portfolio-data";
 import PortfolioTable from "@/components/portfolio/PortfolioTable";
 import { PortfolioData } from "@/lib/ai/tools/getPortfolio";
-import { StakeComponentProps } from "@/lib/ai/tools/coreStakeActions/makeStakeCoreTransaction";
-import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/coreStakeActions/getDelegatedCoreForEachValidator";
-import { getClaimedAndPendingRewards } from "@/lib/ai/tools/coreStakeActions/getClaimedAndPendingRewards";
+import { StakeComponentProps } from "@/lib/ai/tools/core-staking-actions/makeStakeCoreTransaction";
+import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/core-staking-actions/getDelegatedCoreForEachValidator";
+import { getClaimedAndPendingRewards } from "@/lib/ai/tools/core-staking-actions/getClaimedAndPendingRewards";
 import UnDelegateComponent from "@/components/stake-actions-components/UnDelegateComponent";
 import TransferComponent from "@/components/stake-actions-components/TransferComponent";
-import { TransferStakedCoreTransactionProps } from "@/lib/ai/tools/coreStakeActions/makeTransferStakedCoreTransaction";
+import { TransferStakedCoreTransactionProps } from "@/lib/ai/tools/core-staking-actions/makeTransferStakedCoreTransaction";
 import ClaimRewardsComponent from "@/components/stake-actions-components/ClaimRewards";
 import ColendSupplyCore from "@/components/colend/colend-supply-core";
 import { ColendSupplyCoreTxProps } from "@/lib/ai/tools/colend/colendSupplyCore";
