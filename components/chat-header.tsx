@@ -25,7 +25,7 @@ function PureChatHeader() {
   const { width: windowWidth } = useWindowSize();
   const { address, isConnected } = useAppKitAccount();
   return (
-    <header className="flex sticky top-0 bg-background py-1.5 items-center justify-between px-2 md:px-2 gap-2">
+    <header className="flex sticky top-0 bg-background py-1.5 items-center justify-between px-2 md:px-2 gap-2 z-10">
       <div className="flex items-center gap-2">
         <SidebarToggle />
 

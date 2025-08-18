@@ -20,7 +20,7 @@ export interface TokenData {
 
 async function getTokensData(walletAddress: string): Promise<TokenData[]> {
   try {
-    const url = `${DEBANK_API_BASE_URL}/user/token_list?id=${walletAddress}&chain_id=${DEBANK_CHAIN_ID}`;
+    const url = `${DEBANK_API_BASE_URL}/user/token_list?id=${walletAddress}&chain_id=${DEBANK_CHAIN_ID}&is_all=false`;
     const res = await fetch(url, {
       headers: { AccessKey: DEBANK_API_KEY },
     });

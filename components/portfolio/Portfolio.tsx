@@ -7,6 +7,7 @@ import { NFTData } from "@/app/api/portfolio/nfts/route";
 import { useAppKitAccount } from "@reown/appkit/react";
 import TokensSection from "@/components/portfolio/TokenList";
 import ProtocolList from "@/components/portfolio/ProtocolList";
+import { TotalChainBalance } from "@/components/portfolio/TotalChainBalance";
 
 export const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -80,11 +81,9 @@ export default function Portfolio() {
 
   return (
     <div className="px-4 py-6 md:px-8 space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3 ">
         <h1 className="text-2xl font-semibold">Portfolio</h1>
-        <div className="text-xs text-gray-500 font-mono">
-          {address?.slice(0, 6)}...{address?.slice(-4)}
-        </div>
+        {isConnected && address && <TotalChainBalance address={address} />}
       </div>
 
       {address ? (

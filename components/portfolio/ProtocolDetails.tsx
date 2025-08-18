@@ -47,8 +47,13 @@ export function ProtocolDetails({ protocol }: { protocol: ComplexProtocol }) {
       {/* Portfolio items */}
       {protocol.portfolio_item_list.map((item, idx) => (
         <div key={idx} className="mb-6">
-          <div className="bg-zinc-100 dark:bg-zinc-800 text-sm font-semibold px-3 py-1 rounded-md inline-block mb-2">
-            {item.name}
+          <div>
+            <div className="bg-zinc-100 dark:bg-zinc-800 text-sm font-semibold px-3 py-1 rounded-md inline-block mb-2">
+              {item.name}
+            </div>
+            <div className=" text-sm font-semibold px-3 py-1 rounded-md inline-block mb-2">
+              {item.detail.description}
+            </div>
           </div>
 
           {/* Health rate if lending */}
