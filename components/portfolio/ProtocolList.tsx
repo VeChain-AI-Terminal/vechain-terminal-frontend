@@ -2,8 +2,8 @@
 
 import useSWR from "swr";
 import { ComplexProtocol } from "@/app/api/portfolio/protocols/route";
-import { ProtocolCard } from "./ProtocolCard";
-import { ProtocolDetails } from "./ProtocolDetails";
+import { ProtocolCard } from "./protocol/ProtocolCard";
+import { ProtocolDetails } from "./protocol/ProtocolDetails";
 import { fetcher } from "@/components/portfolio/Portfolio";
 
 export default function ProtocolList({ address }: { address: string }) {
@@ -29,7 +29,7 @@ export default function ProtocolList({ address }: { address: string }) {
   return (
     <div>
       {/* top row of cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-5">
         {protocols.map((p) => (
           <ProtocolCard
             key={p.id}
