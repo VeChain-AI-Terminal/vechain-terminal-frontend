@@ -17,15 +17,26 @@ type TokenData = {
   usd_value?: number;
 };
 
-const fmtUSD = (n: number) =>
-  n >= 1
-    ? `$${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
-    : `$${n.toFixed(2)}`;
-
 const fmtNum = (n: number, d = 4) =>
   n >= 1
     ? n.toLocaleString(undefined, { maximumFractionDigits: 4 })
     : n.toFixed(d);
+
+const fmtCompact = (n: number, d = 2) => {
+  if (n === 0) return "0";
+  if (Math.abs(n) < 1000) return n.toFixed(d);
+
+  const units = ["", "k", "M", "B", "T"];
+  let idx = 0;
+  let val = n;
+
+  while (Math.abs(val) >= 1000 && idx < units.length - 1) {
+    val /= 1000;
+    idx++;
+  }
+
+  return `${val.toFixed(d)}${units[idx]}`;
+};
 
 const changeColor = (p: number) =>
   p > 0 ? "text-green-600" : p < 0 ? "text-red-600" : "text-gray-400";
@@ -93,7 +104,7 @@ function TokensSection({ address }: { address: string }) {
           <h2 className="text-xl font-semibold">Wallet</h2>
         </div>
         <div className="text-right text-zinc-900 dark:text-zinc-100 font-semibold">
-          {fmtUSD(totals.totalUSD)}
+          {fmtCompact(totals.totalUSD)}
         </div>
       </div>
 
@@ -123,7 +134,7 @@ function TokensSection({ address }: { address: string }) {
             derived.map((t) => (
               <div
                 key={t.key}
-                className="grid grid-cols-[1.5fr,1fr,1fr,1fr,0.8fr] items-center px-4 py-3 hover:bg-zinc-50/70 dark:hover:bg-zinc-800/30 transition-colors"
+                className="grid grid-cols-[1.5fr,1fr,1fr,1fr,0.8fr] items-center md:px-4 lg:px-4 py-3 hover:bg-zinc-50/70 dark:hover:bg-zinc-800/30 transition-colors"
               >
                 {/* Token cell */}
                 <div className="flex items-center gap-3">
@@ -143,7 +154,7 @@ function TokensSection({ address }: { address: string }) {
                     )}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                    <span className="hidden md:block text-sm font-medium text-zinc-900 dark:text-zinc-100">
                       {t.name}
                     </span>
                     <span className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
@@ -154,7 +165,7 @@ function TokensSection({ address }: { address: string }) {
 
                 {/* Price */}
                 <div className="text-sm text-zinc-900 dark:text-zinc-100 tabular-nums">
-                  {fmtUSD(t.price)}
+                  {fmtCompact(t.price)}
                 </div>
 
                 {/* Amount */}
@@ -164,7 +175,7 @@ function TokensSection({ address }: { address: string }) {
 
                 {/* USD Value */}
                 <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100 tabular-nums">
-                  {fmtUSD(t.usdValue)}
+                  {fmtCompact(t.usdValue)}
                 </div>
 
                 {/* 24h Change */}
