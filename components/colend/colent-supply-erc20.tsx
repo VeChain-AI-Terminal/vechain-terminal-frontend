@@ -105,7 +105,6 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
 
   const tokenSymbol: string | undefined = useMemo(() => {
     const v = metaData?.[1]?.result;
-    console.log("decimals -----", v);
     return typeof v === "string" ? v : undefined;
   }, [metaData]);
 

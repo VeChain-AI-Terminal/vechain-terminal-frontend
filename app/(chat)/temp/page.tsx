@@ -11,13 +11,13 @@ export default function Page() {
   return (
     <div className="space-y-8 p-6">
       {/* Example: swap ERC20 -> ERC20 (USDT -> USDC) */}
-      <Erc20ToErc20Swap tokenIn={USDC} tokenOut={USDT} decimalsIn={6} />
+      <Erc20ToErc20Swap tokenIn={USDC} tokenOut={USDT} />
 
       {/* Example: swap ERC20 -> Native (USDC -> CORE) */}
-      <Erc20ToNativeSwap tokenIn={USDC} decimalsIn={6} />
+      <Erc20ToNativeSwap tokenIn={USDC} />
 
       {/* Example: swap Native -> ERC20 (CORE -> USDT) */}
-      <NativeToErc20Swap tokenOut={USDT} decimalsIn={18} />
+      <NativeToErc20Swap tokenOut={USDC} />
     </div>
   );
 }

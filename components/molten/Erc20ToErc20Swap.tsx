@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   useWriteContract,
   useWaitForTransactionReceipt,
   useReadContract,
+  useReadContracts,
 } from "wagmi";
 import { parseUnits, encodeFunctionData, formatUnits } from "viem";
 import { useAppKitAccount } from "@reown/appkit/react";
@@ -12,16 +13,27 @@ import { useAppKitAccount } from "@reown/appkit/react";
 const SWAP_ROUTER = "0x832933BA44658C50ae6152039Cd30A6f4C2432b1";
 const QUOTER = "0x20dA24b5FaC067930Ced329A3457298172510Fe7";
 
-const erc20Abi = [
+const erc20MetaAbi = [
   {
     type: "function",
-    name: "approve",
-    stateMutability: "nonpayable",
-    inputs: [
-      { name: "spender", type: "address" },
-      { name: "amount", type: "uint256" },
-    ],
-    outputs: [{ type: "bool" }],
+    name: "decimals",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint8" }],
+  },
+  {
+    type: "function",
+    name: "symbol",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "string" }],
+  },
+  {
+    type: "function",
+    name: "name",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "string" }],
   },
   {
     type: "function",
@@ -35,17 +47,13 @@ const erc20Abi = [
   },
   {
     type: "function",
-    name: "name",
-    stateMutability: "view",
-    inputs: [],
-    outputs: [{ type: "string" }],
-  },
-  {
-    type: "function",
-    name: "symbol",
-    stateMutability: "view",
-    inputs: [],
-    outputs: [{ type: "string" }],
+    name: "approve",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "spender", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [{ type: "bool" }],
   },
 ];
 
@@ -102,45 +110,43 @@ const quoterAbi = [
 export default function Erc20ToErc20Swap({
   tokenIn,
   tokenOut,
-  decimalsIn,
 }: {
   tokenIn: `0x${string}`;
   tokenOut: `0x${string}`;
-  decimalsIn: number;
 }) {
   const { address: from } = useAppKitAccount();
   const [amountIn, setAmountIn] = useState("");
+
+  // --- Fetch token metadata for both tokens
+  const { data: metaData } = useReadContracts({
+    allowFailure: true,
+    contracts: [
+      { address: tokenIn, abi: erc20MetaAbi, functionName: "decimals" },
+      { address: tokenIn, abi: erc20MetaAbi, functionName: "symbol" },
+      { address: tokenOut, abi: erc20MetaAbi, functionName: "decimals" },
+      { address: tokenOut, abi: erc20MetaAbi, functionName: "symbol" },
+    ],
+    query: { enabled: !!tokenIn && !!tokenOut },
+  });
+
+  const decimalsIn = useMemo(
+    () => (typeof metaData?.[0]?.result === "number" ? metaData[0].result : 18),
+    [metaData]
+  );
+  const symbolIn = useMemo(
+    () => (typeof metaData?.[1]?.result === "string" ? metaData[1].result : ""),
+    [metaData]
+  );
+  const decimalsOut = useMemo(
+    () => (typeof metaData?.[2]?.result === "number" ? metaData[2].result : 18),
+    [metaData]
+  );
+  const symbolOut = useMemo(
+    () => (typeof metaData?.[3]?.result === "string" ? metaData[3].result : ""),
+    [metaData]
+  );
+
   const parsedAmount = amountIn ? parseUnits(amountIn, decimalsIn) : 0n;
-
-  // --- Fetch token metadata
-  // --- Fetch token metadata
-  const { data: tokenInNameRaw } = useReadContract({
-    address: tokenIn,
-    abi: erc20Abi,
-    functionName: "name",
-  });
-  const tokenInName = tokenInNameRaw as string | undefined;
-
-  const { data: tokenInSymbolRaw } = useReadContract({
-    address: tokenIn,
-    abi: erc20Abi,
-    functionName: "symbol",
-  });
-  const tokenInSymbol = tokenInSymbolRaw as string | undefined;
-
-  const { data: tokenOutNameRaw } = useReadContract({
-    address: tokenOut,
-    abi: erc20Abi,
-    functionName: "name",
-  });
-  const tokenOutName = tokenOutNameRaw as string | undefined;
-
-  const { data: tokenOutSymbolRaw } = useReadContract({
-    address: tokenOut,
-    abi: erc20Abi,
-    functionName: "symbol",
-  });
-  const tokenOutSymbol = tokenOutSymbolRaw as string | undefined;
 
   // --- Quote expected out
   const { data: expectedOutRaw } = useReadContract({
@@ -157,7 +163,7 @@ export default function Erc20ToErc20Swap({
   // --- Allowance
   const { data: allowanceRaw } = useReadContract({
     address: tokenIn,
-    abi: erc20Abi,
+    abi: erc20MetaAbi,
     functionName: "allowance",
     args: from ? [from, SWAP_ROUTER] : undefined,
     chainId: 1116,
@@ -179,7 +185,7 @@ export default function Erc20ToErc20Swap({
     if (!from) return;
     writeApprove({
       address: tokenIn,
-      abi: erc20Abi,
+      abi: erc20MetaAbi,
       functionName: "approve",
       args: [SWAP_ROUTER, 2n ** 256n - 1n],
     });
@@ -215,41 +221,38 @@ export default function Erc20ToErc20Swap({
   return (
     <div className="p-4 border rounded space-y-3">
       <h2 className="font-semibold">
-        Swap {tokenInSymbol ?? "…"} → {tokenOutSymbol ?? "…"}
+        Swap {symbolIn || "…"} → {symbolOut || "…"}
       </h2>
-      <p className="text-sm text-gray-500">
-        {tokenInName ?? "…"} to {tokenOutName ?? "…"}
-      </p>
 
       <input
         type="number"
-        placeholder={`Amount in ${tokenInSymbol ?? ""}`}
+        placeholder={`Amount in ${symbolIn || ""}`}
         value={amountIn}
         onChange={(e) => setAmountIn(e.target.value)}
-        className="border rounded px-2 py-1"
+        className="border rounded px-2 py-1 w-full"
       />
 
       {!isApproved && (
         <button
           onClick={handleApprove}
           disabled={approving}
-          className="bg-blue-600 text-white px-3 py-1 rounded"
+          className="bg-blue-600 text-white px-3 py-1 rounded w-full"
         >
-          {approving ? "Approving..." : `Approve ${tokenInSymbol ?? ""}`}
+          {approving ? "Approving..." : `Approve ${symbolIn}`}
         </button>
       )}
       <button
         onClick={handleSwap}
         disabled={(!isApproved && !approveSuccess) || swapping}
-        className="bg-green-600 text-white px-3 py-1 rounded"
+        className="bg-green-600 text-white px-3 py-1 rounded w-full"
       >
         {swapping ? "Swapping..." : "Swap"}
       </button>
 
       {expectedOut && (
         <p>
-          Est. receive ≈ {formatUnits(expectedOut, decimalsIn)}{" "}
-          {tokenOutSymbol ?? ""}
+          Est. receive ≈{" "}
+          {Number(formatUnits(expectedOut, decimalsOut)).toFixed(3)} {symbolOut}
         </p>
       )}
 

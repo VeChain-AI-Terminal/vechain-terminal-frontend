@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   useWriteContract,
   useWaitForTransactionReceipt,
+  useReadContracts,
   useReadContract,
 } from "wagmi";
 import { parseUnits, encodeFunctionData, formatUnits } from "viem";
@@ -13,7 +14,21 @@ const SWAP_ROUTER = "0x832933BA44658C50ae6152039Cd30A6f4C2432b1";
 const QUOTER = "0x20dA24b5FaC067930Ced329A3457298172510Fe7";
 const WCORE = "0x191e94fa59739e188dce837f7f6978d84727ad01";
 
-const erc20Abi = [
+const erc20MetaAbi = [
+  {
+    type: "function",
+    name: "decimals",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint8" }],
+  },
+  {
+    type: "function",
+    name: "symbol",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "string" }],
+  },
   {
     type: "function",
     name: "approve",
@@ -33,20 +48,6 @@ const erc20Abi = [
       { name: "spender", type: "address" },
     ],
     outputs: [{ type: "uint256" }],
-  },
-  {
-    type: "function",
-    name: "name",
-    stateMutability: "view",
-    inputs: [],
-    outputs: [{ type: "string" }],
-  },
-  {
-    type: "function",
-    name: "symbol",
-    stateMutability: "view",
-    inputs: [],
-    outputs: [{ type: "string" }],
   },
 ];
 
@@ -111,19 +112,49 @@ const quoterAbi = [
 
 export default function Erc20ToNativeSwap({
   tokenIn,
-  decimalsIn,
-  decimalsOut = 18, // CORE native decimals
 }: {
   tokenIn: `0x${string}`;
-  decimalsIn: number;
-  decimalsOut?: number;
 }) {
   const { address: from } = useAppKitAccount();
   const [amountIn, setAmountIn] = useState("");
-  const [slippage, setSlippage] = useState("0.5"); // default 0.5%
-  const parsedAmount = amountIn ? parseUnits(amountIn, decimalsIn) : 0n;
+  const [slippage, setSlippage] = useState("0.5");
 
-  // quote
+  // --- Fetch token metadata (decimals + symbol)
+  const { data: metaData } = useReadContracts({
+    allowFailure: true,
+    contracts: [
+      {
+        address: tokenIn,
+        chainId: 1116,
+        abi: erc20MetaAbi,
+        functionName: "decimals",
+      },
+      {
+        address: tokenIn,
+        chainId: 1116,
+        abi: erc20MetaAbi,
+        functionName: "symbol",
+      },
+    ],
+    query: { enabled: !!tokenIn },
+  });
+
+  const tokenDecimals = useMemo(() => {
+    const v = metaData?.[0]?.result;
+    return typeof v === "number" ? v : 18; // fallback to 18
+  }, [metaData]);
+
+  const tokenSymbol = useMemo(() => {
+    const v = metaData?.[1]?.result;
+    return typeof v === "string" ? v : undefined;
+  }, [metaData]);
+
+  // CORE native is 18 decimals
+  const decimalsOut = 18;
+
+  const parsedAmount = amountIn ? parseUnits(amountIn, tokenDecimals) : 0n;
+
+  // --- Quote expected out
   const { data: expectedOutRaw } = useReadContract({
     address: QUOTER,
     abi: quoterAbi,
@@ -136,16 +167,16 @@ export default function Erc20ToNativeSwap({
   });
   const expectedOut = expectedOutRaw as bigint | undefined;
 
-  // slippage calculation
-  const slippageBps = BigInt(Math.floor(parseFloat(slippage) * 100)); // e.g. 0.5% → 50 bps
+  // --- Slippage
+  const slippageBps = BigInt(Math.floor(parseFloat(slippage) * 100));
   const minOut = expectedOut
     ? (expectedOut * (10000n - slippageBps)) / 10000n
     : 0n;
 
-  // allowance
+  // --- Allowance
   const { data: allowanceRaw } = useReadContract({
     address: tokenIn,
-    abi: erc20Abi,
+    abi: erc20MetaAbi,
     functionName: "allowance",
     args: from ? [from, SWAP_ROUTER] : undefined,
     chainId: 1116,
@@ -154,15 +185,7 @@ export default function Erc20ToNativeSwap({
   const allowance = allowanceRaw as bigint | undefined;
   const isApproved = allowance !== undefined && allowance >= parsedAmount;
 
-  // token metadata
-  const { data: tokenInSymbolRaw } = useReadContract({
-    address: tokenIn,
-    abi: erc20Abi,
-    functionName: "symbol",
-  });
-  const tokenInSymbol = tokenInSymbolRaw as string | undefined;
-
-  // write hooks
+  // --- Write hooks
   const { writeContract: writeApprove, data: approveHash } = useWriteContract();
   const { writeContract: writeSwap, data: swapHash } = useWriteContract();
 
@@ -175,7 +198,7 @@ export default function Erc20ToNativeSwap({
     if (!from) return;
     writeApprove({
       address: tokenIn,
-      abi: erc20Abi,
+      abi: erc20MetaAbi,
       functionName: "approve",
       args: [SWAP_ROUTER, 2n ** 256n - 1n],
     });
@@ -204,7 +227,7 @@ export default function Erc20ToNativeSwap({
     const unwrapData = encodeFunctionData({
       abi: routerAbi,
       functionName: "unwrapWNativeToken",
-      args: [0n, from],
+      args: [minOut, from], // ✅ enforce minOut here
     });
 
     writeSwap({
@@ -217,11 +240,11 @@ export default function Erc20ToNativeSwap({
 
   return (
     <div className="space-y-3 border p-4 rounded">
-      <h2 className="font-semibold">Swap {tokenInSymbol ?? "..."} → CORE</h2>
+      <h2 className="font-semibold">Swap {tokenSymbol ?? "..."} → CORE</h2>
 
       <input
         type="number"
-        placeholder={`Amount in ${tokenInSymbol ?? ""}`}
+        placeholder={`Amount in ${tokenSymbol ?? ""}`}
         value={amountIn}
         onChange={(e) => setAmountIn(e.target.value)}
         className="border rounded px-2 py-1 w-full"
@@ -232,17 +255,11 @@ export default function Erc20ToNativeSwap({
         <div className="text-sm text-gray-600">
           <p>
             Est. receive ≈{" "}
-            {expectedOut !== undefined
-              ? Number(formatUnits(expectedOut, decimalsOut)).toFixed(3)
-              : "-"}{" "}
-            CORE
+            {Number(formatUnits(expectedOut, decimalsOut)).toFixed(3)} CORE
           </p>
           <p>
             Minimum (after slippage {slippage}%):{" "}
-            {minOut !== undefined
-              ? Number(formatUnits(minOut, decimalsOut)).toFixed(3)
-              : "-"}{" "}
-            CORE
+            {Number(formatUnits(minOut, decimalsOut)).toFixed(3)} CORE
           </p>
         </div>
       )}
@@ -254,7 +271,7 @@ export default function Erc20ToNativeSwap({
           disabled={approving}
           className="bg-blue-600 text-white px-3 py-1 rounded"
         >
-          {approving ? "Approving..." : `Approve ${tokenInSymbol ?? ""}`}
+          {approving ? "Approving..." : `Approve ${tokenSymbol ?? ""}`}
         </button>
       )}
       <button
