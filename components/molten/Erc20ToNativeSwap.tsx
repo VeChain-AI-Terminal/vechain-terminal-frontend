@@ -6,7 +6,7 @@ import {
   useWaitForTransactionReceipt,
   useReadContract,
 } from "wagmi";
-import { parseUnits, encodeFunctionData } from "viem";
+import { parseUnits, encodeFunctionData, formatUnits } from "viem";
 import { useAppKitAccount } from "@reown/appkit/react";
 
 const SWAP_ROUTER = "0x832933BA44658C50ae6152039Cd30A6f4C2432b1";
@@ -34,6 +34,20 @@ const erc20Abi = [
     ],
     outputs: [{ type: "uint256" }],
   },
+  {
+    type: "function",
+    name: "name",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "string" }],
+  },
+  {
+    type: "function",
+    name: "symbol",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "string" }],
+  },
 ];
 
 const routerAbi = [
@@ -41,7 +55,21 @@ const routerAbi = [
     type: "function",
     name: "exactInputSingle",
     stateMutability: "payable",
-    inputs: [{ name: "params", type: "tuple", components: [] }],
+    inputs: [
+      {
+        name: "params",
+        type: "tuple",
+        components: [
+          { name: "tokenIn", type: "address" },
+          { name: "tokenOut", type: "address" },
+          { name: "recipient", type: "address" },
+          { name: "deadline", type: "uint256" },
+          { name: "amountIn", type: "uint256" },
+          { name: "amountOutMinimum", type: "uint256" },
+          { name: "limitSqrtPrice", type: "uint160" },
+        ],
+      },
+    ],
   },
   {
     type: "function",
@@ -56,7 +84,7 @@ const routerAbi = [
     type: "function",
     name: "multicall",
     stateMutability: "payable",
-    inputs: [],
+    inputs: [{ name: "data", type: "bytes[]" }],
   },
 ];
 
@@ -65,7 +93,18 @@ const quoterAbi = [
     type: "function",
     name: "quoteExactInputSingle",
     stateMutability: "view",
-    inputs: [{ name: "params", type: "tuple", components: [] }],
+    inputs: [
+      {
+        name: "params",
+        type: "tuple",
+        components: [
+          { name: "tokenIn", type: "address" },
+          { name: "tokenOut", type: "address" },
+          { name: "amountIn", type: "uint256" },
+          { name: "limitSqrtPrice", type: "uint160" },
+        ],
+      },
+    ],
     outputs: [{ name: "amountOut", type: "uint256" }],
   },
 ];
@@ -73,12 +112,15 @@ const quoterAbi = [
 export default function Erc20ToNativeSwap({
   tokenIn,
   decimalsIn,
+  decimalsOut = 18, // CORE native decimals
 }: {
   tokenIn: `0x${string}`;
   decimalsIn: number;
+  decimalsOut?: number;
 }) {
   const { address: from } = useAppKitAccount();
   const [amountIn, setAmountIn] = useState("");
+  const [slippage, setSlippage] = useState("0.5"); // default 0.5%
   const parsedAmount = amountIn ? parseUnits(amountIn, decimalsIn) : 0n;
 
   // quote
@@ -93,7 +135,12 @@ export default function Erc20ToNativeSwap({
     query: { enabled: !!from && !!amountIn },
   });
   const expectedOut = expectedOutRaw as bigint | undefined;
-  const minOut = expectedOut ? (expectedOut * 995n) / 1000n : 0n;
+
+  // slippage calculation
+  const slippageBps = BigInt(Math.floor(parseFloat(slippage) * 100)); // e.g. 0.5% → 50 bps
+  const minOut = expectedOut
+    ? (expectedOut * (10000n - slippageBps)) / 10000n
+    : 0n;
 
   // allowance
   const { data: allowanceRaw } = useReadContract({
@@ -107,6 +154,15 @@ export default function Erc20ToNativeSwap({
   const allowance = allowanceRaw as bigint | undefined;
   const isApproved = allowance !== undefined && allowance >= parsedAmount;
 
+  // token metadata
+  const { data: tokenInSymbolRaw } = useReadContract({
+    address: tokenIn,
+    abi: erc20Abi,
+    functionName: "symbol",
+  });
+  const tokenInSymbol = tokenInSymbolRaw as string | undefined;
+
+  // write hooks
   const { writeContract: writeApprove, data: approveHash } = useWriteContract();
   const { writeContract: writeSwap, data: swapHash } = useWriteContract();
 
@@ -160,26 +216,56 @@ export default function Erc20ToNativeSwap({
   }
 
   return (
-    <div>
-      <h2>ERC20 → Native</h2>
+    <div className="space-y-3 border p-4 rounded">
+      <h2 className="font-semibold">Swap {tokenInSymbol ?? "..."} → CORE</h2>
+
       <input
         type="number"
-        placeholder="Amount"
+        placeholder={`Amount in ${tokenInSymbol ?? ""}`}
         value={amountIn}
         onChange={(e) => setAmountIn(e.target.value)}
+        className="border rounded px-2 py-1 w-full"
       />
+
+      {/* Estimations */}
+      {expectedOut !== undefined && (
+        <div className="text-sm text-gray-600">
+          <p>
+            Est. receive ≈{" "}
+            {expectedOut !== undefined
+              ? Number(formatUnits(expectedOut, decimalsOut)).toFixed(3)
+              : "-"}{" "}
+            CORE
+          </p>
+          <p>
+            Minimum (after slippage {slippage}%):{" "}
+            {minOut !== undefined
+              ? Number(formatUnits(minOut, decimalsOut)).toFixed(3)
+              : "-"}{" "}
+            CORE
+          </p>
+        </div>
+      )}
+
+      {/* Buttons */}
       {!isApproved && (
-        <button onClick={handleApprove} disabled={approving}>
-          {approving ? "Approving..." : "Approve"}
+        <button
+          onClick={handleApprove}
+          disabled={approving}
+          className="bg-blue-600 text-white px-3 py-1 rounded"
+        >
+          {approving ? "Approving..." : `Approve ${tokenInSymbol ?? ""}`}
         </button>
       )}
       <button
         onClick={handleSwap}
         disabled={(!isApproved && !approveSuccess) || swapping}
+        className="bg-green-600 text-white px-3 py-1 rounded ml-2"
       >
         {swapping ? "Swapping..." : "Swap"}
       </button>
-      {swapSuccess && <p>Swap confirmed 🎉</p>}
+
+      {swapSuccess && <p className="text-green-600">Swap confirmed 🎉</p>}
     </div>
   );
 }

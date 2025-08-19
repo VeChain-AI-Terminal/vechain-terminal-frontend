@@ -6,7 +6,7 @@ import {
   useWaitForTransactionReceipt,
   useReadContract,
 } from "wagmi";
-import { parseUnits, encodeFunctionData } from "viem";
+import { parseUnits, encodeFunctionData, formatUnits } from "viem";
 import { useAppKitAccount } from "@reown/appkit/react";
 
 const SWAP_ROUTER = "0x832933BA44658C50ae6152039Cd30A6f4C2432b1";
@@ -246,9 +246,10 @@ export default function Erc20ToErc20Swap({
         {swapping ? "Swapping..." : "Swap"}
       </button>
 
-      {expectedOut !== undefined && (
-        <p className="text-sm text-gray-700">
-          Est. receive ≈ {expectedOut.toString()} {tokenOutSymbol ?? ""}
+      {expectedOut && (
+        <p>
+          Est. receive ≈ {formatUnits(expectedOut, decimalsIn)}{" "}
+          {tokenOutSymbol ?? ""}
         </p>
       )}
 
