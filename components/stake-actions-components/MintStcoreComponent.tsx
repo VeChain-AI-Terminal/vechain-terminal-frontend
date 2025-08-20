@@ -6,6 +6,7 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import Image from "next/image";
 import Link from "next/link";
 import { CheckCircleFillIcon } from "@/components/icons";
+import { CHAIN_ID } from "@/lib/constants";
 
 // Contract + validator
 const MINT_CONTRACT_ADDRESS =
@@ -40,7 +41,7 @@ const MintStCoreComponent: React.FC = () => {
     data: receipt,
   } = useWaitForTransactionReceipt({
     hash: txHash,
-    chainId: 1116, // mainnet
+    chainId: CHAIN_ID, // mainnet
     confirmations: 1,
     query: { enabled: !!txHash },
   });
@@ -54,7 +55,7 @@ const MintStCoreComponent: React.FC = () => {
     functionName: "mint",
     args: [VALIDATOR_ADDRESS, amountInWei] as const,
     value: amountInWei,
-    chainId: 1116,
+    chainId: CHAIN_ID,
     account: from as Address,
   } as const;
 

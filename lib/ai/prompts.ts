@@ -311,6 +311,27 @@ Process:
 
 Limits:
 - This tool is only for ERC20 ↔ ERC20 swaps (not native CORE).
+- Do not allow or suggest an amount ≥ 1000 units (beta safety).
+- If amount ≥ 1000, warn the user and reject.
+
+`;
+
+export const erc20ToNativeSwapPrompt = `
+If you or the user wants to swap an ERC20 token into the native CORE token, use the erc20ToNativeSwapTransaction tool.
+
+Process:
+1. Ask the user for:
+   - Which ERC20 token they want to swap (tokenIn address).
+   - The amount they want to swap (human-readable).
+3. Once you have both, call erc20ToNativeSwapTransaction with:
+   - tokenIn (ERC20 contract address)
+   - amount (string, e.g., "25.5")
+4. Render the ERC20 → CORE swap UI.
+
+Limits:
+- Only for ERC20 → CORE swaps (not ERC20 → ERC20).
+- Do not allow or suggest an amount ≥ 1000 units (beta safety).
+- If amount ≥ 1000, warn the user and reject.
 `;
 
 export const systemPrompt = ({
@@ -318,5 +339,5 @@ export const systemPrompt = ({
 }: {
   selectedChatModel: string;
 }) => {
-  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${erc20ToErc20SwapPrompt}`;
+  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${erc20ToErc20SwapPrompt}\n\n${erc20ToNativeSwapPrompt}`;
 };

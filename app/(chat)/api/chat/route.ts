@@ -59,6 +59,7 @@ import { colendSupplyErc20 } from "@/lib/ai/tools/colend/colendSupplyErc20";
 
 //swaps
 import { erc20ToErc20SwapTransaction } from "@/lib/ai/tools/swap-actions/erc20ToErc20SwapTransaction";
+import { erc20ToNativeSwapTransaction } from "@/lib/ai/tools/swap-actions/erc20ToNativeSwapTransaction";
 
 export const maxDuration = 60;
 
@@ -188,6 +189,7 @@ export async function POST(request: Request) {
                   "colendSupplyCore",
                   "colendSupplyErc20",
                   "erc20ToErc20SwapTransaction",
+                  "erc20ToNativeSwapTransaction",
                 ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
@@ -206,6 +208,7 @@ export async function POST(request: Request) {
             colendSupplyCore,
             colendSupplyErc20,
             erc20ToErc20SwapTransaction,
+            erc20ToNativeSwapTransaction,
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,

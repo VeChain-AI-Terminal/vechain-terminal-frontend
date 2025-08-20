@@ -9,7 +9,10 @@ import {
 } from "wagmi";
 import { parseUnits, encodeFunctionData, formatUnits } from "viem";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { MOLTEN_QUOTER, MOLTEN_SWAP_ROUTER } from "@/lib/constants";
+import { CHAIN_ID, MOLTEN_QUOTER, MOLTEN_SWAP_ROUTER } from "@/lib/constants";
+import { FaSpinner } from "react-icons/fa";
+import { CheckCircleFillIcon } from "@/components/icons";
+import Link from "next/link";
 
 const WCORE = "0x191e94fa59739e188dce837f7f6978d84727ad01";
 
@@ -111,26 +114,27 @@ const quoterAbi = [
 
 export default function Erc20ToNativeSwap({
   tokenIn,
+  amount,
 }: {
   tokenIn: `0x${string}`;
+  amount: string;
 }) {
   const { address: from } = useAppKitAccount();
-  const [amountIn, setAmountIn] = useState("");
   const [slippage, setSlippage] = useState("0.5");
 
-  // --- Fetch token metadata (decimals + symbol)
+  // --- Metadata
   const { data: metaData } = useReadContracts({
     allowFailure: true,
     contracts: [
       {
         address: tokenIn,
-        chainId: 1116,
+        chainId: CHAIN_ID,
         abi: erc20MetaAbi,
         functionName: "decimals",
       },
       {
         address: tokenIn,
-        chainId: 1116,
+        chainId: CHAIN_ID,
         abi: erc20MetaAbi,
         functionName: "symbol",
       },
@@ -138,22 +142,18 @@ export default function Erc20ToNativeSwap({
     query: { enabled: !!tokenIn },
   });
 
-  const tokenDecimals = useMemo(() => {
-    const v = metaData?.[0]?.result;
-    return typeof v === "number" ? v : 18; // fallback to 18
-  }, [metaData]);
+  const tokenDecimals = useMemo(
+    () => (typeof metaData?.[0]?.result === "number" ? metaData[0].result : 18),
+    [metaData]
+  );
+  const tokenSymbol = useMemo(
+    () => (typeof metaData?.[1]?.result === "string" ? metaData[1].result : ""),
+    [metaData]
+  );
 
-  const tokenSymbol = useMemo(() => {
-    const v = metaData?.[1]?.result;
-    return typeof v === "string" ? v : undefined;
-  }, [metaData]);
+  const parsedAmount = amount ? parseUnits(amount, tokenDecimals) : 0n;
 
-  // CORE native is 18 decimals
-  const decimalsOut = 18;
-
-  const parsedAmount = amountIn ? parseUnits(amountIn, tokenDecimals) : 0n;
-
-  // --- Quote expected out
+  // --- Quote
   const { data: expectedOutRaw } = useReadContract({
     address: MOLTEN_QUOTER,
     abi: quoterAbi,
@@ -161,12 +161,13 @@ export default function Erc20ToNativeSwap({
     args: [
       { tokenIn, tokenOut: WCORE, amountIn: parsedAmount, limitSqrtPrice: 0n },
     ],
-    chainId: 1116,
-    query: { enabled: !!from && !!amountIn },
+    chainId: CHAIN_ID,
+    query: { enabled: !!from && !!amount },
   });
   const expectedOut = expectedOutRaw as bigint | undefined;
 
   // --- Slippage
+  const decimalsOut = 18;
   const slippageBps = BigInt(Math.floor(parseFloat(slippage) * 100));
   const minOut = expectedOut
     ? (expectedOut * (10000n - slippageBps)) / 10000n
@@ -178,7 +179,7 @@ export default function Erc20ToNativeSwap({
     abi: erc20MetaAbi,
     functionName: "allowance",
     args: from ? [from, MOLTEN_SWAP_ROUTER] : undefined,
-    chainId: 1116,
+    chainId: CHAIN_ID,
     query: { enabled: !!from },
   });
   const allowance = allowanceRaw as bigint | undefined;
@@ -189,9 +190,12 @@ export default function Erc20ToNativeSwap({
   const { writeContract: writeSwap, data: swapHash } = useWriteContract();
 
   const { isLoading: approving, isSuccess: approveSuccess } =
-    useWaitForTransactionReceipt({ hash: approveHash, chainId: 1116 });
-  const { isLoading: swapping, isSuccess: swapSuccess } =
-    useWaitForTransactionReceipt({ hash: swapHash, chainId: 1116 });
+    useWaitForTransactionReceipt({ hash: approveHash, chainId: CHAIN_ID });
+  const {
+    isLoading: swapping,
+    isSuccess: swapSuccess,
+    data: swapReceipt,
+  } = useWaitForTransactionReceipt({ hash: swapHash, chainId: CHAIN_ID });
 
   function handleApprove() {
     if (!from) return;
@@ -204,7 +208,7 @@ export default function Erc20ToNativeSwap({
   }
 
   function handleSwap() {
-    if (!from || !amountIn) return;
+    if (!from || !amount) return;
     const deadline = BigInt(Math.floor(Date.now() / 1000) + 600);
 
     const swapData = encodeFunctionData({
@@ -226,7 +230,7 @@ export default function Erc20ToNativeSwap({
     const unwrapData = encodeFunctionData({
       abi: routerAbi,
       functionName: "unwrapWNativeToken",
-      args: [minOut, from], // ✅ enforce minOut here
+      args: [minOut, from],
     });
 
     writeSwap({
@@ -238,50 +242,96 @@ export default function Erc20ToNativeSwap({
   }
 
   return (
-    <div className="space-y-3 border p-4 rounded">
-      <h2 className="font-semibold">Swap {tokenSymbol ?? "..."} → CORE</h2>
+    <div className="flex flex-col gap-2">
+      <div className="bg-zinc-900 text-white p-4 rounded-2xl shadow-md w-full border border-zinc-700 max-w-lg">
+        <h2 className="text-xl font-semibold mb-4">
+          Swap {tokenSymbol || "…"} → CORE
+        </h2>
 
-      <input
-        type="number"
-        placeholder={`Amount in ${tokenSymbol ?? ""}`}
-        value={amountIn}
-        onChange={(e) => setAmountIn(e.target.value)}
-        className="border rounded px-2 py-1 w-full"
-      />
+        {/* Summary */}
+        <div className="text-sm grid grid-cols-2 gap-y-2 mb-6">
+          <span className="text-gray-400">Amount In</span>
+          <span className="text-right font-medium">
+            {amount} {tokenSymbol}
+          </span>
 
-      {/* Estimations */}
-      {expectedOut !== undefined && (
-        <div className="text-sm text-gray-600">
-          <p>
-            Est. receive ≈{" "}
-            {Number(formatUnits(expectedOut, decimalsOut)).toFixed(3)} CORE
-          </p>
-          <p>
-            Minimum (after slippage {slippage}%):{" "}
-            {Number(formatUnits(minOut, decimalsOut)).toFixed(3)} CORE
-          </p>
+          <span className="text-gray-400">Est. Receive</span>
+          <span className="text-right font-medium">
+            {expectedOut
+              ? Number(formatUnits(expectedOut, decimalsOut)).toFixed(3)
+              : "…"}{" "}
+            CORE
+          </span>
+
+          <span className="text-gray-400">Min (slippage {slippage}%)</span>
+          <span className="text-right font-medium">
+            {minOut ? Number(formatUnits(minOut, decimalsOut)).toFixed(3) : "…"}{" "}
+            CORE
+          </span>
+        </div>
+
+        {/* Action buttons */}
+        {!isApproved ? (
+          <button
+            disabled={approving}
+            onClick={handleApprove}
+            className="flex items-center justify-center gap-2 bg-white text-black py-2 px-4 rounded-md font-medium hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed w-full h-10"
+          >
+            {approving ? (
+              <>
+                <FaSpinner className="animate-spin" />
+                <span>Approving {tokenSymbol}…</span>
+              </>
+            ) : (
+              <>Approve {tokenSymbol}</>
+            )}
+          </button>
+        ) : (
+          <button
+            disabled={swapping || swapSuccess}
+            onClick={handleSwap}
+            className="flex items-center justify-center gap-2 bg-white text-black py-2 px-4 rounded-md font-medium hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed w-full h-10"
+          >
+            {swapping ? (
+              <>
+                <FaSpinner className="animate-spin" />
+                <span>Swapping…</span>
+              </>
+            ) : (
+              <>Swap</>
+            )}
+          </button>
+        )}
+      </div>
+
+      {/* Success card */}
+      {swapSuccess && swapReceipt?.status === "success" && (
+        <div className="bg-zinc-800 rounded-xl p-6 mt-6 flex flex-col items-center text-center border border-green-500 max-w-lg">
+          <div className="text-green-500 mb-3">
+            <CheckCircleFillIcon size={40} />
+          </div>
+          <h3 className="text-xl font-semibold mb-2">Swap Successful</h3>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-lg font-bold">
+              {amount} {tokenSymbol} →{" "}
+              {Number(formatUnits(expectedOut ?? 0n, decimalsOut)).toFixed(3)}{" "}
+              CORE
+            </span>
+          </div>
+          <p className="text-gray-500 text-sm">via Molten Router</p>
+          {swapHash && (
+            <p>
+              <Link
+                href={`https://scan.coredao.org/tx/${swapHash}`}
+                target="_blank"
+                className="underline text-blue-600 text-sm"
+              >
+                View on CoreScan
+              </Link>
+            </p>
+          )}
         </div>
       )}
-
-      {/* Buttons */}
-      {!isApproved && (
-        <button
-          onClick={handleApprove}
-          disabled={approving}
-          className="bg-blue-600 text-white px-3 py-1 rounded"
-        >
-          {approving ? "Approving..." : `Approve ${tokenSymbol ?? ""}`}
-        </button>
-      )}
-      <button
-        onClick={handleSwap}
-        disabled={(!isApproved && !approveSuccess) || swapping}
-        className="bg-green-600 text-white px-3 py-1 rounded ml-2"
-      >
-        {swapping ? "Swapping..." : "Swap"}
-      </button>
-
-      {swapSuccess && <p className="text-green-600">Swap confirmed 🎉</p>}
     </div>
   );
 }
