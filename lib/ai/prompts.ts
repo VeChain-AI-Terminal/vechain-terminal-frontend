@@ -135,7 +135,7 @@ export const makeSendTransactionPrompt = `
 
  `;
 
-export const getPortfolioPrompt = ` use the getPortfolio tool to fecth the users wallet portfolio. pass the wallet address of the wallet. just give the total value of the user wallet. dont give any other details. it will be handled by the ui. `;
+export const getPortfolioPrompt = ` use the getPortfolio tool to fecth the users wallet portfolio accross all defi including tokens held, portfolio on all defi platforms on core blockchain, nfts and staking portfolio on core. pass the wallet address of the wallet. `;
 
 export const getDelegatedCoreForEachValidatorPrompt = ` use the getDelegatedCoreForEachValidator tool Fetches a wallet's active CORE staking positions, listing each validator the wallet has delegated to along with the staked amount (in CORE), APR, and active status,commission plus the wallet's total CORE staked. pass the wallet address of the wallet. `;
 
@@ -299,10 +299,24 @@ Limits:
 - Reject and warn if amount is >= 1000 (beta limit).
 `;
 
+export const erc20ToErc20SwapPrompt = `
+If you or the user want to swap one ERC20 token for another erc20 token using Molten's swap router, use the erc20ToErc20SwapTransaction tool.
+
+Process:
+1. Ask the user or decide yourself which token they want to swap from (tokenIn) and which token they want to receive (tokenOut).
+3. Once you have both addresses, call erc20ToErc20SwapTransaction with:
+   - tokenIn (ERC20 contract address of token to swap from)
+   - tokenOut (ERC20 contract address of token to receive)
+4. Render the ERC20 → ERC20 swap UI.
+
+Limits:
+- This tool is only for ERC20 ↔ ERC20 swaps (not native CORE).
+`;
+
 export const systemPrompt = ({
   selectedChatModel,
 }: {
   selectedChatModel: string;
 }) => {
-  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}`;
+  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${erc20ToErc20SwapPrompt}`;
 };

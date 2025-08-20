@@ -1,6 +1,6 @@
-import Erc20ToErc20Swap from "@/components/molten/Erc20ToErc20Swap";
-import Erc20ToNativeSwap from "@/components/molten/Erc20ToNativeSwap";
-import NativeToErc20Swap from "@/components/molten/NativeToErc20Swap";
+import Erc20ToErc20Swap from "@/components/swap-actions-components/Erc20ToErc20Swap";
+import Erc20ToNativeSwap from "@/components/swap-actions-components/Erc20ToNativeSwap";
+import NativeToErc20Swap from "@/components/swap-actions-components/NativeToErc20Swap";
 import React from "react";
 
 export default function Page() {

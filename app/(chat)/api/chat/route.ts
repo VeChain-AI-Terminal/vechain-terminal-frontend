@@ -57,6 +57,9 @@ import { getColendStats } from "@/lib/ai/tools/colend/get-colend-stats";
 import { colendSupplyCore } from "@/lib/ai/tools/colend/colendSupplyCore";
 import { colendSupplyErc20 } from "@/lib/ai/tools/colend/colendSupplyErc20";
 
+//swaps
+import { erc20ToErc20SwapTransaction } from "@/lib/ai/tools/swap-actions/erc20ToErc20SwapTransaction";
+
 export const maxDuration = 60;
 
 let globalStreamContext: ResumableStreamContext | null = null;
@@ -184,6 +187,7 @@ export async function POST(request: Request) {
                   "getColendStats",
                   "colendSupplyCore",
                   "colendSupplyErc20",
+                  "erc20ToErc20SwapTransaction",
                 ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
@@ -201,6 +205,7 @@ export async function POST(request: Request) {
             getColendStats,
             colendSupplyCore,
             colendSupplyErc20,
+            erc20ToErc20SwapTransaction,
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,

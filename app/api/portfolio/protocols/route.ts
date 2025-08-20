@@ -99,9 +99,12 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
   const address = searchParams.get("address");
+
   if (!address) {
+    console.log("missing address");
     return NextResponse.json({ error: "Missing address" }, { status: 400 });
   }
+  console.log("fetching protocols stats for ", address);
 
   try {
     const complexProtocols = await fetchComplexProtocols(address);

@@ -22,8 +22,6 @@ import TransactionComponent, {
 } from "@/components/TransactionComponent";
 import StakeComponent from "@/components/stake-actions-components/StakeComponent";
 import { PortfolioDataType } from "@/lib/types/portfolio-data";
-import PortfolioTable from "@/components/portfolio/PortfolioTable";
-import { PortfolioData } from "@/lib/ai/tools/getPortfolio";
 import { StakeComponentProps } from "@/lib/ai/tools/core-staking-actions/makeStakeCoreTransaction";
 import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/core-staking-actions/getDelegatedCoreForEachValidator";
 import { getClaimedAndPendingRewards } from "@/lib/ai/tools/core-staking-actions/getClaimedAndPendingRewards";
@@ -31,11 +29,13 @@ import UnDelegateComponent from "@/components/stake-actions-components/UnDelegat
 import TransferComponent from "@/components/stake-actions-components/TransferComponent";
 import { TransferStakedCoreTransactionProps } from "@/lib/ai/tools/core-staking-actions/makeTransferStakedCoreTransaction";
 import ClaimRewardsComponent from "@/components/stake-actions-components/ClaimRewards";
-import ColendSupplyCore from "@/components/colend/colend-supply-core";
+import ColendSupplyCore from "@/components/colend-actions-components/colend-supply-core";
 import { ColendSupplyCoreTxProps } from "@/lib/ai/tools/colend/colendSupplyCore";
 import { ColendSupplyErc20TxProps } from "@/lib/ai/tools/colend/colendSupplyErc20";
-import ColendSupplyErc20 from "@/components/colend/colent-supply-erc20";
-import ColendTable from "@/components/colend/colend-stats-table";
+import ColendSupplyErc20 from "@/components/colend-actions-components/colent-supply-erc20";
+import ColendTable from "@/components/colend-actions-components/colend-stats-table";
+import { Erc20ToErc20SwapTxProps } from "@/lib/ai/tools/swap-actions/erc20ToErc20SwapTransaction";
+import Erc20ToErc20Swap from "@/components/swap-actions-components/Erc20ToErc20Swap";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -231,7 +231,7 @@ const PurePreviewMessage = ({
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId} className="skeleton">
-                      <p>Fetching portfolio...</p>
+                      <p>Looking at your portfolio...</p>
                     </div>
                   );
                 }
@@ -239,33 +239,7 @@ const PurePreviewMessage = ({
                 if (state === "output-available") {
                   const { output } = part;
 
-                  // Make sure output has the right shape
-                  const {
-                    chainId,
-                    walletAddress,
-                    fungibleTokens,
-                    nfts,
-                    totalPortfolioValueUSD,
-                    stakingPortfolio,
-                    totalStakedValue,
-                    totalClaimedValue,
-                    totalPendingValue,
-                  } = output as PortfolioData;
-
-                  return (
-                    <PortfolioTable
-                      key={toolCallId}
-                      chainId={chainId ?? 0}
-                      walletAddress={walletAddress ?? ""}
-                      fungibleTokens={fungibleTokens ?? []}
-                      nfts={nfts ?? []}
-                      totalPortfolioValueUSD={totalPortfolioValueUSD ?? 0}
-                      stakingPortfolio={stakingPortfolio}
-                      totalStakedValue={totalStakedValue}
-                      totalClaimedValue={totalClaimedValue}
-                      totalPendingValue={totalPendingValue}
-                    />
-                  );
+                  return <div key={toolCallId}>Portfolio analysed.</div>;
                 }
               }
 
@@ -541,6 +515,30 @@ const PurePreviewMessage = ({
                   const tx = output as ColendSupplyErc20TxProps; // from your supplyCore tool
                   // console.log(" ts in supply ---", tx);
                   return <ColendSupplyErc20 tx={tx} key={toolCallId} />;
+                }
+              }
+
+              if (type === "tool-erc20ToErc20SwapTransaction") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId} className="skeleton">
+                      <p>Preparing swap transaction...</p>
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+                  const tx = output as Erc20ToErc20SwapTxProps;
+                  return (
+                    <Erc20ToErc20Swap
+                      key={toolCallId}
+                      tokenIn={tx.tokenIn as `0x${string}`}
+                      tokenOut={tx.tokenOut as `0x${string}`}
+                      amount={tx.amount as string}
+                    />
+                  );
                 }
               }
             })}
