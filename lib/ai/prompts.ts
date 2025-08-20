@@ -303,7 +303,7 @@ export const erc20ToErc20SwapPrompt = `
 If you or the user want to swap one ERC20 token for another erc20 token using Molten's swap router, use the erc20ToErc20SwapTransaction tool.
 
 Process:
-1. Ask the user or decide yourself which token they want to swap from (tokenIn) and which token they want to receive (tokenOut).
+1. determine which token they want to swap from (tokenIn) and which token they want to receive (tokenOut).
 3. Once you have both addresses, call erc20ToErc20SwapTransaction with:
    - tokenIn (ERC20 contract address of token to swap from)
    - tokenOut (ERC20 contract address of token to receive)
@@ -320,7 +320,7 @@ export const erc20ToNativeSwapPrompt = `
 If you or the user wants to swap an ERC20 token into the native CORE token, use the erc20ToNativeSwapTransaction tool.
 
 Process:
-1. Ask the user for:
+1. determine:
    - Which ERC20 token they want to swap (tokenIn address).
    - The amount they want to swap (human-readable).
 3. Once you have both, call erc20ToNativeSwapTransaction with:
@@ -334,10 +334,28 @@ Limits:
 - If amount ≥ 1000, warn the user and reject.
 `;
 
+export const nativeToErc20SwapPrompt = `
+If the user wants to swap native CORE into an ERC20 token, use the nativeToErc20SwapTransaction tool.
+
+Process:
+1. determine:
+   - The ERC20 token they want to receive (tokenOut address).
+   - The amount of CORE they want to swap (human-readable string).
+3. Once you have both, call nativeToErc20SwapTransaction with:
+   - tokenOut (ERC20 address of the desired token)
+   - amount (string, e.g., "2.75")
+4. Render the CORE → ERC20 swap UI.
+
+Limits:
+- This tool is only for CORE → ERC20 swaps.
+- Do not allow or suggest swaps ≥ 1000 CORE (beta safety).
+- If amount ≥ 1000, warn the user and reject.
+`;
+
 export const systemPrompt = ({
   selectedChatModel,
 }: {
   selectedChatModel: string;
 }) => {
-  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${erc20ToErc20SwapPrompt}\n\n${erc20ToNativeSwapPrompt}`;
+  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${erc20ToErc20SwapPrompt}\n\n${erc20ToNativeSwapPrompt}\n\n${nativeToErc20SwapPrompt}`;
 };

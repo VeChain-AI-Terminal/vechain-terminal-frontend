@@ -12,10 +12,14 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import { FaSpinner } from "react-icons/fa";
 import { CheckCircleFillIcon } from "@/components/icons";
 import Link from "next/link";
+import {
+  MOLTEN_QUOTER,
+  MOLTEN_SWAP_ROUTER,
+  WCORE_TOKEN_ADDRESS,
+} from "@/lib/constants";
 
-const SWAP_ROUTER = "0x832933BA44658C50ae6152039Cd30A6f4C2432b1";
-const WCORE = "0x191e94fa59739e188dce837f7f6978d84727ad01";
-const QUOTER_V2 = "0x20dA24b5FaC067930Ced329A3457298172510Fe7";
+// --- Slippage tolerance (0.5%)
+const SLIPPAGE_BPS = 50; // 50 basis points = 0.5%
 
 const erc20MetaAbi = [
   {
@@ -107,6 +111,7 @@ export default function NativeToErc20Swap({
   tokenOut: `0x${string}`;
   amount: string;
 }) {
+  console.log("amojtn for native to erc20 --- ", amount);
   const { address } = useAppKitAccount();
   const {
     writeContract,
@@ -148,24 +153,32 @@ export default function NativeToErc20Swap({
 
   // --- Quoter for expected output
   const { data: quoteResult } = useReadContract({
-    address: QUOTER_V2,
+    address: MOLTEN_QUOTER,
     abi: quoterV2Abi,
     functionName: "quoteExactInputSingle",
     args: [
       {
-        tokenIn: WCORE,
+        tokenIn: WCORE_TOKEN_ADDRESS,
         tokenOut: tokenOut,
         amountIn: amountInWei,
         limitSqrtPrice: 0n,
       },
     ],
     query: { enabled: !!tokenOut && amountInWei > 0n },
-  });
+  }) as { data: any | undefined };
+
+  console.log("quoter resute --- ", quoteResult);
 
   const expectedOut = useMemo(() => {
     if (!quoteResult) return null;
     return quoteResult[0] as bigint; // amountOut
   }, [quoteResult]);
+
+  // --- Apply slippage
+  const minAmountOut = useMemo(() => {
+    if (!expectedOut) return 0n;
+    return (expectedOut * BigInt(10000 - SLIPPAGE_BPS)) / 10000n;
+  }, [expectedOut]);
 
   const handleSwap = async () => {
     if (!amount) return;
@@ -175,19 +188,19 @@ export default function NativeToErc20Swap({
       functionName: "exactInputSingle",
       args: [
         {
-          tokenIn: WCORE,
+          tokenIn: WCORE_TOKEN_ADDRESS,
           tokenOut: tokenOut,
           recipient: address,
           deadline: Math.floor(Date.now() / 1000) + 600,
           amountIn: amountInWei,
-          amountOutMinimum: 0n,
+          amountOutMinimum: minAmountOut,
           limitSqrtPrice: 0n,
         },
       ],
     });
 
     writeContract({
-      address: SWAP_ROUTER,
+      address: MOLTEN_SWAP_ROUTER,
       abi: swapRouterAbi,
       functionName: "multicall",
       args: [[swapData]],
@@ -215,6 +228,14 @@ export default function NativeToErc20Swap({
           <span className="text-right font-medium">
             {expectedOut
               ? Number(formatUnits(expectedOut, decimalsOut)).toFixed(3)
+              : "…"}{" "}
+            {symbolOut}
+          </span>
+
+          <span className="text-gray-400">Min. Receive (0.5% slip)</span>
+          <span className="text-right font-medium">
+            {minAmountOut
+              ? Number(formatUnits(minAmountOut, decimalsOut)).toFixed(3)
               : "…"}{" "}
             {symbolOut}
           </span>

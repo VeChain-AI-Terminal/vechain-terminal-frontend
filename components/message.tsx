@@ -38,6 +38,8 @@ import { Erc20ToErc20SwapTxProps } from "@/lib/ai/tools/swap-actions/erc20ToErc2
 import Erc20ToErc20Swap from "@/components/swap-actions-components/Erc20ToErc20Swap";
 import { Erc20ToNativeSwapTxProps } from "@/lib/ai/tools/swap-actions/erc20ToNativeSwapTransaction";
 import Erc20ToNativeSwap from "@/components/swap-actions-components/Erc20ToNativeSwap";
+import { NativeToErc20SwapTxProps } from "@/lib/ai/tools/swap-actions/nativeToErc20SwapTransaction";
+import NativeToErc20Swap from "@/components/swap-actions-components/NativeToErc20Swap";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -561,6 +563,29 @@ const PurePreviewMessage = ({
                     <Erc20ToNativeSwap
                       key={toolCallId}
                       tokenIn={tx.tokenIn as `0x${string}`}
+                      amount={tx.amount}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-nativeToErc20SwapTransaction") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId} className="skeleton">
+                      <p>Preparing CORE → ERC20 swap transaction...</p>
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+                  const tx = output as NativeToErc20SwapTxProps;
+                  return (
+                    <NativeToErc20Swap
+                      key={toolCallId}
+                      tokenOut={tx.tokenOut as `0x${string}`}
                       amount={tx.amount}
                     />
                   );
