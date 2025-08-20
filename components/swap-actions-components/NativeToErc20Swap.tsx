@@ -1,107 +1,270 @@
 "use client";
 
-import React, { useState } from "react";
-import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
-import { parseEther } from "viem";
+import React, { useMemo } from "react";
+import {
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useReadContracts,
+  useReadContract,
+} from "wagmi";
+import { parseEther, formatUnits, encodeFunctionData } from "viem";
 import { useAppKitAccount } from "@reown/appkit/react";
+import { FaSpinner } from "react-icons/fa";
+import { CheckCircleFillIcon } from "@/components/icons";
+import Link from "next/link";
 
-// Molten contracts
 const SWAP_ROUTER = "0x832933BA44658C50ae6152039Cd30A6f4C2432b1";
-const WCORE = "0x40375c92d9faf44d2f9db9bd9ba41a3317a2404f"; // <-- replace with actual WCORE address
+const WCORE = "0x191e94fa59739e188dce837f7f6978d84727ad01";
+const QUOTER_V2 = "0x20dA24b5FaC067930Ced329A3457298172510Fe7";
 
-const swapRouterAbi = [
+const erc20MetaAbi = [
   {
-    inputs: [
-      {
-        components: [
-          { internalType: "address", name: "tokenIn", type: "address" },
-          { internalType: "address", name: "tokenOut", type: "address" },
-          { internalType: "uint24", name: "fee", type: "uint24" },
-          { internalType: "address", name: "recipient", type: "address" },
-          { internalType: "uint256", name: "deadline", type: "uint256" },
-          { internalType: "uint256", name: "amountIn", type: "uint256" },
-          {
-            internalType: "uint256",
-            name: "amountOutMinimum",
-            type: "uint256",
-          },
-          { internalType: "uint160", name: "limitSqrtPrice", type: "uint160" },
-        ],
-        internalType: "struct ISwapRouter.ExactInputSingleParams",
-        name: "params",
-        type: "tuple",
-      },
-    ],
-    name: "exactInputSingle",
-    outputs: [{ internalType: "uint256", name: "amountOut", type: "uint256" }],
-    stateMutability: "payable",
     type: "function",
+    name: "decimals",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint8" }],
+  },
+  {
+    type: "function",
+    name: "symbol",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "string" }],
+  },
+  {
+    type: "function",
+    name: "name",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "string" }],
   },
 ];
 
-export default function CoreToUSDC({ tokenOut }: { tokenOut: `0x${string}` }) {
-  const { address } = useAppKitAccount();
-  const { writeContract, data: hash, isPending } = useWriteContract();
-  const [amount, setAmount] = useState("");
+const swapRouterAbi = [
+  {
+    type: "function",
+    name: "exactInputSingle",
+    stateMutability: "payable",
+    inputs: [
+      {
+        name: "params",
+        type: "tuple",
+        components: [
+          { name: "tokenIn", type: "address" },
+          { name: "tokenOut", type: "address" },
+          { name: "recipient", type: "address" },
+          { name: "deadline", type: "uint256" },
+          { name: "amountIn", type: "uint256" },
+          { name: "amountOutMinimum", type: "uint256" },
+          { name: "limitSqrtPrice", type: "uint160" },
+        ],
+      },
+    ],
+    outputs: [{ name: "amountOut", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "multicall",
+    stateMutability: "payable",
+    inputs: [{ name: "data", type: "bytes[]" }],
+    outputs: [{ name: "results", type: "bytes[]" }],
+  },
+];
 
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
-    hash,
+const quoterV2Abi = [
+  {
+    type: "function",
+    name: "quoteExactInputSingle",
+    stateMutability: "nonpayable",
+    inputs: [
+      {
+        name: "params",
+        type: "tuple",
+        components: [
+          { name: "tokenIn", type: "address" },
+          { name: "tokenOut", type: "address" },
+          { name: "amountIn", type: "uint256" },
+          { name: "limitSqrtPrice", type: "uint160" },
+        ],
+      },
+    ],
+    outputs: [
+      { name: "amountOut", type: "uint256" },
+      { name: "amountIn", type: "uint256" },
+      { name: "sqrtPriceX96After", type: "uint160" },
+      { name: "initializedTicksCrossed", type: "uint32" },
+      { name: "gasEstimate", type: "uint256" },
+      { name: "fee", type: "uint16" },
+    ],
+  },
+];
+
+export default function NativeToErc20Swap({
+  tokenOut,
+  amount,
+}: {
+  tokenOut: `0x${string}`;
+  amount: string;
+}) {
+  const { address } = useAppKitAccount();
+  const {
+    writeContract,
+    data: swapHash,
+    isPending: swapping,
+    error: writeError,
+  } = useWriteContract();
+  const { isSuccess: swapSuccess, data: swapReceipt } =
+    useWaitForTransactionReceipt({ hash: swapHash });
+
+  const amountInWei = amount ? parseEther(amount) : 0n;
+
+  // --- Metadata for tokenOut
+  const { data: tokenMeta } = useReadContracts({
+    allowFailure: true,
+    contracts: [
+      { address: tokenOut, abi: erc20MetaAbi, functionName: "decimals" },
+      { address: tokenOut, abi: erc20MetaAbi, functionName: "symbol" },
+      { address: tokenOut, abi: erc20MetaAbi, functionName: "name" },
+    ],
+    query: { enabled: !!tokenOut },
   });
 
-  const handleSwap = () => {
+  const decimalsOut = useMemo(
+    () =>
+      typeof tokenMeta?.[0]?.result === "number" ? tokenMeta[0].result : 18,
+    [tokenMeta]
+  );
+  const symbolOut = useMemo(
+    () =>
+      typeof tokenMeta?.[1]?.result === "string" ? tokenMeta[1].result : "",
+    [tokenMeta]
+  );
+  const nameOut = useMemo(
+    () =>
+      typeof tokenMeta?.[2]?.result === "string" ? tokenMeta[2].result : "",
+    [tokenMeta]
+  );
+
+  // --- Quoter for expected output
+  const { data: quoteResult } = useReadContract({
+    address: QUOTER_V2,
+    abi: quoterV2Abi,
+    functionName: "quoteExactInputSingle",
+    args: [
+      {
+        tokenIn: WCORE,
+        tokenOut: tokenOut,
+        amountIn: amountInWei,
+        limitSqrtPrice: 0n,
+      },
+    ],
+    query: { enabled: !!tokenOut && amountInWei > 0n },
+  });
+
+  const expectedOut = useMemo(() => {
+    if (!quoteResult) return null;
+    return quoteResult[0] as bigint; // amountOut
+  }, [quoteResult]);
+
+  const handleSwap = async () => {
     if (!amount) return;
 
-    const amountIn = parseEther(amount);
-
-    // Path = CORE (wrapped to WCORE) → USDC
-    const path = encodePackedPath([WCORE, tokenOut]);
-
-    writeContract({
-      address: SWAP_ROUTER,
+    const swapData = encodeFunctionData({
       abi: swapRouterAbi,
       functionName: "exactInputSingle",
       args: [
         {
           tokenIn: WCORE,
           tokenOut: tokenOut,
-          fee: 500, // 0.05% pool fee tier
           recipient: address,
           deadline: Math.floor(Date.now() / 1000) + 600,
-          amountIn,
-          amountOutMinimum: 0, // should use quoter for safety
-          limitSqrtPrice: 0,
+          amountIn: amountInWei,
+          amountOutMinimum: 0n,
+          limitSqrtPrice: 0n,
         },
       ],
-      value: amountIn, // pay CORE, router wraps it
+    });
+
+    writeContract({
+      address: SWAP_ROUTER,
+      abi: swapRouterAbi,
+      functionName: "multicall",
+      args: [[swapData]],
+      value: amountInWei,
     });
   };
 
-  // Utility to encode packed path
-  function encodePackedPath(tokens: string[]): `0x${string}` {
-    return ("0x" +
-      tokens.map((t) => t.slice(2).toLowerCase()).join("")) as `0x${string}`;
-  }
+  const symbolIn = "CORE";
 
   return (
-    <div className="p-4 space-y-4 border rounded-lg">
-      <h2 className="text-lg font-semibold">Swap CORE → USDC</h2>
-      <input
-        type="text"
-        placeholder="Amount in CORE"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        className="w-full p-2 border rounded"
-      />
-      <button
-        onClick={handleSwap}
-        disabled={isPending}
-        className="px-4 py-2 bg-orange-600 text-white rounded"
-      >
-        {isPending ? "Confirming…" : "Swap"}
-      </button>
+    <div className="flex flex-col gap-2">
+      <div className="bg-zinc-900 text-white p-4 rounded-2xl shadow-md w-full border border-zinc-700 max-w-lg">
+        <h2 className="text-xl font-semibold mb-4">
+          Swap {symbolIn} → {symbolOut || "…"}
+        </h2>
 
-      {isConfirming && <p>Waiting for confirmation…</p>}
-      {isSuccess && <p>✅ Swap confirmed!</p>}
+        {/* Swap summary */}
+        <div className="text-sm grid grid-cols-2 gap-y-2 mb-6">
+          <span className="text-gray-400">Amount In</span>
+          <span className="text-right font-medium">
+            {amount} {symbolIn}
+          </span>
+
+          <span className="text-gray-400">Est. Receive</span>
+          <span className="text-right font-medium">
+            {expectedOut
+              ? Number(formatUnits(expectedOut, decimalsOut)).toFixed(3)
+              : "…"}{" "}
+            {symbolOut}
+          </span>
+        </div>
+
+        {/* Action button */}
+        <button
+          disabled={swapping || swapSuccess}
+          onClick={handleSwap}
+          className="flex items-center justify-center gap-2 bg-white text-black py-2 px-4 rounded-md font-medium hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed w-full h-10"
+        >
+          {swapping ? (
+            <>
+              <FaSpinner className="animate-spin" />
+              <span>Swapping…</span>
+            </>
+          ) : (
+            <>Swap</>
+          )}
+        </button>
+      </div>
+
+      {/* Success card */}
+      {swapSuccess && swapReceipt?.status === "success" && (
+        <div className="bg-zinc-800 rounded-xl p-6 mt-6 flex flex-col items-center text-center border border-green-500 max-w-lg">
+          <div className="text-green-500 mb-3">
+            <CheckCircleFillIcon size={40} />
+          </div>
+          <h3 className="text-xl font-semibold mb-2">Swap Successful</h3>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-lg font-bold">
+              {amount} {symbolIn} →{" "}
+              {Number(formatUnits(expectedOut ?? 0n, decimalsOut)).toFixed(3)}{" "}
+              {symbolOut}
+            </span>
+          </div>
+          <p className="text-gray-500 text-sm">via Molten Router</p>
+          {swapHash && (
+            <p>
+              <Link
+                href={`https://scan.coredao.org/tx/${swapHash}`}
+                target="_blank"
+                className="underline text-blue-600 text-sm"
+              >
+                View on CoreScan
+              </Link>
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
