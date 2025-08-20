@@ -48,6 +48,9 @@ import { makeUnDelegateCoreTransaction } from "@/lib/ai/tools/core-staking-actio
 import { makeClaimRewardsTransaction } from "@/lib/ai/tools/core-staking-actions/makeClaimRewardsTransaction";
 import { makeTransferStakedCoreTransaction } from "@/lib/ai/tools/core-staking-actions/makeTransferStakedCoreTransaction";
 
+// chain info
+import { getTokenAddresses } from "@/lib/ai/tools/getTokenAddresses";
+
 //portfolio
 import { getPortfolio } from "@/lib/ai/tools/getPortfolio";
 import { getUserWalletInfo } from "@/lib/ai/tools/getUserWalletInfo";
@@ -183,6 +186,7 @@ export async function POST(request: Request) {
                   "makeUnDelegateCoreTransaction",
                   "makeClaimRewardsTransaction",
                   "makeTransferStakedCoreTransaction",
+                  "getTokenAddresses",
                   "getPortfolio",
                   "ensToAddress",
                   "getUserWalletInfo",
@@ -203,6 +207,7 @@ export async function POST(request: Request) {
             makeUnDelegateCoreTransaction,
             makeClaimRewardsTransaction,
             makeTransferStakedCoreTransaction,
+            getTokenAddresses,
             getPortfolio,
             ensToAddress,
             getUserWalletInfo,

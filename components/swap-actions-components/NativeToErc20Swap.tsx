@@ -111,7 +111,7 @@ export default function NativeToErc20Swap({
   tokenOut: `0x${string}`;
   amount: string;
 }) {
-  console.log("amojtn for native to erc20 --- ", amount);
+  // console.log("amojtn for native to erc20 --- ", amount);
   const { address } = useAppKitAccount();
   const {
     writeContract,
@@ -167,7 +167,7 @@ export default function NativeToErc20Swap({
     query: { enabled: !!tokenOut && amountInWei > 0n },
   }) as { data: any | undefined };
 
-  console.log("quoter resute --- ", quoteResult);
+  // console.log("quoter resute --- ", quoteResult);
 
   const expectedOut = useMemo(() => {
     if (!quoteResult) return null;

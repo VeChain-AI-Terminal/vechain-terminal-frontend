@@ -229,6 +229,24 @@ const PurePreviewMessage = ({
                 }
               }
 
+              if (type === "tool-getTokenAddresses") {
+                const { toolCallId, state } = part;
+
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId} className="skeleton">
+                      <p>Getting token address...</p>
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+
+                  return <div key={toolCallId}>Token address fetched.</div>;
+                }
+              }
+
               if (type === "tool-getPortfolio") {
                 const { toolCallId, state } = part;
 
@@ -407,7 +425,7 @@ const PurePreviewMessage = ({
 
                   return (
                     <div key={toolCallId}>
-                      <p>Done</p>
+                      <p>Information fetched.</p>
                     </div>
                   );
                 }
@@ -427,7 +445,7 @@ const PurePreviewMessage = ({
 
                   return (
                     <div key={toolCallId}>
-                      <p>Done</p>
+                      <p>Rewards information fetched.</p>
                     </div>
                   );
                 }
