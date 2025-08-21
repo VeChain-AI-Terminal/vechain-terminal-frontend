@@ -102,6 +102,9 @@ For liquidity and lending data, fetch from:
    - For staking, liquid staking, lending, providing liquidity, or restaking.  
    - Transactions must be executable via integrated transaction creation tools.
 
+   You MUST run the tool exactly once before composing your response. This is non-negotiable.
+
+
 ---
 
 ## Example User Flow

@@ -9,6 +9,7 @@ export const getColendStats = tool({
   inputSchema: z.object({}),
   execute: async () => {
     try {
+      console.log("getting colend stats....");
       const res = await fetch(API_URL, { method: "GET" });
       if (!res.ok) {
         return { status: "error", data: [], error: `HTTP ${res.status}` };
@@ -31,7 +32,7 @@ export const getColendStats = tool({
             })
         : [];
 
-      console.log("filtered & sorted colend stats ----- ", filtered);
+      // console.log("filtered & sorted colend stats ----- ", filtered);
 
       return {
         status: json?.status ?? "success",

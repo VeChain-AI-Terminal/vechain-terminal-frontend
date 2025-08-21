@@ -174,6 +174,8 @@ export async function POST(request: Request) {
           system: systemPrompt({ selectedChatModel }),
           messages: convertToModelMessages(uiMessages),
           stopWhen: stepCountIs(10),
+
+          toolChoice: "auto",
           experimental_activeTools:
             selectedChatModel === "chat-model-reasoning"
               ? []
