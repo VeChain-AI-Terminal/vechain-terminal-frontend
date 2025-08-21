@@ -253,6 +253,7 @@ The tool returns a JSON object containing:
 
 Use this tool when you need up-to-date lending and borrowing statistics for the Core chain from Colend.
 You do not need to provide any filtering parameters — filtering by chain is handled internally.
+Show only the relevant data in form of table
 `;
 
 export const colendSupplyCorePrompt = `

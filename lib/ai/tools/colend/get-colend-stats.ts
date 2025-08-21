@@ -5,7 +5,7 @@ const API_URL = "https://yields.llama.fi/pools";
 
 export const getColendStats = tool({
   description:
-    "Fetch Colend protocol defi stats like tvlUsd, apy, apyReward, etc., filtered for Core chain and sorted by APY (highest first).",
+    "Fetch Colend protocol defi stats like tvlUsd, apy, apyReward, etc., filtered for Core chain and sorted by APY (highest first), then TVL (highest first).",
   inputSchema: z.object({}),
   execute: async () => {
     try {
@@ -24,7 +24,11 @@ export const getColendStats = tool({
                 item.chain.toLowerCase() === "core" &&
                 item.project === "colend-protocol"
             )
-            .sort((a: any, b: any) => (b.apy ?? 0) - (a.apy ?? 0))
+            .sort((a: any, b: any) => {
+              const apyDiff = (b.apy ?? 0) - (a.apy ?? 0);
+              if (apyDiff !== 0) return apyDiff;
+              return (b.tvlUsd ?? 0) - (a.tvlUsd ?? 0);
+            })
         : [];
 
       console.log("filtered & sorted colend stats ----- ", filtered);

@@ -33,13 +33,14 @@ import ColendSupplyCore from "@/components/colend-actions-components/colend-supp
 import { ColendSupplyCoreTxProps } from "@/lib/ai/tools/colend/colendSupplyCore";
 import { ColendSupplyErc20TxProps } from "@/lib/ai/tools/colend/colendSupplyErc20";
 import ColendSupplyErc20 from "@/components/colend-actions-components/colent-supply-erc20";
-import ColendTable from "@/components/colend-actions-components/colend-stats-table";
+// import ColendTable from "@/components/colend-actions-components/colend-stats-table";
 import { Erc20ToErc20SwapTxProps } from "@/lib/ai/tools/swap-actions/erc20ToErc20SwapTransaction";
 import Erc20ToErc20Swap from "@/components/swap-actions-components/Erc20ToErc20Swap";
 import { Erc20ToNativeSwapTxProps } from "@/lib/ai/tools/swap-actions/erc20ToNativeSwapTransaction";
 import Erc20ToNativeSwap from "@/components/swap-actions-components/Erc20ToNativeSwap";
 import { NativeToErc20SwapTxProps } from "@/lib/ai/tools/swap-actions/nativeToErc20SwapTransaction";
 import NativeToErc20Swap from "@/components/swap-actions-components/NativeToErc20Swap";
+import ToolCallLoader from "@/components/tool-call-loader";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -190,8 +191,8 @@ const PurePreviewMessage = ({
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Getting your wallet info...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Getting your wallet info..." />
                     </div>
                   );
                 }
@@ -201,8 +202,8 @@ const PurePreviewMessage = ({
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Making transaction...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Making transaction..." />
                     </div>
                   );
                 }
@@ -234,16 +235,21 @@ const PurePreviewMessage = ({
 
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Getting token address...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Getting token address..." />
                     </div>
                   );
                 }
 
                 if (state === "output-available") {
-                  const { output } = part;
-
-                  return <div key={toolCallId}>Token address fetched.</div>;
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader
+                        loadingMessage="Token address fetched."
+                        isFinished
+                      />
+                    </div>
+                  );
                 }
               }
 
@@ -252,16 +258,21 @@ const PurePreviewMessage = ({
 
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Looking at your portfolio...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Looking at your portfolio..." />
                     </div>
                   );
                 }
 
                 if (state === "output-available") {
-                  const { output } = part;
-
-                  return <div key={toolCallId}>Portfolio analysed.</div>;
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader
+                        loadingMessage="Portfolio analysed."
+                        isFinished
+                      />
+                    </div>
+                  );
                 }
               }
 
@@ -269,8 +280,8 @@ const PurePreviewMessage = ({
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Making stake transaction...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Making stake transaction..." />
                     </div>
                   );
                 }
@@ -299,8 +310,8 @@ const PurePreviewMessage = ({
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Making un-delegate stake transaction...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Making un-delegate stake transaction..." />
                     </div>
                   );
                 }
@@ -324,12 +335,13 @@ const PurePreviewMessage = ({
                   );
                 }
               }
+
               if (type === "tool-makeClaimRewardsTransaction") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Making claim rewards transaction...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Making claim rewards transaction..." />
                     </div>
                   );
                 }
@@ -358,8 +370,8 @@ const PurePreviewMessage = ({
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Making transfer stake transaction...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Making transfer stake transaction..." />
                     </div>
                   );
                 }
@@ -393,18 +405,19 @@ const PurePreviewMessage = ({
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Getting validators...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Getting validators..." />
                     </div>
                   );
                 }
 
                 if (state === "output-available") {
-                  const { output } = part;
-
                   return (
                     <div key={toolCallId}>
-                      <p>Validators fetched</p>
+                      <ToolCallLoader
+                        loadingMessage="Validators fetched"
+                        isFinished
+                      />
                     </div>
                   );
                 }
@@ -412,40 +425,45 @@ const PurePreviewMessage = ({
 
               if (type === "tool-getDelegatedCoreForEachValidator") {
                 const { toolCallId, state } = part;
+
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Looking up your staked CORE across validators...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Looking up your staked CORE across validators..." />
                     </div>
                   );
                 }
 
                 if (state === "output-available") {
-                  const { output } = part;
-
                   return (
                     <div key={toolCallId}>
-                      <p>Information fetched.</p>
+                      <ToolCallLoader
+                        loadingMessage="Information fetched."
+                        isFinished
+                      />
                     </div>
                   );
                 }
               }
+
               if (type === "tool-getClaimedAndPendingRewards") {
                 const { toolCallId, state } = part;
+
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Looking up your rewards across validators...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Looking up your rewards across validators..." />
                     </div>
                   );
                 }
 
                 if (state === "output-available") {
-                  const { output } = part;
-
                   return (
                     <div key={toolCallId}>
-                      <p>Rewards information fetched.</p>
+                      <ToolCallLoader
+                        loadingMessage="Rewards information fetched."
+                        isFinished
+                      />
                     </div>
                   );
                 }
@@ -453,20 +471,22 @@ const PurePreviewMessage = ({
 
               if (type === "tool-ensToAddress") {
                 const { toolCallId, state } = part;
+
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Getting address...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Getting address..." />
                     </div>
                   );
                 }
 
                 if (state === "output-available") {
-                  const { output } = part;
-
                   return (
                     <div key={toolCallId}>
-                      <p>Address fetched</p>
+                      <ToolCallLoader
+                        loadingMessage="Address fetched"
+                        isFinished
+                      />
                     </div>
                   );
                 }
@@ -474,32 +494,23 @@ const PurePreviewMessage = ({
 
               if (type === "tool-getColendStats") {
                 const { toolCallId, state } = part;
+
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Fetching defi stats from colend protocol...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Fetching defi stats from colend protocol..." />
                     </div>
                   );
                 }
 
                 if (state === "output-available") {
-                  const { output } = part as any; // output.data is the array
                   return (
-                    <ColendTable
-                      key={toolCallId}
-                      data={output.data.map((item: any) => ({
-                        symbol: item.symbol,
-                        poolMeta: item.poolMeta,
-                        project: item.project,
-                        tvlUsd: item.tvlUsd,
-                        apy: item.apy,
-                        apyBase: item.apyBase,
-                        apyReward: item.apyReward,
-                        apyMean30d: item.apyMean30d,
-                        apyPct1D: item.apyPct1D,
-                        apyPct7D: item.apyPct7D,
-                      }))}
-                    />
+                    <div key={toolCallId}>
+                      <ToolCallLoader
+                        loadingMessage="DeFi stats fetched from colend protocol."
+                        isFinished
+                      />
+                    </div>
                   );
                 }
               }
@@ -508,16 +519,15 @@ const PurePreviewMessage = ({
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Making supply core transaction on colend...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Making supply core transaction on colend..." />
                     </div>
                   );
                 }
 
                 if (state === "output-available") {
                   const { output } = part;
-                  const tx = output as ColendSupplyCoreTxProps; // from your supplyCore tool
-                  // console.log(" ts in supply ---", tx);
+                  const tx = output as ColendSupplyCoreTxProps;
                   return <ColendSupplyCore tx={tx} key={toolCallId} />;
                 }
               }
@@ -526,16 +536,15 @@ const PurePreviewMessage = ({
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Making supply token transaction on colend...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Making supply token transaction on colend..." />
                     </div>
                   );
                 }
 
                 if (state === "output-available") {
                   const { output } = part;
-                  const tx = output as ColendSupplyErc20TxProps; // from your supplyCore tool
-                  // console.log(" ts in supply ---", tx);
+                  const tx = output as ColendSupplyErc20TxProps;
                   return <ColendSupplyErc20 tx={tx} key={toolCallId} />;
                 }
               }
@@ -544,8 +553,8 @@ const PurePreviewMessage = ({
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Preparing swap transaction...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Preparing swap transaction..." />
                     </div>
                   );
                 }
@@ -568,8 +577,8 @@ const PurePreviewMessage = ({
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Preparing ERC20 → CORE swap transaction...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Preparing ERC20 → CORE swap transaction..." />
                     </div>
                   );
                 }
@@ -591,8 +600,8 @@ const PurePreviewMessage = ({
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
-                    <div key={toolCallId} className="skeleton">
-                      <p>Preparing CORE → ERC20 swap transaction...</p>
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Preparing CORE → ERC20 swap transaction..." />
                     </div>
                   );
                 }

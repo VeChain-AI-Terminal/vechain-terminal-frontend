@@ -9,7 +9,7 @@ import {
 } from "wagmi";
 import { parseUnits, encodeFunctionData, formatUnits } from "viem";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { CHAIN_ID, MOLTEN_QUOTER, MOLTEN_SWAP_ROUTER } from "@/lib/constants";
+import { MOLTEN_QUOTER, MOLTEN_SWAP_ROUTER } from "@/lib/constants";
 import { FaSpinner } from "react-icons/fa";
 import { CheckCircleFillIcon } from "@/components/icons";
 import Link from "next/link";
@@ -149,7 +149,7 @@ export default function Erc20ToErc20Swap({
     abi: quoterAbi,
     functionName: "quoteExactInputSingle",
     args: [{ tokenIn, tokenOut, amountIn: parsedAmount, limitSqrtPrice: 0n }],
-    chainId: CHAIN_ID,
+    chainId: 1116,
     query: { enabled: !!from && !!amount },
   });
   const expectedOut = expectedOutRaw as bigint | undefined;
@@ -161,7 +161,7 @@ export default function Erc20ToErc20Swap({
     abi: erc20MetaAbi,
     functionName: "allowance",
     args: from ? [from, MOLTEN_SWAP_ROUTER] : undefined,
-    chainId: CHAIN_ID,
+    chainId: 1116,
     query: { enabled: !!from },
   });
   const allowance = allowanceRaw as bigint | undefined;
@@ -172,12 +172,12 @@ export default function Erc20ToErc20Swap({
   const { writeContract: writeSwap, data: swapHash } = useWriteContract();
 
   const { isLoading: approving, isSuccess: approveSuccess } =
-    useWaitForTransactionReceipt({ hash: approveHash, chainId: CHAIN_ID });
+    useWaitForTransactionReceipt({ hash: approveHash, chainId: 1116 });
   const {
     isLoading: swapping,
     isSuccess: swapSuccess,
     data: swapReceipt,
-  } = useWaitForTransactionReceipt({ hash: swapHash, chainId: CHAIN_ID });
+  } = useWaitForTransactionReceipt({ hash: swapHash, chainId: 1116 });
 
   function handleApprove() {
     if (!from) return;
@@ -257,7 +257,7 @@ export default function Erc20ToErc20Swap({
           </button>
         ) : (
           <button
-            disabled={swapping || swapSuccess}
+            disabled={swapping}
             onClick={handleSwap}
             className="flex items-center justify-center gap-2 bg-white text-black py-2 px-4 rounded-md font-medium hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed w-full h-10"
           >
