@@ -43,6 +43,8 @@ import NativeToErc20Swap from "@/components/swap-actions-components/NativeToErc2
 import ToolCallLoader from "@/components/tool-call-loader";
 import ColendWithdrawErc20 from "@/components/colend-actions-components/colend-withdraw-erc20";
 import { ColendWithdrawErc20TxProps } from "@/lib/ai/tools/colend/colendWithdrawErc20";
+import ColendWithdrawCore from "@/components/colend-actions-components/colend-withdraw-core";
+import { ColendWithdrawCoreTxProps } from "@/lib/ai/tools/colend/colendWithdrawCore";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -565,6 +567,23 @@ const PurePreviewMessage = ({
                   const { output } = part;
                   const tx = output as ColendWithdrawErc20TxProps;
                   return <ColendWithdrawErc20 tx={tx} key={toolCallId} />;
+                }
+              }
+
+              if (type === "tool-colendWithdrawCore") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Making supply token transaction on colend..." />
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+                  const tx = output as ColendWithdrawCoreTxProps;
+                  return <ColendWithdrawCore tx={tx} key={toolCallId} />;
                 }
               }
 
