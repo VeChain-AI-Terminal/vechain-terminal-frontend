@@ -10,6 +10,8 @@ import {
 import { Address, parseUnits } from "viem";
 import { useAppKitAccount } from "@reown/appkit/react";
 import Link from "next/link";
+import Image from "next/image";
+import { CheckCircleFillIcon } from "@/components/icons";
 import { ColendWithdrawErc20TxProps } from "@/lib/ai/tools/colend/colendWithdrawErc20";
 import { CHAIN_ID } from "@/lib/constants";
 
@@ -64,7 +66,6 @@ const ColendWithdrawErc20: React.FC<Props> = ({ tx }) => {
   const [lastWithdrawHash, setLastWithdrawHash] = useState<`0x${string}`>();
   const [errorMsg, setErrorMsg] = useState<string>("");
 
-  // fetch decimals + symbol
   const { data: metaData } = useReadContracts({
     allowFailure: true,
     contracts: [
@@ -159,7 +160,7 @@ const ColendWithdrawErc20: React.FC<Props> = ({ tx }) => {
         address: contractAddress,
         abi: withdrawAbi,
         functionName: "withdraw",
-        args: [asset, parsedAmount, receiver], // 👈 to = from
+        args: [asset, parsedAmount, receiver],
         chainId: CHAIN_ID,
         account: from as Address,
       });
@@ -236,6 +237,33 @@ const ColendWithdrawErc20: React.FC<Props> = ({ tx }) => {
           <div>Phase: {phase}</div>
         </div>
       </div>
+
+      {/* ✅ Success UI */}
+      {phase === "success" && (
+        <div className="bg-zinc-800 rounded-xl p-6 mt-6 flex flex-col items-center text-center border border-green-500 max-w-lg">
+          <div className="text-green-500 mb-3">
+            <CheckCircleFillIcon size={40} />
+          </div>
+          <h3 className="text-xl font-semibold mb-2">Withdraw Successful</h3>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-lg font-bold">
+              {amountHuman} {tokenSymbol ?? tx.withdraw.tokenName}
+            </span>
+          </div>
+          <p className="text-gray-500 text-sm">from Colend</p>
+          {lastWithdrawHash && (
+            <p>
+              <Link
+                href={`${CORE_SCAN_TX}${lastWithdrawHash}`}
+                target="_blank"
+                className="underline text-blue-600 text-sm"
+              >
+                View on CoreScan
+              </Link>
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -11,6 +11,8 @@ import {
 import { Address, erc20Abi, parseUnits } from "viem";
 import { useAppKitAccount } from "@reown/appkit/react";
 import Link from "next/link";
+import Image from "next/image";
+import { CheckCircleFillIcon } from "@/components/icons";
 import { ColendSupplyErc20TxProps } from "@/lib/ai/tools/colend/colendSupplyErc20";
 import { CHAIN_ID } from "@/lib/constants";
 
@@ -31,7 +33,6 @@ const poolAbi = [
   },
 ] as const;
 
-// Minimal ERC20 meta ABI
 const erc20MetaAbi = [
   {
     type: "function",
@@ -59,7 +60,7 @@ type Phase =
   | "error";
 
 interface Props {
-  tx: ColendSupplyErc20TxProps; // payload from colendSupplyErc20 tool
+  tx: ColendSupplyErc20TxProps;
 }
 
 const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
@@ -77,7 +78,6 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
   const [lastSupplyHash, setLastSupplyHash] = useState<`0x${string}`>();
   const [errorMsg, setErrorMsg] = useState<string>("");
 
-  // Fetch token decimals & symbol for the provided asset
   const { data: metaData, isFetching: metaLoading } = useReadContracts({
     allowFailure: true,
     contracts: [
@@ -99,7 +99,6 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
 
   const tokenDecimals: number | undefined = useMemo(() => {
     const v = metaData?.[0]?.result;
-    console.log("decimals -----", v);
     return typeof v === "number" ? v : undefined;
   }, [metaData]);
 
@@ -127,13 +126,11 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
     query: { enabled: !!currentHash },
   });
 
-  // Track latest tx hash emitted by writeContract
   useEffect(() => {
     if (!writeHash) return;
     setCurrentHash(writeHash);
   }, [writeHash]);
 
-  // Global error logger
   useEffect(() => {
     if (sendError) {
       console.error("[writeContract] error:", sendError);
@@ -142,7 +139,6 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
     }
   }, [sendError]);
 
-  // Observe receipt state transitions
   useEffect(() => {
     if (!currentHash) return;
 
@@ -162,7 +158,6 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
     }
   }, [isMining, isSuccess, isTxError, receipt, currentHash, phase]);
 
-  // Convert amount using fetched decimals
   const parsedAmount = useMemo(() => {
     try {
       if (!amountHuman || typeof tokenDecimals !== "number") return undefined;
@@ -189,13 +184,12 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
     }
 
     try {
-      // 1) Approve unlimited (amount provided by tool, usually MAX_UINT256)
       setPhase("awaiting_wallet");
       await writeContract({
         address: asset,
         abi: erc20Abi,
         functionName: "approve",
-        args: [spender, parsedAmount], // parsed from supply.amount + decimals
+        args: [spender, parsedAmount],
         chainId: CHAIN_ID,
         account: from as Address,
       });
@@ -208,7 +202,6 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
     }
   };
 
-  // After approval confirmed, auto send supply
   useEffect(() => {
     const doSupply = async () => {
       if (phase !== "approved") return;
@@ -227,7 +220,6 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
           chainId: CHAIN_ID,
           account: from as Address,
         });
-        // moves to success in receipt effect
       } catch (e: any) {
         console.error("[supply] error:", e);
         setErrorMsg(e?.message || "Supply failed");
@@ -252,29 +244,14 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
           Supply {tx.supply.tokenName}
         </h2>
 
-        {/* Read-only summary from tool payload */}
         <div className="text-sm grid grid-cols-2 gap-y-2 mb-4">
           <span className="text-gray-400">Token</span>
           <span className="text-right break-all">
             {tx.supply.tokenName} ({tokenSymbol ?? "..."})
           </span>
 
-          {/* <span className="text-gray-400">Token Address</span>
-          <span className="text-right break-all">{asset}</span> */}
-
           <span className="text-gray-400">Amount</span>
           <span className="text-right">{amountHuman}</span>
-
-          {/* <span className="text-gray-400">Pool (spender)</span>
-          <span className="text-right break-all">{spender}</span> */}
-
-          {/* <span className="text-gray-400">Referral</span>
-          <span className="text-right">{referralCode}</span> */}
-
-          {/* <span className="text-gray-400">Decimals</span>
-          <span className="text-right">
-            {metaLoading ? "Loading..." : tokenDecimals ?? "?"}
-          </span> */}
         </div>
 
         {errorMsg && (
@@ -308,7 +285,6 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
           )}
         </button>
 
-        {/* Status rows */}
         <div className="text-xs text-gray-400 mt-3 space-y-1">
           {lastApproveHash && (
             <div>
@@ -337,6 +313,33 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
           <div>Phase: {phase}</div>
         </div>
       </div>
+
+      {/* ✅ Success UI */}
+      {phase === "success" && receipt?.status === "success" && (
+        <div className="bg-zinc-800 rounded-xl p-6 mt-6 flex flex-col items-center text-center border border-green-500 max-w-lg">
+          <div className="text-green-500 mb-3">
+            <CheckCircleFillIcon size={40} />
+          </div>
+          <h3 className="text-xl font-semibold mb-2">Supply Successful</h3>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-lg font-bold">
+              {amountHuman} {tokenSymbol ?? tx.supply.tokenName}
+            </span>
+          </div>
+          <p className="text-gray-500 text-sm">on Colend</p>
+          {lastSupplyHash && (
+            <p>
+              <Link
+                href={`${CORE_SCAN_TX}${lastSupplyHash}`}
+                target="_blank"
+                className="underline text-blue-600 text-sm"
+              >
+                View on CoreScan
+              </Link>
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

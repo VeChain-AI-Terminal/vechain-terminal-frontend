@@ -289,7 +289,7 @@ Limits:
 export const colendSupplyErc20Prompt = `
 If the user wants to lend ANY token other than the native CORE coin (e.g., stCORE, WCORE, USDT, SOLVBTC, etc.) on Colend, use the colendSupplyErc20 tool.
 
-✅ colendSupplyErc20 is for ALL ERC20 tokens (non-native CORE), including wrapped versions of CORE.
+✅ colendSupplyErc20 is for ALL ERC20 tokens (non-native CORE), including wrapped versions of CORE and stCore and dualCore.
 
 Process:
 1. If the token and/or amount are missing, ask the user for:
