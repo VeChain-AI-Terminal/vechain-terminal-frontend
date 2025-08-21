@@ -35,7 +35,7 @@ export const colendSupplyErc20 = tool({
     value: z
       .string()
       .describe("Amount of ERC20 to supply, human-readable (e.g., '25.5')"),
-    tokenAddress: z.string().describe("ERC20 token contract address"),
+    tokenAddress: z.string().describe("ERC20 token contract address to supply"),
     tokenName: z
       .string()
       .describe("Display name for the token (e.g., 'stCORE')"),

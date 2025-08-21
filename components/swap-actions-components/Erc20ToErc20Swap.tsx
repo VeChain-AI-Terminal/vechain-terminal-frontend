@@ -165,6 +165,7 @@ export default function Erc20ToErc20Swap({
     query: { enabled: !!from },
   });
   const allowance = allowanceRaw as bigint | undefined;
+  console.log("allowance --- ", allowance);
   const isApproved = allowance !== undefined && allowance >= parsedAmount;
 
   // --- Write contracts

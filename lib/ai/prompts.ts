@@ -256,7 +256,7 @@ The tool returns a JSON object containing:
 
 Use this tool when you need up-to-date lending and borrowing statistics for the Core chain from Colend.
 You do not need to provide any filtering parameters — filtering by chain is handled internally.
-Show only the relevant data in form of table
+Show only the relevant data in form of table , do not show pool id in the response
 `;
 
 export const colendSupplyCorePrompt = `
@@ -301,6 +301,27 @@ Process:
    - tokenAddress (ERC20 address)
    - tokenName (e.g., "stCORE")
 4. Render the ERC20 supply UI.
+
+Limits:
+- Amount must be less than 1000 units (in human-readable token units).
+- Reject and warn if amount is >= 1000 (beta limit).
+`;
+
+export const colendWithdrawErc20Prompt = `
+If the user wants to withdraw ANY ERC20 token they supplied to Colend (e.g., stCORE, WCORE, USDT, SOLVBTC, etc.), use the colendWithdrawErc20 tool.
+
+✅ colendWithdrawErc20 is for ALL ERC20 tokens (non-native CORE), including wrapped versions of CORE.
+
+Process:
+1. If the token and/or amount are missing, ask the user for:
+   - Which token they want to withdraw.
+   - The amount they want to withdraw.
+2. Never pick a token yourself.
+3. Once you have both token and amount, call colendWithdrawErc20 with:
+   - value (human-readable string, e.g., "10")
+   - tokenAddress (ERC20 address)
+   - tokenName (e.g., "stCORE")
+4. Render the ERC20 withdraw UI.
 
 Limits:
 - Amount must be less than 1000 units (in human-readable token units).
@@ -365,5 +386,5 @@ export const systemPrompt = ({
 }: {
   selectedChatModel: string;
 }) => {
-  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getTokenAddressesPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${erc20ToErc20SwapPrompt}\n\n${erc20ToNativeSwapPrompt}\n\n${nativeToErc20SwapPrompt}`;
+  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getTokenAddressesPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${colendWithdrawErc20Prompt}\n\n${erc20ToErc20SwapPrompt}\n\n${erc20ToNativeSwapPrompt}\n\n${nativeToErc20SwapPrompt}`;
 };

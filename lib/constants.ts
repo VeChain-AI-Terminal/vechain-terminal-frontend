@@ -43,3 +43,5 @@ export const SOLVBTC_C_ADDRESS = "0x9410e8052bc661041e5cb27fdf7d9e9e842af2aa"; /
 // --- Staked CORE ---
 export const STCORE_TOKEN_ADDRESS =
   "0xb3a8f0f0da9ffc65318aa39e55079796093029ad";
+export const DUALCORE_TOKEN_ADDRESS =
+  "0xc5555eA27e63cd89f8b227deCe2a3916800c0f4F";

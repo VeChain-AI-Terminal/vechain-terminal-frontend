@@ -59,6 +59,7 @@ import { getUserWalletInfo } from "@/lib/ai/tools/getUserWalletInfo";
 import { getColendStats } from "@/lib/ai/tools/colend/get-colend-stats";
 import { colendSupplyCore } from "@/lib/ai/tools/colend/colendSupplyCore";
 import { colendSupplyErc20 } from "@/lib/ai/tools/colend/colendSupplyErc20";
+import { colendWithdrawErc20 } from "@/lib/ai/tools/colend/colendWithdrawErc20";
 
 //swaps
 import { erc20ToErc20SwapTransaction } from "@/lib/ai/tools/swap-actions/erc20ToErc20SwapTransaction";
@@ -195,6 +196,7 @@ export async function POST(request: Request) {
                   "getColendStats",
                   "colendSupplyCore",
                   "colendSupplyErc20",
+                  "colendWithdrawErc20",
                   "erc20ToErc20SwapTransaction",
                   "erc20ToNativeSwapTransaction",
                   "nativeToErc20SwapTransaction",
@@ -216,6 +218,7 @@ export async function POST(request: Request) {
             getColendStats,
             colendSupplyCore,
             colendSupplyErc20,
+            colendWithdrawErc20,
             erc20ToErc20SwapTransaction,
             erc20ToNativeSwapTransaction,
             nativeToErc20SwapTransaction,

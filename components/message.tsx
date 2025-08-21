@@ -32,7 +32,7 @@ import ClaimRewardsComponent from "@/components/stake-actions-components/ClaimRe
 import ColendSupplyCore from "@/components/colend-actions-components/colend-supply-core";
 import { ColendSupplyCoreTxProps } from "@/lib/ai/tools/colend/colendSupplyCore";
 import { ColendSupplyErc20TxProps } from "@/lib/ai/tools/colend/colendSupplyErc20";
-import ColendSupplyErc20 from "@/components/colend-actions-components/colent-supply-erc20";
+import ColendSupplyErc20 from "@/components/colend-actions-components/colend-supply-erc20";
 // import ColendTable from "@/components/colend-actions-components/colend-stats-table";
 import { Erc20ToErc20SwapTxProps } from "@/lib/ai/tools/swap-actions/erc20ToErc20SwapTransaction";
 import Erc20ToErc20Swap from "@/components/swap-actions-components/Erc20ToErc20Swap";
@@ -41,6 +41,8 @@ import Erc20ToNativeSwap from "@/components/swap-actions-components/Erc20ToNativ
 import { NativeToErc20SwapTxProps } from "@/lib/ai/tools/swap-actions/nativeToErc20SwapTransaction";
 import NativeToErc20Swap from "@/components/swap-actions-components/NativeToErc20Swap";
 import ToolCallLoader from "@/components/tool-call-loader";
+import ColendWithdrawErc20 from "@/components/colend-actions-components/colend-withdraw-erc20";
+import { ColendWithdrawErc20TxProps } from "@/lib/ai/tools/colend/colendWithdrawErc20";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -546,6 +548,23 @@ const PurePreviewMessage = ({
                   const { output } = part;
                   const tx = output as ColendSupplyErc20TxProps;
                   return <ColendSupplyErc20 tx={tx} key={toolCallId} />;
+                }
+              }
+
+              if (type === "tool-colendWithdrawErc20") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Making supply token transaction on colend..." />
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+                  const tx = output as ColendWithdrawErc20TxProps;
+                  return <ColendWithdrawErc20 tx={tx} key={toolCallId} />;
                 }
               }
 
