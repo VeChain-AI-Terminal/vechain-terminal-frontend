@@ -65,8 +65,18 @@ export const makeCoreScanApiCall = tool({
         throw new Error("CoreScan API key not found");
       }
 
-      const separator = fullUrl.includes("?") ? "&" : "?";
-      const urlWithKey = `${fullUrl}${separator}apikey=${apiKey}`;
+      // Use URL object for safe query manipulation
+      const url = new URL(fullUrl);
+
+      // Add API key
+      url.searchParams.set("apikey", apiKey);
+
+      // If offset=0, replace with offset=20
+      if (url.searchParams.get("offset") === "0") {
+        url.searchParams.set("offset", "20");
+      }
+
+      const urlWithKey = url.toString();
       console.log("url with key --- ", urlWithKey);
 
       const response = await fetch(urlWithKey, {
