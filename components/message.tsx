@@ -103,9 +103,13 @@ const PurePreviewMessage = ({
           )}
 
           <div
-            className={cn("flex flex-col gap-4 w-full", {
-              "min-h-96": message.role === "assistant" && requiresScrollPadding,
-            })}
+            className={cn(
+              "flex flex-col gap-4 w-full  overflow-clip break-words whitespace-normal",
+              {
+                "min-h-96":
+                  message.role === "assistant" && requiresScrollPadding,
+              }
+            )}
           >
             {attachmentsFromMessage.length > 0 && (
               <div
@@ -142,7 +146,7 @@ const PurePreviewMessage = ({
               if (type === "text") {
                 if (mode === "view") {
                   return (
-                    <div key={key} className="flex flex-row gap-2 items-start">
+                    <div key={key} className="flex flex-row gap-2 items-start ">
                       {message.role === "user" && !isReadonly && (
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -250,6 +254,51 @@ const PurePreviewMessage = ({
                     <div key={toolCallId}>
                       <ToolCallLoader
                         loadingMessage="Token address fetched."
+                        isFinished
+                      />
+                    </div>
+                  );
+                }
+              }
+
+              if (type === "tool-getCoreScanApiParams") {
+                const { toolCallId, state } = part;
+
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Exploring core blockchain ..." />
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader
+                        loadingMessage="Exploring core blockchain"
+                        isFinished
+                      />
+                    </div>
+                  );
+                }
+              }
+              if (type === "tool-makeCoreScanApiCall") {
+                const { toolCallId, state } = part;
+
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Gathering information..." />
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader
+                        loadingMessage="Gathering information"
                         isFinished
                       />
                     </div>

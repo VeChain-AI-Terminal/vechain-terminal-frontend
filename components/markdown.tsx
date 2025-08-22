@@ -49,7 +49,11 @@ const remarkPlugins = [remarkGfm];
 
 const NonMemoizedMarkdown = ({ children }: { children: string }) => {
   return (
-    <Streamdown remarkPlugins={remarkPlugins} components={components}>
+    <Streamdown
+      remarkPlugins={remarkPlugins}
+      components={components}
+      className="w-full "
+    >
       {children}
     </Streamdown>
   );

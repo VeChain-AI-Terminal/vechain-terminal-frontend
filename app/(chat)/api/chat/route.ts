@@ -33,6 +33,7 @@ import { ChatSDKError } from "@/lib/errors";
 import type { ChatMessage } from "@/lib/types";
 import type { ChatModel } from "@/lib/ai/models";
 import type { VisibilityType } from "@/components/visibility-selector";
+
 import { getValidators } from "@/lib/ai/tools/core-staking-actions/getValidators";
 //utils
 import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
@@ -50,7 +51,9 @@ import { makeTransferStakedCoreTransaction } from "@/lib/ai/tools/core-staking-a
 
 // chain info
 import { getTokenAddresses } from "@/lib/ai/tools/getTokenAddresses";
-
+import { getCoreScanApiParams } from "@/lib/ai/tools/coreScanTools";
+import { makeCoreScanApiCall } from "@/lib/ai/tools/coreScanTools";
+import {} from "@/lib/ai/tools/coreScanTools";
 //portfolio
 import { getPortfolio } from "@/lib/ai/tools/getPortfolio";
 import { getUserWalletInfo } from "@/lib/ai/tools/getUserWalletInfo";
@@ -191,6 +194,8 @@ export async function POST(request: Request) {
                   "makeClaimRewardsTransaction",
                   "makeTransferStakedCoreTransaction",
                   "getTokenAddresses",
+                  "getCoreScanApiParams",
+                  "makeCoreScanApiCall",
                   "getPortfolio",
                   "ensToAddress",
                   "getUserWalletInfo",
@@ -214,6 +219,8 @@ export async function POST(request: Request) {
             makeClaimRewardsTransaction,
             makeTransferStakedCoreTransaction,
             getTokenAddresses,
+            getCoreScanApiParams,
+            makeCoreScanApiCall,
             getPortfolio,
             ensToAddress,
             getUserWalletInfo,

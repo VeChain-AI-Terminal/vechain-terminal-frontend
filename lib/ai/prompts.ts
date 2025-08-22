@@ -120,6 +120,138 @@ export const getTokenAddressesPrompt = `
  Use this tool to get the token information like name and addresses on the core blockchain. always use this tool if you dont know the token address of a token you need to use in supply or swaps.
  `;
 
+export const getCoreScanApiParamsPrompt = `
+ you have access to the core scan api, use getCoreScanApiParams tool get the requeired parameters for any api.
+ pass the api path to the tool to get the params you will need to pass to the makeCoreScanApiCall to actually fetch the info. based on the user query , you can use the following API paths from CoreScan:
+[
+  {
+    "path": "/api/accounts/core_balance_by_address/{address}",
+    "desc": "Get CORE balance by address"
+  },
+  {
+    "path": "/api/accounts/internal_txs_by_block_range",
+    "desc": "Get internal transactions by block range"
+  },
+  {
+    "path": "/api/accounts/internal_txs_by_tx_hash/{txhash}",
+    "desc": "Get internal transactions by transaction hash"
+  },
+  {
+    "path": "/api/accounts/list_of_blocks_validated_by_address/{address}",
+    "desc": "Get list of blocks validated by address"
+  },
+  {
+    "path": "/api/accounts/list_of_erc20_transfer_events_by_address/{address}",
+    "desc": "Get list of ERC20 transfer events by address"
+  },
+  {
+    "path": "/api/accounts/list_of_erc721_transfer_events_by_address/{address}",
+    "desc": "Get list of ERC721 transfer events by address"
+  },
+  {
+    "path": "/api/accounts/list_of_txs_by_address/{address}",
+    "desc": "Get list of transactions by address"
+  },
+  {
+    "path": "/api/blocks/block_number_by_timesamp",
+    "desc": "Get block number by timestamp"
+  },
+  {
+    "path": "/api/blocks/block_rewards_by_block_number/{blockno}",
+    "desc": "Get block rewards by block number"
+  },
+  {
+    "path": "/api/blocks/estimated_block_countdown_time_by_block_number/{blockno}",
+    "desc": "Get estimated block countdown time by block number"
+  },
+  {
+    "path": "/api/contracts/abi_of_verified_contract/{address}",
+    "desc": "Get ABI of verified contract"
+  },
+  {
+    "path": "/api/contracts/check_proxy_contract_verification_submission_status_using_cURL",
+    "desc": "Check proxy contract verification submission status using cURL"
+  },
+  {
+    "path": "/api/contracts/source_code_of_verified_contract/{address}",
+    "desc": "Get source code of verified contract"
+  },
+  {
+    "path": "/api/geth/eth_blockNumber",
+    "desc": "Get block number"
+  },
+  {
+    "path": "/api/geth/eth_call",
+    "desc": "Get transaction receipt"
+  },
+  {
+    "path": "/api/geth/eth_estimateGas",
+    "desc": "Estimate gas"
+  },
+  {
+    "path": "/api/geth/eth_gasPrice",
+    "desc": "Get gas price"
+  },
+  {
+    "path": "/api/geth/eth_getBlockByNumber",
+    "desc": "Get block by number"
+  },
+  {
+    "path": "/api/geth/eth_getBlockTransactionCountByNumber",
+    "desc": "Get block transaction count by number"
+  },
+  {
+    "path": "/api/geth/eth_getCode",
+    "desc": "Get code"
+  },
+  {
+    "path": "/api/geth/eth_getStorageAt",
+    "desc": "Get storage at"
+  },
+  {
+    "path": "/api/geth/eth_getTransactionByBlockNumberAndIndex",
+    "desc": "Get transaction by block number and index"
+  },
+  {
+    "path": "/api/geth/eth_getTransactionByHash",
+    "desc": "Get transaction by hash"
+  },
+  {
+    "path": "/api/geth/eth_getTransactionCount",
+    "desc": "Get transaction count"
+  },
+  {
+    "path": "/api/geth/eth_getTransactionReceipt",
+    "desc": "Get transaction receipt"
+  },
+  {
+    "path": "/api/geth/eth_sendRawTransaction",
+    "desc": "Send raw transaction"
+  },
+  {
+    "path": "/api/stats/last_core_price",
+    "desc": "Get last core price"
+  },
+  {
+    "path": "/api/stats/list_of_validators",
+    "desc": "Get list of validators"
+  },
+  {
+    "path": "/api/stats/total_core_supply",
+    "desc": "Get total core supply"
+  },
+  {
+    "path": "/api/txs/tx_receipt_status",
+    "desc": "Get transaction receipt status"
+  }
+]
+remember that offset means the number of items to fetch. offset = 5 means first 5 items.
+dont give transactions as tables, give as normal readable text
+always run this tool first to get additional required parameters of the apis.  
+ `;
+
+export const makeCoreScanApiCallPrompt = `use the makeCoreScanApiCall tool to make an api fetch call to the api endpoint. pass the full url along with the correct parameters. it will return the response of the api call.`;
+
 export const getPortfolioPrompt = ` use the getPortfolio tool to fecth the users wallet portfolio accross all defi including tokens held, portfolio on all defi platforms on core blockchain, nfts and staking portfolio on core. pass the wallet address of the wallet. `;
 
 export const getDelegatedCoreForEachValidatorPrompt = ` use the getDelegatedCoreForEachValidator tool Fetches a wallet's active CORE staking positions, listing each validator the wallet has delegated to along with the staked amount (in CORE), APR, and active status,commission plus the wallet's total CORE staked. pass the wallet address of the wallet. `;
@@ -380,5 +512,5 @@ export const systemPrompt = ({
 }: {
   selectedChatModel: string;
 }) => {
-  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getTokenAddressesPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${colendWithdrawErc20Prompt}\n\n${colendWithdrawCorePrompt}\n\n${erc20ToErc20SwapPrompt}\n\n${erc20ToNativeSwapPrompt}\n\n${nativeToErc20SwapPrompt}`;
+  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getTokenAddressesPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${colendWithdrawErc20Prompt}\n\n${colendWithdrawCorePrompt}\n\n${erc20ToErc20SwapPrompt}\n\n${erc20ToNativeSwapPrompt}\n\n${nativeToErc20SwapPrompt}\n\n${getCoreScanApiParamsPrompt}\n\n${getCoreScanApiParamsPrompt}`;
 };
