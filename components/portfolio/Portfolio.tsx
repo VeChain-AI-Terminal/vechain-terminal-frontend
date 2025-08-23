@@ -5,17 +5,17 @@ import React, { useMemo, useState } from "react";
 import { useAppKitAccount } from "@reown/appkit/react";
 import dynamic from "next/dynamic";
 import { TotalChainBalance } from "@/components/portfolio/TotalChainBalance";
-import CoreOfficialStakingStats from "@/components/portfolio/CoreOfficialStakingStats";
 
 export const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
-type TabKey = "tokens" | "protocols" | "nfts" | "staking";
+type TabKey = "tokens" | "protocols" | "nfts" | "staking" | "txnHistory";
 
 const Tabs: { key: TabKey; label: string }[] = [
   { key: "tokens", label: "Tokens" },
   { key: "protocols", label: "Protocols" },
   { key: "nfts", label: "NFTs" },
   { key: "staking", label: "Core Staking" },
+  { key: "txnHistory", label: "Transactions" },
 ];
 
 // Lazy-load each section so we don’t even ship their code until needed.
@@ -43,6 +43,24 @@ const NFTList = dynamic(() => import("@/components/portfolio/NftList"), {
     <div className="py-4 text-sm text-gray-400">Loading NFTs…</div>
   ),
 });
+const CoreOfficialStakingStats = dynamic(
+  () => import("@/components/portfolio/CoreOfficialStakingStats"),
+  {
+    ssr: false,
+    loading: () => <div className="py-4 text-sm text-gray-400">Loading…</div>,
+  }
+);
+const TransactionHistory = dynamic(
+  () => import("@/components/portfolio/TransactionHistory"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="py-4 text-sm text-gray-400">
+        Loading transaction history…
+      </div>
+    ),
+  }
+);
 
 export default function Portfolio() {
   const { isConnected, address } = useAppKitAccount();
@@ -62,6 +80,8 @@ export default function Portfolio() {
         return <NFTList address={address} />;
       case "staking":
         return <CoreOfficialStakingStats address={address} />;
+      case "txnHistory":
+        return <TransactionHistory address={address} />;
       default:
         return null;
     }

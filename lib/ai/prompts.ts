@@ -129,14 +129,6 @@ export const getCoreScanApiParamsPrompt = `
     "desc": "Get CORE balance by address"
   },
   {
-    "path": "/api/accounts/internal_txs_by_block_range",
-    "desc": "Get internal transactions by block range"
-  },
-  {
-    "path": "/api/accounts/internal_txs_by_tx_hash/{txhash}",
-    "desc": "Get internal transactions by transaction hash"
-  },
-  {
     "path": "/api/accounts/list_of_blocks_validated_by_address/{address}",
     "desc": "Get list of blocks validated by address"
   },
@@ -148,10 +140,7 @@ export const getCoreScanApiParamsPrompt = `
     "path": "/api/accounts/list_of_erc721_transfer_events_by_address/{address}",
     "desc": "Get list of ERC721 transfer events by address"
   },
-  {
-    "path": "/api/accounts/list_of_txs_by_address/{address}",
-    "desc": "Get list of transactions by address"
-  },
+
   {
     "path": "/api/blocks/block_number_by_timesamp",
     "desc": "Get block number by timestamp"
