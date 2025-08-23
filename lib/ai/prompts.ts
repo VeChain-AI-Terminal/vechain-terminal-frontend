@@ -243,7 +243,7 @@ export const makeCoreScanApiCallPrompt = `use the makeCoreScanApiCall tool to ma
 
 export const getPortfolioPrompt = ` use the getPortfolio tool to fecth the users wallet portfolio accross all defi including tokens held, portfolio on all defi platforms on core blockchain, nfts and staking portfolio on core. pass the wallet address of the wallet. `;
 
-export const getTransactionHistoryPrompt = ` use the getTransactionHistory tool to fecth the users wallet transactions accross all defi. pass the wallet address of the wallet and the number of txns to fetch `;
+export const getTransactionHistoryPrompt = ` use the getTransactionHistory tool to fecth the users wallet transactions accross all defi. pass the wallet address of the wallet and the number of txns to fetch. use CORE instead of ETH as units. `;
 
 export const getDelegatedCoreForEachValidatorPrompt = ` use the getDelegatedCoreForEachValidator tool Fetches a wallet's active CORE staking positions, listing each validator the wallet has delegated to along with the staked amount (in CORE), APR, and active status,commission plus the wallet's total CORE staked. pass the wallet address of the wallet. `;
 
