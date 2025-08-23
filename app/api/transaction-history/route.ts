@@ -22,7 +22,7 @@ async function getTransactionHistory(
     }
 
     const txnHistory: TransactionHistory = await res.json();
-    console.log("txnHistory", txnHistory);
+    // console.log("txnHistory", txnHistory);
     return txnHistory;
   } catch (err) {
     console.error("Error fetching token data from Debank:", err);

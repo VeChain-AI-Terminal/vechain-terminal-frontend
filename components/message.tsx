@@ -329,6 +329,29 @@ const PurePreviewMessage = ({
                 }
               }
 
+              if (type === "tool-getTransactionHistory") {
+                const { toolCallId, state } = part;
+
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Looking at your transactions..." />
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader
+                        loadingMessage="Transactions analysed."
+                        isFinished
+                      />
+                    </div>
+                  );
+                }
+              }
+
               if (type === "tool-makeStakeCoreTransaction") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {

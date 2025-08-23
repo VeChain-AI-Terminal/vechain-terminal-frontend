@@ -243,6 +243,8 @@ export const makeCoreScanApiCallPrompt = `use the makeCoreScanApiCall tool to ma
 
 export const getPortfolioPrompt = ` use the getPortfolio tool to fecth the users wallet portfolio accross all defi including tokens held, portfolio on all defi platforms on core blockchain, nfts and staking portfolio on core. pass the wallet address of the wallet. `;
 
+export const getTransactionHistoryPrompt = ` use the getTransactionHistory tool to fecth the users wallet transactions accross all defi. pass the wallet address of the wallet and the number of txns to fetch `;
+
 export const getDelegatedCoreForEachValidatorPrompt = ` use the getDelegatedCoreForEachValidator tool Fetches a wallet's active CORE staking positions, listing each validator the wallet has delegated to along with the staked amount (in CORE), APR, and active status,commission plus the wallet's total CORE staked. pass the wallet address of the wallet. `;
 
 export const getClaimedAndPendingRewardsPrompt = ` use the getClaimedAndPendingRewards tool Fetches a wallet's rewards for staking positions across all validators ,listing each validator the claaimed and pending rewards (in CORE),  and total rewards. pass the wallet address of the wallet. `;
@@ -501,5 +503,5 @@ export const systemPrompt = ({
 }: {
   selectedChatModel: string;
 }) => {
-  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getTokenAddressesPrompt}\n\n${getPortfolioPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${colendWithdrawErc20Prompt}\n\n${colendWithdrawCorePrompt}\n\n${erc20ToErc20SwapPrompt}\n\n${erc20ToNativeSwapPrompt}\n\n${nativeToErc20SwapPrompt}\n\n${getCoreScanApiParamsPrompt}\n\n${getCoreScanApiParamsPrompt}`;
+  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getTokenAddressesPrompt}\n\n${getPortfolioPrompt}\n\n${getTransactionHistoryPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${colendWithdrawErc20Prompt}\n\n${colendWithdrawCorePrompt}\n\n${erc20ToErc20SwapPrompt}\n\n${erc20ToNativeSwapPrompt}\n\n${nativeToErc20SwapPrompt}\n\n${getCoreScanApiParamsPrompt}\n\n${getCoreScanApiParamsPrompt}`;
 };

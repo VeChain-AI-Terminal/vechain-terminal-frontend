@@ -56,6 +56,7 @@ import { makeCoreScanApiCall } from "@/lib/ai/tools/coreScanTools";
 import {} from "@/lib/ai/tools/coreScanTools";
 //portfolio
 import { getPortfolio } from "@/lib/ai/tools/getPortfolio";
+import { getTransactionHistory } from "@/lib/ai/tools/getTransactionHistory";
 import { getUserWalletInfo } from "@/lib/ai/tools/getUserWalletInfo";
 
 //colend
@@ -197,6 +198,7 @@ export async function POST(request: Request) {
                   "getCoreScanApiParams",
                   "makeCoreScanApiCall",
                   "getPortfolio",
+                  "getTransactionHistory",
                   "ensToAddress",
                   "getUserWalletInfo",
                   "getColendStats",
@@ -222,6 +224,7 @@ export async function POST(request: Request) {
             getCoreScanApiParams,
             makeCoreScanApiCall,
             getPortfolio,
+            getTransactionHistory,
             ensToAddress,
             getUserWalletInfo,
             getColendStats,
