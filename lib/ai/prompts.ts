@@ -99,35 +99,58 @@ _Refer to DefiLlama and protocol-specific APIs and apps for real-time data (APY,
 `;
 
 export const getDefiProtocolsStatsPrompt = `
- The tool getDefiStats fetches real-time DeFi and staking data for the Core ecosystem.
-It merges Core DAO validator stats (from the Core DAO staking API) and Colend protocol pool stats (from DefiLlama), and returns them together in a structured object.
+The tool getDefiStats fetches real-time DeFi and staking data for the Core ecosystem.
+It merges three sources: Core DAO validator stats, Colend protocol pool stats, and DeSyn protocol ETF/fund stats.
+Each protocol section returns both:
+- raw (full API response for reference)
+- summary (trimmed fields optimized for DeFi strategy and decision-making)
 
 ## Core DAO section (protocol: "core-dao")
-Contains validator information like:
-Validator name and operator address
-Status (Active/Inactive) and state (Normal/Unknown)
-Staked CORE, BTC, and hash amounts
-Core and BTC reward rates
-Hybrid score
-Core score efficiency
-Realtime staking delta (absolute and %)
+- Raw: full validator objects from Core DAO API
+- Summary: 
+  - Validator name and operator address
+  - Staked CORE (in millions) and BTC
+  - Core and BTC reward rates
+  - Hybrid score
+  - Core score efficiency
+  - Realtime staking delta (absolute and %)
 
 ## Colend section (protocol: "colend")
-Contains Colend DeFi pool information like:
-tvlUsd (total value locked in USD)
-apy (base APY)
-apyReward (reward APY if any)
-Other pool-level stats, filtered only for Core chain and sorted by APY (highest first), then TVL.
+- Raw: full pool objects from DefiLlama API
+- Summary:
+  - symbol
+  - chain
+  - project
+  - tvlUsd (total value locked in USD)
+  - apy (base APY)
+  - apyReward (reward APY if any)
+
+## DeSyn section (protocol: "desyn")
+- Raw: full ETF/fund objects from DeSyn API
+- Summary:
+  - pool (address)
+  - pool_name
+  - symbol
+  - net_value and net_value_per_share
+  - net_value_change_ratio_by_period
+  - APY
+  - invest_label (e.g., Yield, Arbitrage)
+  - strategy_token_label (e.g., SolvBTC.b, oBTC, USDT)
+  - risk_label
 
 ## When to use getDefiStats
 Use this tool whenever the user asks about:
-Core DAO validators or staking stats
-Validator rewards, hybrid score, or realtime performance
-Colend protocol pools, APY, or TVL on Core
-Yield opportunities or DeFi performance comparisons between validators and pools
-General "show me stats / overview" type queries for Core staking or Colend
+- Core DAO validators or staking stats
+- Validator rewards, hybrid score, or realtime performance
+- Colend protocol pools, APY, or TVL on Core
+- DeSyn protocol funds, strategies, or ETF pool performance
+- Yield opportunities or DeFi performance comparisons across validators, pools, and ETF funds
+- General "show me stats / overview" queries for Core DeFi
 
- `;
+## How to use the results
+- Prefer the **summary** data for making yield strategies, comparisons, and decisions
+- Use **raw** only if the user explicitly requests detailed underlying fields
+`;
 
 export const getUserWalletInfoPrompt = `
   Use the getUserWalletInfo tool to get the user's wallet info like address and chainId.
