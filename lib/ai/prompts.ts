@@ -98,6 +98,37 @@ _Refer to DefiLlama and protocol-specific APIs and apps for real-time data (APY,
 ---
 `;
 
+export const getDefiProtocolsStatsPrompt = `
+ The tool getDefiStats fetches real-time DeFi and staking data for the Core ecosystem.
+It merges Core DAO validator stats (from the Core DAO staking API) and Colend protocol pool stats (from DefiLlama), and returns them together in a structured object.
+
+## Core DAO section (protocol: "core-dao")
+Contains validator information like:
+Validator name and operator address
+Status (Active/Inactive) and state (Normal/Unknown)
+Staked CORE, BTC, and hash amounts
+Core and BTC reward rates
+Hybrid score
+Core score efficiency
+Realtime staking delta (absolute and %)
+
+## Colend section (protocol: "colend")
+Contains Colend DeFi pool information like:
+tvlUsd (total value locked in USD)
+apy (base APY)
+apyReward (reward APY if any)
+Other pool-level stats, filtered only for Core chain and sorted by APY (highest first), then TVL.
+
+## When to use getDefiStats
+Use this tool whenever the user asks about:
+Core DAO validators or staking stats
+Validator rewards, hybrid score, or realtime performance
+Colend protocol pools, APY, or TVL on Core
+Yield opportunities or DeFi performance comparisons between validators and pools
+General "show me stats / overview" type queries for Core staking or Colend
+
+ `;
+
 export const getUserWalletInfoPrompt = `
   Use the getUserWalletInfo tool to get the user's wallet info like address and chainId.
  `;
@@ -331,34 +362,34 @@ If user enters a ENS name, like somename.eth or someName.someChain.eth then use 
   Pass the ens name to the tool.
  `;
 
-export const getValidatorsPrompt = `
- The getValidators tool fetches a list of active validators from the Core DAO staking platform. It provides detailed information about each validator, including:
- 
- - **Validator Name**
- - **validator address**
- - **Commission Rate**
- - **APR (Annual Percentage Rate)**
- - **Staked CORE Amount**
- - **Staked Hash**
- - **BTC Reward Rate**
- - **Core Reward Rate**
- - **Hybrid Score**
- - **BTC Power and Hash Power**
- 
- `;
+// export const getValidatorsPrompt = `
+//  The getValidators tool fetches a list of active validators from the Core DAO staking platform. It provides detailed information about each validator, including:
 
-export const getColendStatsPrompt = `
-The "getColendStats" tool retrieves Colend protocol statistics from an external API.
-It automatically filters the results to include only entries where the "chain" field equals "Core" (case-insensitive).
-The tool returns a JSON object containing:
-- status: string (e.g., "success" or "error")
-- data: an array of filtered pool objects with fields such as project, symbol, tvlUsd, apy, rewardTokens, etc.
-- error: optional string if an error occurred
+//  - **Validator Name**
+//  - **validator address**
+//  - **Commission Rate**
+//  - **APR (Annual Percentage Rate)**
+//  - **Staked CORE Amount**
+//  - **Staked Hash**
+//  - **BTC Reward Rate**
+//  - **Core Reward Rate**
+//  - **Hybrid Score**
+//  - **BTC Power and Hash Power**
 
-Use this tool when you need up-to-date lending and borrowing statistics for the Core chain from Colend.
-You do not need to provide any filtering parameters — filtering by chain is handled internally.
-Show only the relevant data in form of table , do not show pool id in the response
-`;
+//  `;
+
+// export const getColendStatsPrompt = `
+// The "getColendStats" tool retrieves Colend protocol statistics from an external API.
+// It automatically filters the results to include only entries where the "chain" field equals "Core" (case-insensitive).
+// The tool returns a JSON object containing:
+// - status: string (e.g., "success" or "error")
+// - data: an array of filtered pool objects with fields such as project, symbol, tvlUsd, apy, rewardTokens, etc.
+// - error: optional string if an error occurred
+
+// Use this tool when you need up-to-date lending and borrowing statistics for the Core chain from Colend.
+// You do not need to provide any filtering parameters — filtering by chain is handled internally.
+// Show only the relevant data in form of table , do not show pool id in the response
+// `;
 
 export const colendSupplyCorePrompt = `
 If and ONLY if the user explicitly wants to lend **CORE** tokens on Colend, use the supplyCore tool.
@@ -503,5 +534,5 @@ export const systemPrompt = ({
 }: {
   selectedChatModel: string;
 }) => {
-  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getValidatorsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getTokenAddressesPrompt}\n\n${getPortfolioPrompt}\n\n${getTransactionHistoryPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${getColendStatsPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${colendWithdrawErc20Prompt}\n\n${colendWithdrawCorePrompt}\n\n${erc20ToErc20SwapPrompt}\n\n${erc20ToNativeSwapPrompt}\n\n${nativeToErc20SwapPrompt}\n\n${getCoreScanApiParamsPrompt}\n\n${getCoreScanApiParamsPrompt}`;
+  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getDefiProtocolsStatsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getTokenAddressesPrompt}\n\n${getPortfolioPrompt}\n\n${getTransactionHistoryPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${colendWithdrawErc20Prompt}\n\n${colendWithdrawCorePrompt}\n\n${erc20ToErc20SwapPrompt}\n\n${erc20ToNativeSwapPrompt}\n\n${nativeToErc20SwapPrompt}\n\n${getCoreScanApiParamsPrompt}\n\n${getCoreScanApiParamsPrompt}`;
 };

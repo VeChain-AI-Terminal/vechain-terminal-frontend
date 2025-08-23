@@ -499,6 +499,28 @@ const PurePreviewMessage = ({
                 }
               }
 
+              if (type === "tool-getDefiProtocolsStats") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Gathering information from all protocols..." />
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader
+                        loadingMessage="Gathering information from all protocols"
+                        isFinished
+                      />
+                    </div>
+                  );
+                }
+              }
+
               if (type === "tool-getDelegatedCoreForEachValidator") {
                 const { toolCallId, state } = part;
 

@@ -35,6 +35,7 @@ import type { ChatModel } from "@/lib/ai/models";
 import type { VisibilityType } from "@/components/visibility-selector";
 
 import { getValidators } from "@/lib/ai/tools/core-staking-actions/getValidators";
+import { getDefiProtocolsStats } from "@/lib/ai/tools/getDefiProtocolsStats";
 //utils
 import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
 
@@ -186,7 +187,8 @@ export async function POST(request: Request) {
             selectedChatModel === "chat-model-reasoning"
               ? []
               : [
-                  "getValidators",
+                  // "getValidators",
+                  "getDefiProtocolsStats",
                   "makeSendTransaction",
                   "makeStakeCoreTransaction",
                   "getDelegatedCoreForEachValidator",
@@ -201,7 +203,7 @@ export async function POST(request: Request) {
                   "getTransactionHistory",
                   "ensToAddress",
                   "getUserWalletInfo",
-                  "getColendStats",
+                  // "getColendStats",
                   "colendSupplyCore",
                   "colendSupplyErc20",
                   "colendWithdrawErc20",
@@ -212,7 +214,8 @@ export async function POST(request: Request) {
                 ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
-            getValidators,
+            // getValidators,
+            getDefiProtocolsStats,
             makeSendTransaction,
             makeStakeCoreTransaction,
             getDelegatedCoreForEachValidator,
@@ -227,7 +230,7 @@ export async function POST(request: Request) {
             getTransactionHistory,
             ensToAddress,
             getUserWalletInfo,
-            getColendStats,
+            // getColendStats,
             colendSupplyCore,
             colendSupplyErc20,
             colendWithdrawErc20,
