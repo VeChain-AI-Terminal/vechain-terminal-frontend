@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   useWriteContract,
   useWaitForTransactionReceipt,
@@ -13,6 +13,8 @@ import { MOLTEN_QUOTER, MOLTEN_SWAP_ROUTER } from "@/lib/constants";
 import { FaSpinner } from "react-icons/fa";
 import { CheckCircleFillIcon } from "@/components/icons";
 import Link from "next/link";
+import { UseChatHelpers } from "@ai-sdk/react";
+import { ChatMessage } from "@/lib/types";
 
 const erc20MetaAbi = [
   {
@@ -105,10 +107,12 @@ export default function Erc20ToErc20Swap({
   tokenIn,
   tokenOut,
   amount,
+  sendMessage,
 }: {
   tokenIn: `0x${string}`;
   tokenOut: `0x${string}`;
   amount: string;
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
 }) {
   const { address: from } = useAppKitAccount();
 
@@ -150,7 +154,10 @@ export default function Erc20ToErc20Swap({
     functionName: "quoteExactInputSingle",
     args: [{ tokenIn, tokenOut, amountIn: parsedAmount, limitSqrtPrice: 0n }],
     chainId: 1116,
-    query: { enabled: !!from && !!amount },
+    query: {
+      enabled: !!from && !!amount,
+      refetchInterval: 5000, // 🔥 auto refetch every 5s
+    },
   });
   const expectedOut = expectedOutRaw as bigint | undefined;
   const minOut = expectedOut ? (expectedOut * 995n) / 1000n : 0n;
@@ -217,6 +224,36 @@ export default function Erc20ToErc20Swap({
     });
   }
 
+  function sendMessageToAi(message: string) {
+    try {
+      if (!message) throw new Error("Message is empty");
+
+      sendMessage({
+        role: "assistant",
+        parts: [
+          {
+            type: "text",
+            text: message,
+          },
+        ],
+      });
+
+      console.log("Message sent to AI:", message);
+    } catch (error) {
+      console.error("Failed to send message to AI:", error);
+    }
+  }
+
+  useEffect(() => {
+    if (swapSuccess && expectedOut) {
+      sendMessageToAi(
+        `Successfully swaped ${amount} ${symbolIn} to ${Number(
+          formatUnits(expectedOut, decimalsOut)
+        ).toFixed(3)} ${symbolOut}.`
+      );
+    }
+  }, [swapSuccess, expectedOut]);
+
   return (
     <div className="flex flex-col gap-2">
       <div className="bg-zinc-900 text-white p-4 rounded-2xl shadow-md w-full border border-zinc-700 max-w-lg">
@@ -277,7 +314,12 @@ export default function Erc20ToErc20Swap({
       {/* Success card */}
       {swapSuccess && swapReceipt?.status === "success" && (
         <div className="bg-zinc-800 rounded-xl p-6 mt-6 flex flex-col items-center text-center border border-green-500 max-w-lg">
-          <div className="text-green-500 mb-3">
+          <div
+            className="text-green-500 mb-3"
+            onClick={() => {
+              sendMessageToAi("hi");
+            }}
+          >
             <CheckCircleFillIcon size={40} />
           </div>
           <h3 className="text-xl font-semibold mb-2">Swap Successful</h3>

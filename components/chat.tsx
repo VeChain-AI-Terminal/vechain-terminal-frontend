@@ -136,6 +136,7 @@ export function Chat({
           setMessages={setMessages}
           regenerate={regenerate}
           isReadonly={isReadonly}
+          sendMessage={sendMessage}
         />
 
         <form className="flex mx-auto px-4 bg-background pb-4 md:pb-3 gap-2 w-full md:max-w-3xl">

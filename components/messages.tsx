@@ -15,6 +15,7 @@ interface MessagesProps {
   votes: Array<Vote> | undefined;
   messages: ChatMessage[];
   setMessages: UseChatHelpers<ChatMessage>["setMessages"];
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
   regenerate: UseChatHelpers<ChatMessage>["regenerate"];
   isReadonly: boolean;
 }
@@ -27,6 +28,7 @@ function PureMessages({
   setMessages,
   regenerate,
   isReadonly,
+  sendMessage,
 }: MessagesProps) {
   const {
     containerRef: messagesContainerRef,
@@ -65,6 +67,7 @@ function PureMessages({
           requiresScrollPadding={
             hasSentMessage && index === messages.length - 1
           }
+          sendMessage={sendMessage}
         />
       ))}
 

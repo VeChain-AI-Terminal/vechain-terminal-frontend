@@ -220,7 +220,8 @@ export const getDefiProtocolsStats = tool({
       console.error("Error fetching DeSyn stats:", err);
     }
 
-    console.log("res from desyn --- ", desynSummary);
+    // console.log("res from colend --- ", colendSummary);
+    // console.log("res from desyn --- ", desynSummary);
     // --- Return unified ---
     return {
       results: [

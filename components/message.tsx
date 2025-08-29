@@ -55,6 +55,7 @@ const PurePreviewMessage = ({
   vote,
   isLoading,
   setMessages,
+  sendMessage,
   regenerate,
   isReadonly,
   requiresScrollPadding,
@@ -64,6 +65,8 @@ const PurePreviewMessage = ({
   vote: Vote | undefined;
   isLoading: boolean;
   setMessages: UseChatHelpers<ChatMessage>["setMessages"];
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
+
   regenerate: UseChatHelpers<ChatMessage>["regenerate"];
   isReadonly: boolean;
   requiresScrollPadding: boolean;
@@ -696,6 +699,7 @@ const PurePreviewMessage = ({
                   const tx = output as Erc20ToErc20SwapTxProps;
                   return (
                     <Erc20ToErc20Swap
+                      sendMessage={sendMessage}
                       key={toolCallId}
                       tokenIn={tx.tokenIn as `0x${string}`}
                       tokenOut={tx.tokenOut as `0x${string}`}

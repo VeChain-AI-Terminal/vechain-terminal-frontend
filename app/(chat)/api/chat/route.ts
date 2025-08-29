@@ -266,7 +266,8 @@ export async function POST(request: Request) {
           })),
         });
       },
-      onError: () => {
+      onError: (e) => {
+        console.log("error in chat route", e);
         return "Oops, an error occurred!";
       },
     });

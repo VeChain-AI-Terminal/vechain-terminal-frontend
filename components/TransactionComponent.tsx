@@ -37,7 +37,7 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
   value,
   chainId,
 }) => {
-  console.log("recever_address", receiver_address);
+  // console.log("recever_address", receiver_address);
   const { isConnected } = useAppKitAccount();
 
   // value is in wei → human
