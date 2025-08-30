@@ -66,11 +66,12 @@ import { colendSupplyCore } from "@/lib/ai/tools/colend/colendSupplyCore";
 import { colendSupplyErc20 } from "@/lib/ai/tools/colend/colendSupplyErc20";
 import { colendWithdrawErc20 } from "@/lib/ai/tools/colend/colendWithdrawErc20";
 import { colendWithdrawCore } from "@/lib/ai/tools/colend/colendWithdrawCore";
+import { tokenSwapTransaction } from "@/lib/ai/tools/swap-actions/tokenSwapTransaction";
 
 //swaps
-import { erc20ToErc20SwapTransaction } from "@/lib/ai/tools/swap-actions/erc20ToErc20SwapTransaction";
-import { erc20ToNativeSwapTransaction } from "@/lib/ai/tools/swap-actions/erc20ToNativeSwapTransaction";
-import { nativeToErc20SwapTransaction } from "@/lib/ai/tools/swap-actions/nativeToErc20SwapTransaction";
+// import { erc20ToErc20SwapTransaction } from "@/lib/ai/tools/swap-actions/erc20ToErc20SwapTransaction";
+// import { erc20ToNativeSwapTransaction } from "@/lib/ai/tools/swap-actions/erc20ToNativeSwapTransaction";
+// import { nativeToErc20SwapTransaction } from "@/lib/ai/tools/swap-actions/nativeToErc20SwapTransaction";
 
 export const maxDuration = 60;
 
@@ -208,9 +209,10 @@ export async function POST(request: Request) {
                   "colendSupplyErc20",
                   "colendWithdrawErc20",
                   "colendWithdrawCore",
-                  "erc20ToErc20SwapTransaction",
-                  "erc20ToNativeSwapTransaction",
-                  "nativeToErc20SwapTransaction",
+                  // "erc20ToErc20SwapTransaction",
+                  // "erc20ToNativeSwapTransaction",
+                  // "nativeToErc20SwapTransaction",
+                  "tokenSwapTransaction",
                 ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
@@ -235,9 +237,10 @@ export async function POST(request: Request) {
             colendSupplyErc20,
             colendWithdrawErc20,
             colendWithdrawCore,
-            erc20ToErc20SwapTransaction,
-            erc20ToNativeSwapTransaction,
-            nativeToErc20SwapTransaction,
+            // erc20ToErc20SwapTransaction,
+            // erc20ToNativeSwapTransaction,
+            // nativeToErc20SwapTransaction,
+            tokenSwapTransaction,
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,

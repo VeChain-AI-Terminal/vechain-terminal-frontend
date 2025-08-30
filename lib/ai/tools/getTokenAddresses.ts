@@ -16,6 +16,8 @@ export const getTokenAddresses = tool({
   inputSchema: z.object({}),
   execute: async () => {
     const tokenAddressList = [
+      { name: "CORE", address: "0x00" },
+
       { name: "WCORE", address: WCORE_TOKEN_ADDRESS },
       { name: "USDC", address: USDC_TOKEN_ADDRESS },
       { name: "USDT", address: USDT_TOKEN_ADDRESS },

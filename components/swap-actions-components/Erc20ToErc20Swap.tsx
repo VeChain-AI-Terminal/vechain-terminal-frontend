@@ -159,8 +159,12 @@ export default function Erc20ToErc20Swap({
       refetchInterval: 5000, // 🔥 auto refetch every 5s
     },
   });
+  const slippagePercent = 0.5;
   const expectedOut = expectedOutRaw as bigint | undefined;
-  const minOut = expectedOut ? (expectedOut * 995n) / 1000n : 0n;
+  const slippageBps = BigInt(Math.round((slippagePercent ?? 0.5) * 100)); // ← added
+  const minOut = expectedOut
+    ? expectedOut - (expectedOut * slippageBps) / 10000n
+    : 0n;
 
   // --- Allowance
   const { data: allowanceRaw } = useReadContract({
@@ -172,7 +176,7 @@ export default function Erc20ToErc20Swap({
     query: { enabled: !!from },
   });
   const allowance = allowanceRaw as bigint | undefined;
-  console.log("allowance --- ", allowance);
+  // console.log("allowance --- ", allowance);
   const isApproved = allowance !== undefined && allowance >= parsedAmount;
 
   // --- Write contracts

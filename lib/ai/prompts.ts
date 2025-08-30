@@ -502,51 +502,62 @@ Limits:
 
 // swaps
 // -------------------- ERC20 ↔ ERC20 --------------------
-export const erc20ToErc20SwapPrompt = `
-Use erc20ToErc20SwapTransaction ONLY when the user wants to SWAP one ERC20 token
-for another ERC20 token (via Molten's router).
+// export const erc20ToErc20SwapPrompt = `
+// Use erc20ToErc20SwapTransaction ONLY when the user wants to SWAP one ERC20 token
+// for another ERC20 token (via Molten's router).
+
+// Process:
+// 1. Identify tokenIn (ERC20 address of token to swap from).
+// 2. Identify tokenOut (ERC20 address of token to receive).
+// 3. Identify amount (string).
+// 4. Call erc20ToErc20SwapTransaction with tokenIn, tokenOut, amount.
+
+// Limits:
+// - This tool is ONLY for ERC20 to ERC20 swaps (NOT native CORE).
+// - Reject or warn if amount greater than or equal to 1000 USD .
+// - If the user says "swap" between two ERC20 tokens → use this tool.
+// `;
+
+// // -------------------- ERC20 → CORE --------------------
+// export const erc20ToNativeSwapPrompt = `
+// Use erc20ToNativeSwapTransaction ONLY when the user wants to SWAP an ERC20 token into native CORE.
+
+// Process:
+// 1. Identify tokenIn (ERC20 contract address).
+// 2. Identify amount (string).
+// 3. Call erc20ToNativeSwapTransaction with tokenIn and amount.
+
+// Limits:
+// - ONLY ERC20 → CORE swaps.
+// - Reject or warn if amount ≥ 1000 USD.
+// - If the user says "swap X token to CORE" → use this tool.
+// `;
+
+// // -------------------- CORE → ERC20 --------------------
+// export const nativeToErc20SwapPrompt = `
+// Use nativeToErc20SwapTransaction ONLY when the user wants to SWAP native CORE into an ERC20 token.
+// always use this if user wants to swap Core tokens to some other token.
+
+// Process:
+// 1. Identify tokenOut (ERC20 address).
+// 2. Identify amount of CORE (string).
+// 3. Call nativeToErc20SwapTransaction with tokenOut and amount.
+
+// Limits:
+// - ONLY CORE → ERC20 swaps.
+// - Reject or warn if amount ≥ 1000 CORE.
+// - If the user says "swap CORE to <token>" or "convert CORE" → use this tool.
+// `;
+
+export const tokenSwapTransactionPrompt = `
+Use tokenSwapTransaction ONLY when the user wants to SWAP one  token
+for another  token (via Molten's router).
 
 Process:
-1. Identify tokenIn (ERC20 address of token to swap from).
-2. Identify tokenOut (ERC20 address of token to receive).
+1. Identify tokenIn ( address of token to swap from).
+2. Identify tokenOut ( address of token to receive).
 3. Identify amount (string).
-4. Call erc20ToErc20SwapTransaction with tokenIn, tokenOut, amount.
-
-Limits:
-- This tool is ONLY for ERC20 to ERC20 swaps (NOT native CORE).
-- Reject or warn if amount greater than or equal to 1000 USD .
-- If the user says "swap" between two ERC20 tokens → use this tool.
-`;
-
-// -------------------- ERC20 → CORE --------------------
-export const erc20ToNativeSwapPrompt = `
-Use erc20ToNativeSwapTransaction ONLY when the user wants to SWAP an ERC20 token into native CORE.
-
-Process:
-1. Identify tokenIn (ERC20 contract address).
-2. Identify amount (string).
-3. Call erc20ToNativeSwapTransaction with tokenIn and amount.
-
-Limits:
-- ONLY ERC20 → CORE swaps.
-- Reject or warn if amount ≥ 1000 USD.
-- If the user says "swap X token to CORE" → use this tool.
-`;
-
-// -------------------- CORE → ERC20 --------------------
-export const nativeToErc20SwapPrompt = `
-Use nativeToErc20SwapTransaction ONLY when the user wants to SWAP native CORE into an ERC20 token.
-always use this if user wants to swap Core tokens to some other token.
-
-Process:
-1. Identify tokenOut (ERC20 address).
-2. Identify amount of CORE (string).
-3. Call nativeToErc20SwapTransaction with tokenOut and amount.
-
-Limits:
-- ONLY CORE → ERC20 swaps.
-- Reject or warn if amount ≥ 1000 CORE.
-- If the user says "swap CORE to <token>" or "convert CORE" → use this tool.
+4. Call tokenSwapTransaction with tokenIn, tokenOut, amount.
 `;
 
 // -------------------- DISAMBIGUATION RULE --------------------
@@ -565,5 +576,5 @@ export const systemPrompt = ({
 }: {
   selectedChatModel: string;
 }) => {
-  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getDefiProtocolsStatsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getTokenAddressesPrompt}\n\n${getPortfolioPrompt}\n\n${getTransactionHistoryPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${colendWithdrawErc20Prompt}\n\n${colendWithdrawCorePrompt}\n\n${erc20ToErc20SwapPrompt}\n\n${erc20ToNativeSwapPrompt}\n\n${nativeToErc20SwapPrompt}\n\n${getCoreScanApiParamsPrompt}\n\n${getCoreScanApiParamsPrompt}\n\n${disambiguationPrompt}`;
+  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getDefiProtocolsStatsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getTokenAddressesPrompt}\n\n${getPortfolioPrompt}\n\n${getTransactionHistoryPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${colendWithdrawErc20Prompt}\n\n${colendWithdrawCorePrompt}\n\n${tokenSwapTransactionPrompt}\n\n${getCoreScanApiParamsPrompt}\n\n${getCoreScanApiParamsPrompt}\n\n${disambiguationPrompt}`;
 };
