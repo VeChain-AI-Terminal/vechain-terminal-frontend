@@ -748,6 +748,8 @@ export default function TokenSwap({
     isApproved,
     approving,
     swapping,
+    swapSuccess,
+    swapReceipt,
     handleApprove,
     handleSwap,
     filteredPaths,
@@ -801,7 +803,7 @@ export default function TokenSwap({
           </button>
         ) : (
           <button
-            // disabled={swapping}
+            disabled={swapping}
             onClick={handleSwap}
             className="flex items-center justify-center gap-2 bg-white text-black py-2 px-4 rounded-md font-medium hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed w-full h-10"
           >
@@ -817,7 +819,7 @@ export default function TokenSwap({
         )}
       </div>
 
-      {/* Success card
+      {/* Success card */}
       {swapSuccess && swapReceipt?.status === "success" && (
         <div className="bg-zinc-800 rounded-xl p-6 mt-6 flex flex-col items-center text-center border border-green-500 max-w-lg">
           <div className="text-green-500 mb-3">
@@ -832,10 +834,10 @@ export default function TokenSwap({
             </span>
           </div>
           <p className="text-gray-500 text-sm">via Molten Router</p>
-          {swapHash && (
+          {swapReceipt?.transactionHash && (
             <p>
               <Link
-                href={`https://scan.coredao.org/tx/${swapHash}`}
+                href={`https://scan.coredao.org/tx/${swapReceipt?.transactionHash}`}
                 target="_blank"
                 className="underline text-blue-600 text-sm"
               >
@@ -844,7 +846,7 @@ export default function TokenSwap({
             </p>
           )}
         </div>
-      )} */}
+      )}
     </div>
   );
 }
