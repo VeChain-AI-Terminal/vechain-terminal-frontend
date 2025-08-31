@@ -20,6 +20,10 @@ import {
   STCORE_TOKEN_ADDRESS,
   ALGEBRA_FACTORY,
 } from "@/lib/constants";
+import Link from "next/link";
+import { CheckCircleFillIcon } from "@/components/icons";
+import { FaSpinner } from "react-icons/fa";
+import { ArrowRightCircle } from "lucide-react";
 
 // ========================================
 // ABIs
@@ -62,8 +66,8 @@ const erc20MetaAbi = [
   },
 ];
 
-// Multi-hop router (Algebra Integral / Molten)
 export const routerAbi = [
+  // ✅ Multi-hop exactInput: 5 fields
   {
     type: "function",
     name: "exactInput",
@@ -74,6 +78,27 @@ export const routerAbi = [
         type: "tuple",
         components: [
           { name: "path", type: "bytes" },
+          { name: "recipient", type: "address" },
+          { name: "deadline", type: "uint256" },
+          { name: "amountIn", type: "uint256" },
+          { name: "amountOutMinimum", type: "uint256" },
+        ],
+      },
+    ],
+    outputs: [{ name: "amountOut", type: "uint256" }],
+  },
+  // ✅ Single-hop exactInputSingle (has limitSqrtPrice)
+  {
+    type: "function",
+    name: "exactInputSingle",
+    stateMutability: "payable",
+    inputs: [
+      {
+        name: "params",
+        type: "tuple",
+        components: [
+          { name: "tokenIn", type: "address" },
+          { name: "tokenOut", type: "address" },
           { name: "recipient", type: "address" },
           { name: "deadline", type: "uint256" },
           { name: "amountIn", type: "uint256" },
@@ -249,7 +274,7 @@ const generatePaths = (
     }
   }
 
-  console.log("paths --", paths);
+  // console.log("paths --", paths);
   return paths;
 };
 
@@ -266,7 +291,7 @@ const pairsFromPaths = (paths: `0x${string}`[][]) => {
       }
     }
   }
-  console.log("all possible pool  --- ", pairs);
+  // console.log("all possible pool  --- ", pairs);
   return pairs;
 };
 
@@ -321,7 +346,7 @@ export function useDynamicSwap({
     query: { enabled: candidatePairs.length > 0 },
   });
 
-  console.log("factory results  --- ", factoryResults);
+  // console.log("factory results  --- ", factoryResults);
 
   const pairHasPool = useMemo(() => {
     const map = new Map<string, boolean>();
@@ -340,7 +365,7 @@ export function useDynamicSwap({
       map.set(key, exists);
     }
 
-    console.log("map -- ", map);
+    // console.log("map -- ", map);
     return map;
   }, [factoryResults, candidatePairs]);
 
@@ -356,7 +381,7 @@ export function useDynamicSwap({
       return true;
     });
   }, [candidatePaths, pairHasPool]);
-  console.log("filtered paths --- ", filteredPaths);
+  // console.log("filtered paths --- ", filteredPaths);
 
   // Build quoter calls: [V2full, V1min] per path
   const quoterCalls = filteredPaths.flatMap((p) => [
@@ -476,14 +501,114 @@ export function useDynamicSwap({
       return;
     }
 
-    const path = bestPathQuote.path;
+    const path = bestPathQuote.path; // [tokenIn, ..., tokenOut] (WCORE-canonicalized)
+    const encodedPath = encodePath(path);
     const deadline = BigInt(Math.floor(Date.now() / 1000) + 600);
     const amountOutMinimum = bestPathQuote.minOut;
 
     const isCoreIn = tokenIn === "0x00";
     const isCoreOut = tokenOut === "0x00";
 
-    // If output is CORE, we first receive WCORE to router, then unwrap to CORE.
+    // Safety: CORE-in must start with WCORE
+    if (
+      isCoreIn &&
+      path[0].toLowerCase() !== WCORE_TOKEN_ADDRESS.toLowerCase()
+    ) {
+      console.error("CORE-in path must start with WCORE. Got:", path[0]);
+      return;
+    }
+
+    // SINGLE-HOP (2 tokens) → exactInputSingle
+    if (path.length === 2) {
+      const [a, b] = path as [`0x${string}`, `0x${string}`];
+      const calls: `0x${string}`[] = [];
+
+      if (!isCoreIn && isCoreOut) {
+        // ERC20 -> CORE: swap to WCORE (recipient router) then unwrap all to user
+        const exactInputSingleData = encodeFunctionData({
+          abi: routerAbi,
+          functionName: "exactInputSingle",
+          args: [
+            {
+              tokenIn: a,
+              tokenOut: WCORE_TOKEN_ADDRESS as `0x${string}`,
+              recipient: MOLTEN_SWAP_ROUTER as `0x${string}`,
+              deadline,
+              amountIn: amountInWei,
+              amountOutMinimum,
+              limitSqrtPrice: 0n,
+            },
+          ],
+        });
+        const unwrapData = encodeFunctionData({
+          abi: routerAbi,
+          functionName: "unwrapWNativeToken",
+          args: [0n, from as `0x${string}`], // unwrap full WCORE
+        });
+        calls.push(exactInputSingleData, unwrapData);
+
+        return writeSwap({
+          address: MOLTEN_SWAP_ROUTER,
+          abi: routerAbi,
+          functionName: "multicall",
+          args: [calls],
+        });
+      }
+
+      if (isCoreIn && !isCoreOut) {
+        // CORE -> ERC20: send value; router wraps internally, recipient = user
+        const exactInputSingleData = encodeFunctionData({
+          abi: routerAbi,
+          functionName: "exactInputSingle",
+          args: [
+            {
+              tokenIn: WCORE_TOKEN_ADDRESS as `0x${string}`,
+              tokenOut: b,
+              recipient: from as `0x${string}`,
+              deadline,
+              amountIn: amountInWei,
+              amountOutMinimum,
+              limitSqrtPrice: 0n,
+            },
+          ],
+        });
+        calls.push(exactInputSingleData);
+
+        return writeSwap({
+          address: MOLTEN_SWAP_ROUTER,
+          abi: routerAbi,
+          functionName: "multicall",
+          args: [calls],
+          value: amountInWei,
+        });
+      }
+
+      // ERC20 -> ERC20 single-hop
+      const exactInputSingleData = encodeFunctionData({
+        abi: routerAbi,
+        functionName: "exactInputSingle",
+        args: [
+          {
+            tokenIn: a,
+            tokenOut: b,
+            recipient: from as `0x${string}`,
+            deadline,
+            amountIn: amountInWei,
+            amountOutMinimum,
+            limitSqrtPrice: 0n,
+          },
+        ],
+      });
+
+      return writeSwap({
+        address: MOLTEN_SWAP_ROUTER,
+        abi: routerAbi,
+        functionName: "multicall",
+        args: [[exactInputSingleData]],
+      });
+    }
+
+    // MULTI-HOP (≥3 tokens) → exactInput (NO limitSqrtPrice)
     const recipient = isCoreOut
       ? (MOLTEN_SWAP_ROUTER as `0x${string}`)
       : (from as `0x${string}`);
@@ -493,55 +618,33 @@ export function useDynamicSwap({
       functionName: "exactInput",
       args: [
         {
-          path: encodePath(path),
+          path: encodedPath,
           recipient,
           deadline,
           amountIn: amountInWei,
           amountOutMinimum,
-          limitSqrtPrice: 0n,
         },
       ],
     });
-    console.log("path --- ", path);
-    console.log("encodePath(path) --- ", encodePath(path));
 
-    // Case A: ERC20 -> CORE (exactInput then unwrap)
-    if (!isCoreIn && isCoreOut) {
+    const calls: `0x${string}`[] = [exactInputData];
+
+    if (isCoreOut) {
+      // unwrap full WCORE to CORE for user
       const unwrapData = encodeFunctionData({
         abi: routerAbi,
         functionName: "unwrapWNativeToken",
-        args: [amountOutMinimum, from as `0x${string}`],
+        args: [0n, from as `0x${string}`],
       });
-
-      // exactInput + unwrap via multicall
-      writeSwap({
-        address: MOLTEN_SWAP_ROUTER,
-        abi: routerAbi,
-        functionName: "multicall",
-        args: [[exactInputData, unwrapData]],
-      });
-      return;
+      calls.push(unwrapData);
     }
 
-    // Case B: CORE -> ERC20 (send native value; router wraps WCORE internally if supported)
-    if (isCoreIn && !isCoreOut) {
-      writeSwap({
-        address: MOLTEN_SWAP_ROUTER,
-        abi: routerAbi,
-        functionName: "multicall",
-        args: [[exactInputData]],
-        value: amountInWei, // send CORE in
-      });
-      return;
-    }
-
-    // Case C: ERC20 -> ERC20
-    writeSwap({
+    return writeSwap({
       address: MOLTEN_SWAP_ROUTER,
       abi: routerAbi,
       functionName: "multicall",
-      args: [[exactInputData]],
-      ...(isCoreIn ? { value: amountInWei } : {}), // CORE->CORE rare, but safe
+      args: [calls],
+      ...(isCoreIn ? { value: amountInWei } : {}),
     });
   }
 
@@ -651,36 +754,97 @@ export default function TokenSwap({
   } = useDynamicSwap({ tokenIn, tokenOut, amountInWei, slippagePct });
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="text-sm opacity-80">
-        Paths considered: {filteredPaths.length}
+    <div className="flex flex-col gap-2">
+      <div className="bg-zinc-900 text-white p-4 rounded-2xl shadow-md w-full border border-zinc-700 max-w-lg">
+        <h2 className="text-xl font-semibold mb-4 flex flex-row flex-wrap gap-2 items-center">
+          <span>Swap {symbolIn || "…"}</span> <ArrowRightCircle size={24} />{" "}
+          <span>{symbolOut || "…"}</span>
+        </h2>
+
+        {/* Swap summary */}
+        <div className="text-sm grid grid-cols-2 gap-y-2 mb-6">
+          <span className="text-gray-400">Amount In</span>
+          <span className="text-right font-medium">
+            {amount} {symbolIn}
+          </span>
+
+          <span className="text-gray-400">Est. Receive</span>
+          <span className="text-right font-medium">
+            {expectedOut
+              ? Number(formatUnits(expectedOut, decimalsOut)).toFixed(3)
+              : "…"}{" "}
+            {symbolOut}
+          </span>
+
+          <span className="text-gray-400">Min. Receive (0.5% slip)</span>
+          <span className="text-right font-medium">
+            {minOut ? Number(formatUnits(minOut, decimalsOut)).toFixed(3) : "…"}{" "}
+            {symbolOut}
+          </span>
+        </div>
+
+        {/* Action buttons */}
+        {!isApproved ? (
+          <button
+            disabled={approving}
+            onClick={handleApprove}
+            className="flex items-center justify-center gap-2 bg-white text-black py-2 px-4 rounded-md font-medium hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed w-full h-10"
+          >
+            {approving ? (
+              <>
+                <FaSpinner className="animate-spin" />
+                <span>Approving {symbolIn}…</span>
+              </>
+            ) : (
+              <>Approve {symbolIn}</>
+            )}
+          </button>
+        ) : (
+          <button
+            // disabled={swapping}
+            onClick={handleSwap}
+            className="flex items-center justify-center gap-2 bg-white text-black py-2 px-4 rounded-md font-medium hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed w-full h-10"
+          >
+            {swapping ? (
+              <>
+                <FaSpinner className="animate-spin" />
+                <span>Swapping…</span>
+              </>
+            ) : (
+              <>Swap</>
+            )}
+          </button>
+        )}
       </div>
 
-      <div className="text-sm">
-        Expected out:{" "}
-        {expectedOut ? formatUnits(expectedOut, decimalsOut) : "—"}
-      </div>
-      <div className="text-sm">
-        Min out (after slippage): {formatUnits(minOut, decimalsOut)}
-      </div>
-
-      {!isApproved ? (
-        <button
-          className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50"
-          onClick={handleApprove}
-          disabled={approving}
-        >
-          {approving ? "Approving..." : "Approve"}
-        </button>
-      ) : (
-        <button
-          className="px-4 py-2 rounded bg-green-600 text-white disabled:opacity-50"
-          onClick={handleSwap}
-          disabled={swapping || filteredPaths.length === 0}
-        >
-          {swapping ? "Swapping..." : "Swap"}
-        </button>
-      )}
+      {/* Success card
+      {swapSuccess && swapReceipt?.status === "success" && (
+        <div className="bg-zinc-800 rounded-xl p-6 mt-6 flex flex-col items-center text-center border border-green-500 max-w-lg">
+          <div className="text-green-500 mb-3">
+            <CheckCircleFillIcon size={40} />
+          </div>
+          <h3 className="text-xl font-semibold mb-2">Swap Successful</h3>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-lg font-bold">
+              {amount} {symbolIn} →{" "}
+              {Number(formatUnits(expectedOut ?? 0n, decimalsOut)).toFixed(3)}{" "}
+              {symbolOut}
+            </span>
+          </div>
+          <p className="text-gray-500 text-sm">via Molten Router</p>
+          {swapHash && (
+            <p>
+              <Link
+                href={`https://scan.coredao.org/tx/${swapHash}`}
+                target="_blank"
+                className="underline text-blue-600 text-sm"
+              >
+                View on CoreScan
+              </Link>
+            </p>
+          )}
+        </div>
+      )} */}
     </div>
   );
 }
