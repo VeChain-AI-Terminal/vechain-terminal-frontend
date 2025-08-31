@@ -86,12 +86,12 @@ General Rules:
 2. Break the goal into steps. Example:
    - If user wants best APY for 500 USDC:
        a. Fetch user portfolio with getPortfolio.
-       b. Fetch real-time yields with getDefiStats.
+       b. Fetch real-time yields with getDefiProtocolsStats.
        c. Compare strategies (lend, stake, ETF).
        d. If another token yields better, suggest a swap (via the correct swap tool).
        e. After swap, call the lending/staking tool.
    - If user wants to stake but doesn't specify validator:
-       a. Fetch validators (getDefiStats or getValidators).
+       a. Fetch validators (getDefiProtocolsStats or getValidators).
        b. Show them ranked.
        c. Ask user to choose.
        d. Call staking tool with chosen validator.
@@ -108,7 +108,9 @@ General Rules:
 7. Always check beta safety: reject/ask if amount ≥ 1000 CORE or ≥ 1000 units for ERC20s.
 8. If ENS name is given, resolve it with ensToAddress before continuing.
 9. Treat every user query as intent fulfillment: PLAN → FETCH → EXECUTE.
-
+10. Always use decimal form for showing data. use the convertHexToDecimal tool for converting hex to decimal.
+11. Strictly prohibit using 100% of native token balance in any transaction; always reserve sufficient native tokens for gas fees (minimum $0.50 to $1.00 USD equivalent). This applies to all transaction types including send, swap, bridge, portfolio building, staking, lending, and others.
+ 
 `;
 
 // portfolio
@@ -280,7 +282,7 @@ use the makeCoreScanApiCall tool to make an api fetch call to the api endpoint. 
 
 // protocols stats
 export const getDefiProtocolsStatsPrompt = `
-The tool getDefiStats fetches real-time DeFi and staking data for the Core ecosystem.
+The tool getDefiProtocolsStats fetches real-time DeFi and staking data for the Core ecosystem.
 It merges three sources: Core DAO validator stats, Colend protocol pool stats, and DeSyn protocol ETF/fund stats.
 Each protocol section returns both:
 - raw (full API response for reference)
@@ -319,7 +321,7 @@ Each protocol section returns both:
   - strategy_token_label (e.g., SolvBTC.b, oBTC, USDT)
   - risk_label
 
-## When to use getDefiStats
+## When to use getDefiProtocolsStats
 Use this tool whenever the user asks about:
 - Core DAO validators or staking stats
 - Validator rewards, hybrid score, or realtime performance
@@ -418,7 +420,7 @@ if the user wants to transfer his staked core,from current validator to any othe
 export const colendSupplyCorePrompt = `
 If and ONLY if the user explicitly wants to lend **CORE** tokens on Colend, use the supplyCore tool.
 
-✅ colendSupplyCore tool is for CORE token ONLY — not stCORE, not WCORE, not any other token.
+✅ colendSupplyCore tool is for CORE token ONLY , not any other token.
 
 Rules:
 - CORE token = native CORE coin on the Core blockchain (chainId ${CHAIN_ID}).
@@ -550,7 +552,7 @@ Limits:
 // `;
 
 export const tokenSwapTransactionPrompt = `
-Use tokenSwapTransaction ONLY when the user wants to SWAP one  token
+Use tokenSwapTransaction ONLY when the user wants to SWAP or CONVERT one  token
 for another  token (via Molten's router).
 
 Process:

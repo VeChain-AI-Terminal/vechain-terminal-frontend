@@ -38,6 +38,7 @@ import { getValidators } from "@/lib/ai/tools/core-staking-actions/getValidators
 import { getDefiProtocolsStats } from "@/lib/ai/tools/getDefiProtocolsStats";
 //utils
 import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
+import { convertHexToDecimal } from "@/lib/ai/tools/convertHexToDecimal";
 
 //send transaction
 import { makeSendTransaction } from "@/lib/ai/tools/makeSendTransaction";
@@ -203,6 +204,7 @@ export async function POST(request: Request) {
                   "getPortfolio",
                   "getTransactionHistory",
                   "ensToAddress",
+                  "convertHexToDecimal",
                   "getUserWalletInfo",
                   // "getColendStats",
                   "colendSupplyCore",
@@ -231,6 +233,7 @@ export async function POST(request: Request) {
             getPortfolio,
             getTransactionHistory,
             ensToAddress,
+            convertHexToDecimal,
             getUserWalletInfo,
             // getColendStats,
             colendSupplyCore,

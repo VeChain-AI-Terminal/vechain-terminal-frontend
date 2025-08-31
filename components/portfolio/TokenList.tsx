@@ -111,9 +111,9 @@ function TokensSection({ address }: { address: string }) {
       {/* Header row */}
       <div className="grid grid-cols-[1.5fr,1fr,1fr,1fr,0.8fr] text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg px-4 py-2">
         <div>Token</div>
-        <div>Price</div>
         <div>Amount</div>
         <div>USD Value</div>
+        <div>Price</div>
         <div>24h</div>
       </div>
 
@@ -163,11 +163,6 @@ function TokensSection({ address }: { address: string }) {
                   </div>
                 </div>
 
-                {/* Price */}
-                <div className="text-sm text-zinc-900 dark:text-zinc-100 tabular-nums">
-                  {fmtCompact(t.price)}
-                </div>
-
                 {/* Amount */}
                 <div className="text-sm text-zinc-900 dark:text-zinc-100 tabular-nums">
                   {fmtNum(t.amount)}
@@ -177,7 +172,10 @@ function TokensSection({ address }: { address: string }) {
                 <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100 tabular-nums">
                   {fmtCompact(t.usdValue)}
                 </div>
-
+                {/* Price */}
+                <div className="text-sm text-zinc-900 dark:text-zinc-100 tabular-nums">
+                  {fmtCompact(t.price)}
+                </div>
                 {/* 24h Change */}
                 <div
                   className={`text-sm font-medium tabular-nums ${changeColor(
