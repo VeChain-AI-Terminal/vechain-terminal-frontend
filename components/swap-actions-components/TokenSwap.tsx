@@ -773,14 +773,16 @@ export default function TokenSwap({
           <span className="text-gray-400">Est. Receive</span>
           <span className="text-right font-medium">
             {expectedOut
-              ? Number(formatUnits(expectedOut, decimalsOut)).toFixed(3)
+              ? Number(formatUnits(expectedOut, decimalsOut)).toFixed(10)
               : "…"}{" "}
             {symbolOut}
           </span>
 
           <span className="text-gray-400">Min. Receive (0.5% slip)</span>
           <span className="text-right font-medium">
-            {minOut ? Number(formatUnits(minOut, decimalsOut)).toFixed(3) : "…"}{" "}
+            {minOut
+              ? Number(formatUnits(minOut, decimalsOut)).toFixed(10)
+              : "…"}{" "}
             {symbolOut}
           </span>
         </div>
