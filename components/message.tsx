@@ -47,6 +47,7 @@ import ColendWithdrawCore from "@/components/colend-actions-components/colend-wi
 import { ColendWithdrawCoreTxProps } from "@/lib/ai/tools/colend/colendWithdrawCore";
 import TokenSwap from "@/components/swap-actions-components/TokenSwap";
 import { TokenSwapProps } from "@/lib/ai/tools/swap-actions/tokenSwapTransaction";
+import { SLIPPAGE_FOR_SWAPS } from "@/lib/constants";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -776,6 +777,7 @@ const PurePreviewMessage = ({
                       tokenIn={tx.tokenIn as `0x${string}`}
                       tokenOut={tx.tokenOut as `0x${string}`}
                       amount={tx.amount}
+                      slippagePct={SLIPPAGE_FOR_SWAPS}
                     />
                   );
                 }

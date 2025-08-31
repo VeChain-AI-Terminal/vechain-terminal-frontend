@@ -49,3 +49,5 @@ export const DUALCORE_TOKEN_ADDRESS =
 
 export const ALGEBRA_FACTORY =
   "0x74EfE55beA4988e7D92D03EFd8ddB8BF8b7bD597" as `0x${string}`;
+
+export const SLIPPAGE_FOR_SWAPS = "0.5";
