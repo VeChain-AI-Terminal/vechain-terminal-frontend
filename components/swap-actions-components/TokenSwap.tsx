@@ -1,26 +1,29 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
+  useReadContract,
+  useReadContracts,
   useWriteContract,
   useWaitForTransactionReceipt,
-  useReadContracts,
-  useReadContract,
 } from "wagmi";
-import { parseUnits, encodeFunctionData, formatUnits } from "viem";
+import { encodeFunctionData, formatUnits, parseUnits } from "viem";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { FaSpinner } from "react-icons/fa";
-import { CheckCircleFillIcon } from "@/components/icons";
-import Link from "next/link";
+
+// === Constants you likely already have ===
 import {
   MOLTEN_QUOTER,
   MOLTEN_SWAP_ROUTER,
   WCORE_TOKEN_ADDRESS,
+  USDC_TOKEN_ADDRESS,
+  USDT_TOKEN_ADDRESS,
+  STCORE_TOKEN_ADDRESS,
+  ALGEBRA_FACTORY,
 } from "@/lib/constants";
-import { ArrowLeft, ArrowRight, ArrowRightCircle } from "lucide-react";
 
-// --- Slippage tolerance (0.5%)
-const SLIPPAGE_BPS = 50; // 50 basis points = 0.5%
+// ========================================
+// ABIs
+// ========================================
 
 const erc20MetaAbi = [
   {
@@ -59,18 +62,18 @@ const erc20MetaAbi = [
   },
 ];
 
-const routerAbi = [
+// Multi-hop router (Algebra Integral / Molten)
+export const routerAbi = [
   {
     type: "function",
-    name: "exactInputSingle",
+    name: "exactInput",
     stateMutability: "payable",
     inputs: [
       {
         name: "params",
         type: "tuple",
         components: [
-          { name: "tokenIn", type: "address" },
-          { name: "tokenOut", type: "address" },
+          { name: "path", type: "bytes" },
           { name: "recipient", type: "address" },
           { name: "deadline", type: "uint256" },
           { name: "amountIn", type: "uint256" },
@@ -79,6 +82,7 @@ const routerAbi = [
         ],
       },
     ],
+    outputs: [{ name: "amountOut", type: "uint256" }],
   },
   {
     type: "function",
@@ -95,38 +99,486 @@ const routerAbi = [
     stateMutability: "payable",
     inputs: [{ name: "data", type: "bytes[]" }],
   },
-];
+] as const;
 
-const quoterAbi = [
+// QuoterV2 (Algebra Integral): quoteExactInput(bytes,uint256)
+// returns (amountOut, amountIn, sqrtPriceX96AfterList[], initializedTicksCrossedList[], gasEstimate, feeList[])
+export const quoterV2FullAbi = [
   {
     type: "function",
-    name: "quoteExactInputSingle",
-    stateMutability: "view",
+    name: "quoteExactInput",
+    stateMutability: "nonpayable", // not 'view' — call via eth_call
     inputs: [
-      {
-        name: "params",
-        type: "tuple",
-        components: [
-          { name: "tokenIn", type: "address" },
-          { name: "tokenOut", type: "address" },
-          { name: "amountIn", type: "uint256" },
-          { name: "limitSqrtPrice", type: "uint160" },
-        ],
-      },
+      { name: "path", type: "bytes" },
+      { name: "amountInRequired", type: "uint256" },
+    ],
+    outputs: [
+      { name: "amountOut", type: "uint256" },
+      { name: "amountIn", type: "uint256" },
+      { name: "sqrtPriceX96AfterList", type: "uint160[]" },
+      { name: "initializedTicksCrossedList", type: "uint32[]" },
+      { name: "gasEstimate", type: "uint256" },
+      { name: "feeList", type: "uint16[]" },
+    ],
+  },
+] as const;
+
+// Minimal (older Quoter-style) fallback: quoteExactInput(bytes,uint256) returns (uint256 amountOut)
+export const quoterV1MinAbi = [
+  {
+    type: "function",
+    name: "quoteExactInput",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "path", type: "bytes" },
+      { name: "amountIn", type: "uint256" },
     ],
     outputs: [{ name: "amountOut", type: "uint256" }],
   },
+] as const;
+
+// Algebra factory minimal ABI (pool existence checks)
+export const algebraFactoryAbi = [
+  {
+    type: "function",
+    name: "poolByPair",
+    stateMutability: "view",
+    inputs: [
+      { name: "tokenA", type: "address" },
+      { name: "tokenB", type: "address" },
+    ],
+    outputs: [{ name: "pool", type: "address" }],
+  },
+] as const;
+
+// ========================================
+// Chain-specific addresses (Core chain)
+// ========================================
+
+// ========================================
+// Helpers
+// ========================================
+
+const toWcoreIfNative = (addr: `0x${string}`) =>
+  addr.toLowerCase() === "0x00" ? (WCORE_TOKEN_ADDRESS as `0x${string}`) : addr;
+
+const sameAddr = (a?: string, b?: string) =>
+  !!a && !!b && a.toLowerCase() === b.toLowerCase();
+
+const sortPair = (
+  a: `0x${string}`,
+  b: `0x${string}`
+): [`0x${string}`, `0x${string}`] => (BigInt(a) < BigInt(b) ? [a, b] : [b, a]);
+
+const pairKey = (a: `0x${string}`, b: `0x${string}`) => {
+  const [x, y] = sortPair(a, b);
+  return `${x.toLowerCase()}_${y.toLowerCase()}`;
+};
+
+// Pack addresses for Algebra multi-hop (no fee bytes for dynamic-fee pools)
+const encodePath = (addrs: `0x${string}`[]) =>
+  ("0x" + addrs.map((a) => a.slice(2)).join("")) as `0x${string}`;
+
+// Curated candidate intermediates; expand or make dynamic later
+const CANDIDATE_TOKENS: `0x${string}`[] = [
+  WCORE_TOKEN_ADDRESS as `0x${string}`,
+  USDC_TOKEN_ADDRESS as `0x${string}`,
+  USDT_TOKEN_ADDRESS as `0x${string}`,
+  STCORE_TOKEN_ADDRESS as `0x${string}`,
 ];
+
+const generatePaths = (
+  tokenIn0: `0x${string}`,
+  tokenOut0: `0x${string}`,
+  tokens: `0x${string}`[]
+) => {
+  const inW = toWcoreIfNative(tokenIn0);
+  const outW = toWcoreIfNative(tokenOut0);
+
+  // De-dupe & normalize tokens (lowercase)
+  const uniqTokens = Array.from(
+    new Set(tokens.map((t) => t.toLowerCase()))
+  ) as `0x${string}`[];
+
+  const set = new Set<string>();
+  const paths: `0x${string}`[][] = [];
+
+  // Optional safety cap to avoid huge batches
+  const MAX_PATHS = 500;
+
+  // --- direct (0 hops)
+  if (!sameAddr(inW, outW)) {
+    const p = [inW, outW] as `0x${string}`[];
+    const key = p.join(">");
+    if (!set.has(key)) {
+      set.add(key);
+      paths.push(p);
+    }
+  }
+
+  // --- one-hop (1 intermediate)
+  for (const mid of uniqTokens) {
+    if (sameAddr(mid, inW) || sameAddr(mid, outW)) continue;
+    const p = [inW, mid, outW] as `0x${string}`[];
+    const key = p.join(">");
+    if (!set.has(key)) {
+      set.add(key);
+      paths.push(p);
+      if (paths.length >= MAX_PATHS) break;
+    }
+  }
+
+  // --- two-hop (2 intermediates)
+  outer: for (let i = 0; i < uniqTokens.length; i++) {
+    const a = uniqTokens[i];
+    if (sameAddr(a, inW) || sameAddr(a, outW)) continue;
+
+    for (let j = 0; j < uniqTokens.length; j++) {
+      if (j === i) continue;
+      const b = uniqTokens[j];
+      if (sameAddr(b, inW) || sameAddr(b, outW)) continue;
+      if (sameAddr(a, b)) continue; // already guarded by j!==i, but keep explicit
+
+      const p = [inW, a, b, outW] as `0x${string}`[];
+      const key = p.join(">");
+      if (!set.has(key)) {
+        set.add(key);
+        paths.push(p);
+        if (paths.length >= MAX_PATHS) break outer;
+      }
+    }
+  }
+
+  console.log("paths --", paths);
+  return paths;
+};
+
+const pairsFromPaths = (paths: `0x${string}`[][]) => {
+  const seen = new Set<string>();
+  const pairs: [`0x${string}`, `0x${string}`][] = [];
+  for (const p of paths) {
+    for (let i = 0; i < p.length - 1; i++) {
+      const [a, b] = sortPair(p[i], p[i + 1]);
+      const key = pairKey(a, b);
+      if (!seen.has(key)) {
+        seen.add(key);
+        pairs.push([a, b]);
+      }
+    }
+  }
+  console.log("all possible pool  --- ", pairs);
+  return pairs;
+};
+
+// ========================================
+// Hook: dynamic multi-hop pathfinding + swap
+// ========================================
+
+type UseDynamicSwapArgs = {
+  tokenIn: `0x${string}`; // "0x00" sentinel for CORE is allowed
+  tokenOut: `0x${string}`; // "0x00" sentinel for CORE is allowed
+  amountInWei: bigint;
+  slippagePct: string; // e.g. "0.50" for 0.50%
+};
+
+export function useDynamicSwap({
+  tokenIn,
+  tokenOut,
+  amountInWei,
+  slippagePct,
+}: UseDynamicSwapArgs) {
+  const { address: from } = useAppKitAccount();
+
+  // Build candidate paths
+  const canonicalIn = useMemo(
+    () => tokenIn ?? ("0x00" as `0x${string}`),
+    [tokenIn]
+  );
+  const canonicalOut = useMemo(
+    () => tokenOut ?? ("0x00" as `0x${string}`),
+    [tokenOut]
+  );
+
+  const candidatePaths = useMemo(() => {
+    if (!tokenIn || !tokenOut || amountInWei <= 0n)
+      return [] as `0x${string}`[][];
+    return generatePaths(canonicalIn, canonicalOut, CANDIDATE_TOKENS);
+  }, [canonicalIn, canonicalOut, amountInWei, tokenIn, tokenOut]);
+
+  // Pool existence pre-checks via factory
+  const candidatePairs = useMemo(
+    () => pairsFromPaths(candidatePaths),
+    [candidatePaths]
+  );
+
+  const { data: factoryResults } = useReadContracts({
+    contracts: candidatePairs.map(([a, b]) => ({
+      address: ALGEBRA_FACTORY,
+      abi: algebraFactoryAbi,
+      functionName: "poolByPair",
+      args: [a, b],
+    })),
+    query: { enabled: candidatePairs.length > 0 },
+  });
+
+  console.log("factory results  --- ", factoryResults);
+
+  const pairHasPool = useMemo(() => {
+    const map = new Map<string, boolean>();
+    if (!factoryResults || candidatePairs.length === 0) return map;
+    for (let i = 0; i < candidatePairs.length; i++) {
+      const [a, b] = candidatePairs[i];
+      const key = pairKey(a, b);
+      const res = factoryResults[i];
+      let exists = false;
+      if (res?.status === "success" && res.result) {
+        const addr =
+          (res.result as `0x${string}`) ??
+          "0x0000000000000000000000000000000000000000";
+        exists = addr !== "0x0000000000000000000000000000000000000000";
+      }
+      map.set(key, exists);
+    }
+
+    console.log("map -- ", map);
+    return map;
+  }, [factoryResults, candidatePairs]);
+
+  const filteredPaths = useMemo(() => {
+    if (candidatePaths.length === 0) return [] as `0x${string}`[][];
+    if (!pairHasPool || pairHasPool.size === 0) return [] as `0x${string}`[][];
+    return candidatePaths.filter((p) => {
+      for (let i = 0; i < p.length - 1; i++) {
+        const [a, b] = sortPair(p[i], p[i + 1]);
+        const ok = pairHasPool.get(pairKey(a, b));
+        if (!ok) return false;
+      }
+      return true;
+    });
+  }, [candidatePaths, pairHasPool]);
+  console.log("filtered paths --- ", filteredPaths);
+
+  // Build quoter calls: [V2full, V1min] per path
+  const quoterCalls = filteredPaths.flatMap((p) => [
+    {
+      address: MOLTEN_QUOTER as `0x${string}`,
+      abi: quoterV2FullAbi,
+      functionName: "quoteExactInput",
+      args: [encodePath(p), amountInWei], // ensure this is a BigInt
+    },
+    {
+      address: MOLTEN_QUOTER as `0x${string}`,
+      abi: quoterV1MinAbi,
+      functionName: "quoteExactInput",
+      args: [encodePath(p), amountInWei],
+    },
+  ]);
+
+  const { data: quoteResults } = useReadContracts({
+    contracts: quoterCalls,
+    allowFailure: true, // <- important so one bad decode doesn’t nuke the batch
+    query: { enabled: quoterCalls.length > 0 },
+  });
+
+  // Parse results: prefer V2 full; if it failed, fall back to V1 minimal
+  const slippageBps = BigInt(Math.floor(parseFloat(slippagePct || "0") * 100));
+
+  type QuoteOut = {
+    path: `0x${string}`[];
+    expectedOut: bigint;
+    minOut: bigint;
+    gas?: bigint;
+  };
+
+  const bestPathQuote = useMemo(() => {
+    if (!quoteResults || quoteResults.length === 0) return null;
+
+    const scored: QuoteOut[] = [];
+    for (let i = 0; i < filteredPaths.length; i++) {
+      const resV2 = quoteResults[i * 2];
+      const resV1 = quoteResults[i * 2 + 1];
+      let expectedOut = 0n;
+      let gas: bigint | undefined;
+
+      if (resV2?.status === "success" && resV2.result) {
+        // V2 tuple: [amountOut, amountIn, sqrtList, ticksList, gasEstimate, feeList]
+        const [amountOut, , , , gasEstimate] = resV2.result as [
+          bigint,
+          bigint,
+          bigint[],
+          number[],
+          bigint,
+          number[]
+        ];
+        expectedOut = amountOut ?? 0n;
+        gas = gasEstimate;
+      } else if (resV1?.status === "success" && resV1.result) {
+        // V1 minimal: amountOut only
+        expectedOut = resV1.result as bigint;
+      }
+
+      if (expectedOut > 0n) {
+        const minOut = (expectedOut * (10000n - slippageBps)) / 10000n;
+        scored.push({ path: filteredPaths[i], expectedOut, minOut, gas });
+      }
+    }
+
+    if (scored.length === 0) return null;
+    return scored.reduce((b, c) => (c.minOut > b.minOut ? c : b), scored[0]);
+  }, [quoteResults, filteredPaths, slippageBps]);
+
+  const expectedOut = useMemo(
+    () => bestPathQuote?.expectedOut ?? null,
+    [bestPathQuote]
+  );
+  const minOut = useMemo(() => bestPathQuote?.minOut ?? 0n, [bestPathQuote]);
+
+  // Allowance (ERC-20 tokenIn only)
+  const needsApproval = tokenIn !== "0x00";
+  const { data: allowanceRaw } = useReadContract({
+    address: tokenIn,
+    abi: erc20MetaAbi,
+    functionName: "allowance",
+    args: from && needsApproval ? [from, MOLTEN_SWAP_ROUTER] : undefined,
+    query: { enabled: !!from && needsApproval },
+  });
+  const allowance = allowanceRaw as bigint | undefined;
+  const isApproved =
+    !needsApproval || (allowance !== undefined && allowance >= amountInWei);
+
+  // Writers + receipts
+  const { writeContract: writeApprove, data: approveHash } = useWriteContract();
+  const { writeContract: writeSwap, data: swapHash } = useWriteContract();
+
+  const { isLoading: approving, isSuccess: approveSuccess } =
+    useWaitForTransactionReceipt({ hash: approveHash });
+  const {
+    isLoading: swapping,
+    isSuccess: swapSuccess,
+    data: swapReceipt,
+  } = useWaitForTransactionReceipt({ hash: swapHash });
+
+  // Actions
+  function handleApprove() {
+    if (!from || !needsApproval) return;
+    writeApprove({
+      address: tokenIn,
+      abi: erc20MetaAbi,
+      functionName: "approve",
+      args: [MOLTEN_SWAP_ROUTER, 2n ** 256n - 1n],
+    });
+  }
+
+  function handleSwap() {
+    if (!from || amountInWei <= 0n) return;
+    if (!bestPathQuote || bestPathQuote.path.length < 2) {
+      console.warn("No valid quoted path found.");
+      return;
+    }
+
+    const path = bestPathQuote.path;
+    const deadline = BigInt(Math.floor(Date.now() / 1000) + 600);
+    const amountOutMinimum = bestPathQuote.minOut;
+
+    const isCoreIn = tokenIn === "0x00";
+    const isCoreOut = tokenOut === "0x00";
+
+    // If output is CORE, we first receive WCORE to router, then unwrap to CORE.
+    const recipient = isCoreOut
+      ? (MOLTEN_SWAP_ROUTER as `0x${string}`)
+      : (from as `0x${string}`);
+
+    const exactInputData = encodeFunctionData({
+      abi: routerAbi,
+      functionName: "exactInput",
+      args: [
+        {
+          path: encodePath(path),
+          recipient,
+          deadline,
+          amountIn: amountInWei,
+          amountOutMinimum,
+          limitSqrtPrice: 0n,
+        },
+      ],
+    });
+    console.log("path --- ", path);
+    console.log("encodePath(path) --- ", encodePath(path));
+
+    // Case A: ERC20 -> CORE (exactInput then unwrap)
+    if (!isCoreIn && isCoreOut) {
+      const unwrapData = encodeFunctionData({
+        abi: routerAbi,
+        functionName: "unwrapWNativeToken",
+        args: [amountOutMinimum, from as `0x${string}`],
+      });
+
+      // exactInput + unwrap via multicall
+      writeSwap({
+        address: MOLTEN_SWAP_ROUTER,
+        abi: routerAbi,
+        functionName: "multicall",
+        args: [[exactInputData, unwrapData]],
+      });
+      return;
+    }
+
+    // Case B: CORE -> ERC20 (send native value; router wraps WCORE internally if supported)
+    if (isCoreIn && !isCoreOut) {
+      writeSwap({
+        address: MOLTEN_SWAP_ROUTER,
+        abi: routerAbi,
+        functionName: "multicall",
+        args: [[exactInputData]],
+        value: amountInWei, // send CORE in
+      });
+      return;
+    }
+
+    // Case C: ERC20 -> ERC20
+    writeSwap({
+      address: MOLTEN_SWAP_ROUTER,
+      abi: routerAbi,
+      functionName: "multicall",
+      args: [[exactInputData]],
+      ...(isCoreIn ? { value: amountInWei } : {}), // CORE->CORE rare, but safe
+    });
+  }
+
+  return {
+    from,
+    candidatePaths,
+    filteredPaths,
+    expectedOut,
+    minOut,
+    isApproved,
+    approving,
+    approveSuccess,
+    swapping,
+    swapSuccess,
+    swapReceipt,
+    handleApprove,
+    handleSwap,
+  };
+}
+
+// ========================================
+// Example UI usage (wire to your screen/buttons)
+// ========================================
+
+type SwapWidgetProps = {
+  tokenIn: `0x${string}`; // allow "0x00" for CORE
+  tokenOut: `0x${string}`; // allow "0x00" for CORE
+  amount: string;
+  slippagePct: string; // e.g. "0.50"
+};
 
 export default function TokenSwap({
   tokenIn,
   tokenOut,
   amount,
-}: {
-  tokenIn: `0x${string}`;
-  tokenOut: `0x${string}`;
-  amount: string;
-}) {
+  slippagePct,
+}: SwapWidgetProps) {
   const { address: from } = useAppKitAccount();
   const [slippage, setSlippage] = useState("0.5");
 
@@ -187,263 +639,47 @@ export default function TokenSwap({
   }, [metaData, tokenOut]);
 
   const amountInWei = amount ? parseUnits(amount, decimalsIn) : 0n;
-
-  // --- Quote logic
-  // Quote logic with CORE handling
-  const { data: quoteResult } = useReadContract({
-    address: MOLTEN_QUOTER,
-    abi: quoterAbi,
-    functionName: "quoteExactInputSingle",
-    args: [
-      {
-        tokenIn: tokenIn === "0x00" ? WCORE_TOKEN_ADDRESS : tokenIn, // Check if tokenIn is CORE, then use WCORE
-        tokenOut: tokenOut === "0x00" ? WCORE_TOKEN_ADDRESS : tokenOut, // Check if tokenOut is CORE, then use WCORE
-        amountIn: amountInWei,
-        limitSqrtPrice: 0n,
-      },
-    ],
-    query: { enabled: !!tokenIn && !!tokenOut && amountInWei > 0n },
-  });
-
-  const expectedOut = useMemo(() => {
-    if (!quoteResult) return null;
-    console.log("quote result --- ", quoteResult);
-    return quoteResult as bigint | undefined; // amountOut
-  }, [quoteResult]);
-
-  // --- Apply slippage
-  const slippageBps = BigInt(Math.floor(parseFloat(slippage) * 100));
-  const minOut = useMemo(() => {
-    if (!expectedOut) return 0n;
-    return (expectedOut * (10000n - slippageBps)) / 10000n;
-  }, [expectedOut]);
-
-  // --- Allowance check
-  const { data: allowanceRaw } = useReadContract({
-    address: tokenIn,
-    abi: erc20MetaAbi,
-    functionName: "allowance",
-    args: from ? [from, MOLTEN_SWAP_ROUTER] : undefined,
-    query: { enabled: !!from },
-  });
-  const allowance = allowanceRaw as bigint | undefined;
-  // Determine if approval is needed
-  const isApproved =
-    tokenIn === "0x00" || (allowance !== undefined && allowance >= amountInWei);
-
-  // --- Write hooks
-  const { writeContract: writeApprove, data: approveHash } = useWriteContract();
-  const { writeContract: writeSwap, data: swapHash } = useWriteContract();
-
-  const { isLoading: approving, isSuccess: approveSuccess } =
-    useWaitForTransactionReceipt({ hash: approveHash });
   const {
-    isLoading: swapping,
-    isSuccess: swapSuccess,
-    data: swapReceipt,
-  } = useWaitForTransactionReceipt({ hash: swapHash });
-
-  function handleApprove() {
-    if (!from) return;
-    writeApprove({
-      address: tokenIn,
-      abi: erc20MetaAbi,
-      functionName: "approve",
-      args: [MOLTEN_SWAP_ROUTER, 2n ** 256n - 1n],
-    });
-  }
-
-  function handleSwap() {
-    if (!from || !amount) return;
-
-    // Detect if CORE is involved (either as input or output)
-    const isCoreToErc20 = tokenIn === "0x00" && tokenOut !== "0x00";
-    const isErc20ToCore = tokenIn !== "0x00" && tokenOut === "0x00";
-
-    // Handle swapping from CORE (native) to ERC-20 (wrap CORE to WCORE)
-    if (isCoreToErc20) {
-      // const wrapData = encodeFunctionData({
-      //   abi: routerAbi,
-      //   functionName: "wrapWNativeToken",
-      //   args: [amountInWei, from], // Wrap CORE to WCORE
-      // });
-
-      const swapData = encodeFunctionData({
-        abi: routerAbi,
-        functionName: "exactInputSingle",
-        args: [
-          {
-            tokenIn: WCORE_TOKEN_ADDRESS, // Use WCORE for the swap
-            tokenOut: tokenOut,
-            recipient: from,
-            deadline: BigInt(Math.floor(Date.now() / 1000) + 600), // 10 min deadline
-            amountIn: amountInWei,
-            amountOutMinimum: minOut,
-            limitSqrtPrice: 0n,
-          },
-        ],
-      });
-
-      // Perform wrapping (CORE to WCORE) and swapping in a single multicall
-      writeSwap({
-        address: MOLTEN_SWAP_ROUTER,
-        abi: routerAbi,
-        functionName: "multicall",
-        args: [[swapData]],
-      });
-    }
-
-    // Handle swapping from ERC-20 to CORE (unwrap WCORE to CORE)
-    else if (isErc20ToCore) {
-      const swapData = encodeFunctionData({
-        abi: routerAbi,
-        functionName: "exactInputSingle",
-        args: [
-          {
-            tokenIn,
-            tokenOut: WCORE_TOKEN_ADDRESS, // Swap ERC-20 to WCORE
-            recipient: MOLTEN_SWAP_ROUTER,
-            deadline: BigInt(Math.floor(Date.now() / 1000) + 600), // 10 min deadline
-            amountIn: amountInWei,
-            amountOutMinimum: minOut,
-            limitSqrtPrice: 0n,
-          },
-        ],
-      });
-
-      const unwrapData = encodeFunctionData({
-        abi: routerAbi,
-        functionName: "unwrapWNativeToken",
-        args: [minOut, from], // Unwrap WCORE to CORE
-      });
-
-      // Perform the swap to WCORE and unwrap to CORE in a single multicall
-      writeSwap({
-        address: MOLTEN_SWAP_ROUTER,
-        abi: routerAbi,
-        functionName: "multicall",
-        args: [[swapData, unwrapData]],
-      });
-    }
-
-    // If neither CORE token is involved, perform the regular ERC-20 to ERC-20 swap
-    else {
-      const swapData = encodeFunctionData({
-        abi: routerAbi,
-        functionName: "exactInputSingle",
-        args: [
-          {
-            tokenIn,
-            tokenOut,
-            recipient: from,
-            deadline: BigInt(Math.floor(Date.now() / 1000) + 600),
-            amountIn: amountInWei,
-            amountOutMinimum: minOut,
-            limitSqrtPrice: 0n,
-          },
-        ],
-      });
-
-      writeSwap({
-        address: MOLTEN_SWAP_ROUTER,
-        abi: routerAbi,
-        functionName: "multicall",
-        args: [[swapData]],
-      });
-    }
-  }
+    expectedOut,
+    minOut,
+    isApproved,
+    approving,
+    swapping,
+    handleApprove,
+    handleSwap,
+    filteredPaths,
+  } = useDynamicSwap({ tokenIn, tokenOut, amountInWei, slippagePct });
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="bg-zinc-900 text-white p-4 rounded-2xl shadow-md w-full border border-zinc-700 max-w-lg">
-        <h2 className="text-xl font-semibold mb-4 flex flex-row flex-wrap gap-2 items-center">
-          <span>Swap {symbolIn || "…"}</span> <ArrowRightCircle size={24} />{" "}
-          <span>{symbolOut || "…"}</span>
-        </h2>
-
-        {/* Swap summary */}
-        <div className="text-sm grid grid-cols-2 gap-y-2 mb-6">
-          <span className="text-gray-400">Amount In</span>
-          <span className="text-right font-medium">
-            {amount} {symbolIn}
-          </span>
-
-          <span className="text-gray-400">Est. Receive</span>
-          <span className="text-right font-medium">
-            {expectedOut
-              ? Number(formatUnits(expectedOut, decimalsOut)).toFixed(3)
-              : "…"}{" "}
-            {symbolOut}
-          </span>
-
-          <span className="text-gray-400">Min. Receive (0.5% slip)</span>
-          <span className="text-right font-medium">
-            {minOut ? Number(formatUnits(minOut, decimalsOut)).toFixed(3) : "…"}{" "}
-            {symbolOut}
-          </span>
-        </div>
-
-        {/* Action buttons */}
-        {!isApproved ? (
-          <button
-            disabled={approving}
-            onClick={handleApprove}
-            className="flex items-center justify-center gap-2 bg-white text-black py-2 px-4 rounded-md font-medium hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed w-full h-10"
-          >
-            {approving ? (
-              <>
-                <FaSpinner className="animate-spin" />
-                <span>Approving {symbolIn}…</span>
-              </>
-            ) : (
-              <>Approve {symbolIn}</>
-            )}
-          </button>
-        ) : (
-          <button
-            disabled={swapping || swapSuccess}
-            onClick={handleSwap}
-            className="flex items-center justify-center gap-2 bg-white text-black py-2 px-4 rounded-md font-medium hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed w-full h-10"
-          >
-            {swapping ? (
-              <>
-                <FaSpinner className="animate-spin" />
-                <span>Swapping…</span>
-              </>
-            ) : (
-              <>Swap</>
-            )}
-          </button>
-        )}
+    <div className="flex flex-col gap-3">
+      <div className="text-sm opacity-80">
+        Paths considered: {filteredPaths.length}
       </div>
 
-      {/* Success card */}
-      {swapSuccess && swapReceipt?.status === "success" && (
-        <div className="bg-zinc-800 rounded-xl p-6 mt-6 flex flex-col items-center text-center border border-green-500 max-w-lg">
-          <div className="text-green-500 mb-3">
-            <CheckCircleFillIcon size={40} />
-          </div>
-          <h3 className="text-xl font-semibold mb-2">Swap Successful</h3>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-lg font-bold">
-              {amount} {symbolIn} →{" "}
-              {Number(formatUnits(expectedOut ?? 0n, decimalsOut)).toFixed(3)}{" "}
-              {symbolOut}
-            </span>
-          </div>
-          <p className="text-gray-500 text-sm">via Molten Router</p>
-          {swapHash && (
-            <p>
-              <Link
-                href={`https://scan.coredao.org/tx/${swapHash}`}
-                target="_blank"
-                className="underline text-blue-600 text-sm"
-              >
-                View on CoreScan
-              </Link>
-            </p>
-          )}
-        </div>
+      <div className="text-sm">
+        Expected out:{" "}
+        {expectedOut ? formatUnits(expectedOut, decimalsOut) : "—"}
+      </div>
+      <div className="text-sm">
+        Min out (after slippage): {formatUnits(minOut, decimalsOut)}
+      </div>
+
+      {!isApproved ? (
+        <button
+          className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50"
+          onClick={handleApprove}
+          disabled={approving}
+        >
+          {approving ? "Approving..." : "Approve"}
+        </button>
+      ) : (
+        <button
+          className="px-4 py-2 rounded bg-green-600 text-white disabled:opacity-50"
+          onClick={handleSwap}
+          disabled={swapping || filteredPaths.length === 0}
+        >
+          {swapping ? "Swapping..." : "Swap"}
+        </button>
       )}
     </div>
   );
