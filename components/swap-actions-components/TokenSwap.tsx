@@ -24,6 +24,7 @@ import Link from "next/link";
 import { CheckCircleFillIcon } from "@/components/icons";
 import { FaSpinner } from "react-icons/fa";
 import { ArrowRightCircle } from "lucide-react";
+import { toast } from "sonner";
 
 // ========================================
 // ABIs
@@ -209,7 +210,6 @@ const CANDIDATE_TOKENS: `0x${string}`[] = [
   WCORE_TOKEN_ADDRESS as `0x${string}`,
   USDC_TOKEN_ADDRESS as `0x${string}`,
   USDT_TOKEN_ADDRESS as `0x${string}`,
-  STCORE_TOKEN_ADDRESS as `0x${string}`,
 ];
 
 const generatePaths = (
@@ -381,8 +381,6 @@ export function useDynamicSwap({
       return true;
     });
   }, [candidatePaths, pairHasPool]);
-  // console.log("filtered paths --- ", filteredPaths);
-
   // Build quoter calls: [V2full, V1min] per path
   const quoterCalls = filteredPaths.flatMap((p) => [
     {
@@ -453,7 +451,7 @@ export function useDynamicSwap({
   }, [quoteResults, filteredPaths, slippageBps]);
 
   const expectedOut = useMemo(
-    () => bestPathQuote?.expectedOut ?? null,
+    () => (bestPathQuote === null ? 0n : bestPathQuote.expectedOut ?? null),
     [bestPathQuote]
   );
   const minOut = useMemo(() => bestPathQuote?.minOut ?? 0n, [bestPathQuote]);
@@ -468,15 +466,18 @@ export function useDynamicSwap({
     query: { enabled: !!from && needsApproval },
   });
   const allowance = allowanceRaw as bigint | undefined;
-  const isApproved =
+  let isApproved =
     !needsApproval || (allowance !== undefined && allowance >= amountInWei);
 
   // Writers + receipts
   const { writeContract: writeApprove, data: approveHash } = useWriteContract();
   const { writeContract: writeSwap, data: swapHash } = useWriteContract();
 
-  const { isLoading: approving, isSuccess: approveSuccess } =
-    useWaitForTransactionReceipt({ hash: approveHash });
+  const {
+    isLoading: approving,
+    isSuccess: approveSuccess,
+    data: approveReceipt,
+  } = useWaitForTransactionReceipt({ hash: approveHash });
   const {
     isLoading: swapping,
     isSuccess: swapSuccess,
@@ -490,13 +491,14 @@ export function useDynamicSwap({
       address: tokenIn,
       abi: erc20MetaAbi,
       functionName: "approve",
-      args: [MOLTEN_SWAP_ROUTER, 2n ** 256n - 1n],
+      args: [MOLTEN_SWAP_ROUTER, amountInWei],
     });
   }
 
   function handleSwap() {
     if (!from || amountInWei <= 0n) return;
     if (!bestPathQuote || bestPathQuote.path.length < 2) {
+      toast.error("No valid path found for this swap!");
       console.warn("No valid quoted path found.");
       return;
     }
@@ -657,6 +659,7 @@ export function useDynamicSwap({
     isApproved,
     approving,
     approveSuccess,
+    approveReceipt,
     swapping,
     swapSuccess,
     swapReceipt,
@@ -684,6 +687,7 @@ export default function TokenSwap({
 }: SwapWidgetProps) {
   const { address: from } = useAppKitAccount();
   const [slippage, setSlippage] = useState("0.5");
+  const [loading, setLoading] = useState(true); // Track loading state
 
   // --- Metadata for tokenIn and tokenOut
   const { data: metaData } = useReadContracts({
@@ -747,6 +751,8 @@ export default function TokenSwap({
     minOut,
     isApproved,
     approving,
+    approveSuccess,
+    approveReceipt,
     swapping,
     swapSuccess,
     swapReceipt,
@@ -755,6 +761,10 @@ export default function TokenSwap({
     filteredPaths,
   } = useDynamicSwap({ tokenIn, tokenOut, amountInWei, slippagePct });
 
+  console.log("is approved --- ", isApproved);
+  console.log("approveSuccess --- ", approveSuccess);
+  // console.log("approveReceipt --- ", approveReceipt);
+  console.log("filteredPaths --- ", filteredPaths);
   return (
     <div className="flex flex-col gap-2">
       <div className="bg-zinc-900 text-white p-4 rounded-2xl shadow-md w-full border border-zinc-700 max-w-lg">
@@ -788,7 +798,7 @@ export default function TokenSwap({
         </div>
 
         {/* Action buttons */}
-        {!isApproved ? (
+        {!isApproved && !approveSuccess ? (
           <button
             disabled={approving}
             onClick={handleApprove}
@@ -805,7 +815,7 @@ export default function TokenSwap({
           </button>
         ) : (
           <button
-            disabled={swapping}
+            disabled={swapping || expectedOut === null}
             onClick={handleSwap}
             className="flex items-center justify-center gap-2 bg-white text-black py-2 px-4 rounded-md font-medium hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed w-full h-10"
           >
@@ -815,7 +825,7 @@ export default function TokenSwap({
                 <span>Swapping…</span>
               </>
             ) : (
-              <>Swap</>
+              <span>Swap</span>
             )}
           </button>
         )}
@@ -830,7 +840,7 @@ export default function TokenSwap({
           <h3 className="text-xl font-semibold mb-2">Swap Successful</h3>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-lg font-bold">
-              {amount} {symbolIn} →{" "}
+              {amount} {symbolIn} <ArrowRightCircle size={24} />{" "}
               {Number(formatUnits(expectedOut ?? 0n, decimalsOut)).toFixed(3)}{" "}
               {symbolOut}
             </span>

@@ -100,7 +100,7 @@ General Rules:
 4. NEVER assume values like token address, validator, or amount. Always fetch or ask the user.
 5. Always follow disambiguation:
    - "send" or "transfer" = makeSendTransaction
-   - "swap/convert/exchange" = swap tools
+   - "swap/convert/exchange" = tokenSwapTransaction
    - "lend/supply" = colendSupplyCore or colendSupplyErc20
    - "withdraw" = colendWithdrawCore or colendWithdrawErc20
    - "stake/un-stake/claim rewards" = staking tools
@@ -501,55 +501,6 @@ Limits:
 - Amount must be less than 1000 CORE.
 - Reject and warn if amount is >= 1000 (beta limit).
 `;
-
-// swaps
-// -------------------- ERC20 ↔ ERC20 --------------------
-// export const erc20ToErc20SwapPrompt = `
-// Use erc20ToErc20SwapTransaction ONLY when the user wants to SWAP one ERC20 token
-// for another ERC20 token (via Molten's router).
-
-// Process:
-// 1. Identify tokenIn (ERC20 address of token to swap from).
-// 2. Identify tokenOut (ERC20 address of token to receive).
-// 3. Identify amount (string).
-// 4. Call erc20ToErc20SwapTransaction with tokenIn, tokenOut, amount.
-
-// Limits:
-// - This tool is ONLY for ERC20 to ERC20 swaps (NOT native CORE).
-// - Reject or warn if amount greater than or equal to 1000 USD .
-// - If the user says "swap" between two ERC20 tokens → use this tool.
-// `;
-
-// // -------------------- ERC20 → CORE --------------------
-// export const erc20ToNativeSwapPrompt = `
-// Use erc20ToNativeSwapTransaction ONLY when the user wants to SWAP an ERC20 token into native CORE.
-
-// Process:
-// 1. Identify tokenIn (ERC20 contract address).
-// 2. Identify amount (string).
-// 3. Call erc20ToNativeSwapTransaction with tokenIn and amount.
-
-// Limits:
-// - ONLY ERC20 → CORE swaps.
-// - Reject or warn if amount ≥ 1000 USD.
-// - If the user says "swap X token to CORE" → use this tool.
-// `;
-
-// // -------------------- CORE → ERC20 --------------------
-// export const nativeToErc20SwapPrompt = `
-// Use nativeToErc20SwapTransaction ONLY when the user wants to SWAP native CORE into an ERC20 token.
-// always use this if user wants to swap Core tokens to some other token.
-
-// Process:
-// 1. Identify tokenOut (ERC20 address).
-// 2. Identify amount of CORE (string).
-// 3. Call nativeToErc20SwapTransaction with tokenOut and amount.
-
-// Limits:
-// - ONLY CORE → ERC20 swaps.
-// - Reject or warn if amount ≥ 1000 CORE.
-// - If the user says "swap CORE to <token>" or "convert CORE" → use this tool.
-// `;
 
 export const tokenSwapTransactionPrompt = `
 Use tokenSwapTransaction ONLY when the user wants to SWAP or CONVERT one  token

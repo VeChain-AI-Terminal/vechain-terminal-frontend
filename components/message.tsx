@@ -33,13 +33,6 @@ import ColendSupplyCore from "@/components/colend-actions-components/colend-supp
 import { ColendSupplyCoreTxProps } from "@/lib/ai/tools/colend/colendSupplyCore";
 import { ColendSupplyErc20TxProps } from "@/lib/ai/tools/colend/colendSupplyErc20";
 import ColendSupplyErc20 from "@/components/colend-actions-components/colend-supply-erc20";
-// import ColendTable from "@/components/colend-actions-components/colend-stats-table";
-// import { Erc20ToErc20SwapTxProps } from "@/lib/ai/tools/swap-actions/erc20ToErc20SwapTransaction";
-// import Erc20ToErc20Swap from "@/components/swap-actions-components/Erc20ToErc20Swap";
-// import { Erc20ToNativeSwapTxProps } from "@/lib/ai/tools/swap-actions/erc20ToNativeSwapTransaction";
-import Erc20ToNativeSwap from "@/components/swap-actions-components/Erc20ToNativeSwap";
-import { NativeToErc20SwapTxProps } from "@/lib/ai/tools/swap-actions/nativeToErc20SwapTransaction";
-import NativeToErc20Swap from "@/components/swap-actions-components/NativeToErc20Swap";
 import ToolCallLoader from "@/components/tool-call-loader";
 import ColendWithdrawErc20 from "@/components/colend-actions-components/colend-withdraw-erc20";
 import { ColendWithdrawErc20TxProps } from "@/lib/ai/tools/colend/colendWithdrawErc20";
@@ -686,77 +679,6 @@ const PurePreviewMessage = ({
                   return <ColendWithdrawCore tx={tx} key={toolCallId} />;
                 }
               }
-
-              // if (type === "tool-erc20ToErc20SwapTransaction") {
-              //   const { toolCallId, state } = part;
-              //   if (state === "input-available") {
-              //     return (
-              //       <div key={toolCallId}>
-              //         <ToolCallLoader loadingMessage="Preparing swap transaction..." />
-              //       </div>
-              //     );
-              //   }
-
-              //   if (state === "output-available") {
-              //     const { output } = part;
-              //     const tx = output as Erc20ToErc20SwapTxProps;
-              //     return (
-              //       <Erc20ToErc20Swap
-              //         sendMessage={sendMessage}
-              //         key={toolCallId}
-              //         tokenIn={tx.tokenIn as `0x${string}`}
-              //         tokenOut={tx.tokenOut as `0x${string}`}
-              //         amount={tx.amount as string}
-              //       />
-              //     );
-              //   }
-              // }
-
-              // if (type === "tool-erc20ToNativeSwapTransaction") {
-              //   const { toolCallId, state } = part;
-              //   if (state === "input-available") {
-              //     return (
-              //       <div key={toolCallId}>
-              //         <ToolCallLoader loadingMessage="Preparing ERC20 → CORE swap transaction..." />
-              //       </div>
-              //     );
-              //   }
-
-              //   if (state === "output-available") {
-              //     const { output } = part;
-              //     const tx = output as Erc20ToNativeSwapTxProps;
-              //     return (
-              //       <Erc20ToNativeSwap
-              //         key={toolCallId}
-              //         tokenIn={tx.tokenIn as `0x${string}`}
-              //         amount={tx.amount}
-              //       />
-              //     );
-              //   }
-              // }
-
-              // if (type === "tool-nativeToErc20SwapTransaction") {
-              //   const { toolCallId, state } = part;
-              //   if (state === "input-available") {
-              //     return (
-              //       <div key={toolCallId}>
-              //         <ToolCallLoader loadingMessage="Preparing CORE → ERC20 swap transaction..." />
-              //       </div>
-              //     );
-              //   }
-
-              //   if (state === "output-available") {
-              //     const { output } = part;
-              //     const tx = output as NativeToErc20SwapTxProps;
-              //     return (
-              //       <NativeToErc20Swap
-              //         key={toolCallId}
-              //         tokenOut={tx.tokenOut as `0x${string}`}
-              //         amount={tx.amount}
-              //       />
-              //     );
-              //   }
-              // }
 
               if (type === "tool-tokenSwapTransaction") {
                 const { toolCallId, state } = part;
