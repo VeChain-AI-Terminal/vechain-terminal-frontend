@@ -11,7 +11,11 @@ export const makeSendTransaction = tool({
       .string()
       .describe("The receiver ens name if available")
       .optional(),
-    value: z.string().describe("The amount of tokens to send in wei"),
+    value: z
+      .string()
+      .describe(
+        "The amount of tokens to send in human readable format eg, 0.5, 3"
+      ),
     chainId: z.number().default(1116),
   }),
   execute: async ({

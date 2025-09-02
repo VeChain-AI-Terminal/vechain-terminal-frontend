@@ -54,6 +54,8 @@ export const getPortfolio = tool({
       };
     });
 
+    console.log("toksnssss -", tokens);
+
     return {
       protocols,
       staking,

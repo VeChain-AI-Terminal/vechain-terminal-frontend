@@ -699,7 +699,7 @@ const PurePreviewMessage = ({
                       tokenIn={tx.tokenIn as `0x${string}`}
                       tokenOut={tx.tokenOut as `0x${string}`}
                       amount={tx.amount}
-                      slippagePct={SLIPPAGE_FOR_SWAPS}
+                      slippagePct={tx.slippage}
                     />
                   );
                 }

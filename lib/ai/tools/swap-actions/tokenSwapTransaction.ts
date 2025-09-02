@@ -6,6 +6,7 @@ export type TokenSwapProps = {
   tokenIn: string;
   tokenOut: string;
   amount: string;
+  slippage: string;
 };
 
 export const tokenSwapTransaction = tool({
@@ -17,18 +18,26 @@ export const tokenSwapTransaction = tool({
     amount: z
       .string()
       .describe("Amount of tokenIn to swap, human-readable (e.g., '25.5')"),
+    slippage: z.string().describe("Maximum allowed slippage"),
   }),
-  execute: async ({ tokenIn, tokenOut, amount }): Promise<TokenSwapProps> => {
+  execute: async ({
+    tokenIn,
+    tokenOut,
+    amount,
+    slippage,
+  }): Promise<TokenSwapProps> => {
     console.log("Executing tokenSwapTransaction with params:", {
       tokenIn,
       tokenOut,
       amount,
+      slippage,
     });
 
     return {
       tokenIn,
       tokenOut,
       amount,
+      slippage,
     };
   },
 });
