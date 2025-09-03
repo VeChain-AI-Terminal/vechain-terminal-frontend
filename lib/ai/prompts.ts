@@ -557,7 +557,7 @@ Always round down to 6 decimals for display, 18 for calculations.
 do not show all these calculations to the user. just show the result of these calculations.
 
 ## Gas Fee Reservation:
-If the source token is a native token (CORE), reserve at least $0.50-$1.00 worth for gas fees.
+If the source token is a native token (CORE), reserve at least 1 CORE for gas fees.
 Adjust the swap amount accordingly.
 
 ## Parameter Mapping

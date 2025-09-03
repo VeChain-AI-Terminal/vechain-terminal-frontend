@@ -42,6 +42,7 @@ import TokenSwap from "@/components/swap-actions-components/TokenSwap";
 import { TokenSwapProps } from "@/lib/ai/tools/swap-actions/tokenSwapTransaction";
 import { SLIPPAGE_FOR_SWAPS } from "@/lib/constants";
 import { SuggestionAwareMarkdown } from "@/components/SuggestionAwareMarkdown";
+import { InfoIcon } from "lucide-react";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -98,6 +99,13 @@ const PurePreviewMessage = ({
             <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border bg-background">
               <div className="translate-y-px">
                 <SparklesIcon size={14} color="#fc8d36" />
+              </div>
+            </div>
+          )}
+          {message.role === "system" && (
+            <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border bg-background">
+              <div className="translate-y-px">
+                <InfoIcon size={20} color="white" />
               </div>
             </div>
           )}
@@ -704,6 +712,7 @@ const PurePreviewMessage = ({
                       tokenOut={tx.tokenOut as `0x${string}`}
                       amount={tx.amount}
                       slippagePct={tx.slippage}
+                      sendMessage={sendMessage}
                     />
                   );
                 }

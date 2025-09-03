@@ -14,26 +14,50 @@ export const getPortfolio = tool({
     console.log("getting portolfio for wallet ", walletAddress);
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
-    const [protocolsRes, stakingRes, nftsRes, tokensRes] = await Promise.all([
-      fetch(`${baseUrl}/api/portfolio/protocols?address=${walletAddress}`),
-      fetch(`${baseUrl}/api/portfolio/staking?address=${walletAddress}`),
-      fetch(`${baseUrl}/api/portfolio/nfts?address=${walletAddress}`),
-      fetch(`${baseUrl}/api/portfolio/tokens?address=${walletAddress}`),
+    const endpoints = {
+      protocols: `${baseUrl}/api/portfolio/protocols?address=${walletAddress}`,
+      staking: `${baseUrl}/api/portfolio/staking?address=${walletAddress}`,
+      nfts: `${baseUrl}/api/portfolio/nfts?address=${walletAddress}`,
+      tokens: `${baseUrl}/api/portfolio/tokens?address=${walletAddress}`,
+    };
+
+    async function getJson(url: string) {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) {
+        // Turn non-OK into a rejection so allSettled captures it
+        throw new Error(`HTTP ${res.status} for ${url}`);
+      }
+      return res.json();
+    }
+
+    const [protocolsR, stakingR, nftsR, tokensR] = await Promise.allSettled([
+      getJson(endpoints.protocols),
+      getJson(endpoints.staking),
+      getJson(endpoints.nfts),
+      getJson(endpoints.tokens),
     ]);
 
-    const [protocols, staking, nfts, tokensData] = await Promise.all([
-      protocolsRes.json(),
-      stakingRes.json(),
-      nftsRes.json(),
-      tokensRes.json(),
-    ]);
+    // Helper to unwrap results safely
+    const pick = <T>(
+      r: PromiseSettledResult<T>,
+      fallback: T,
+      label: string
+    ) => {
+      if (r.status === "fulfilled") return r.value;
+      console.warn(`${label} failed:`, r.reason);
+      return fallback;
+    };
+
+    const protocols = pick(protocolsR, [], "protocols");
+    const staking = pick(stakingR, [], "staking");
+    const nfts = pick(nftsR, [], "nfts");
+    const tokensData = pick(tokensR, { tokens: [] }, "tokens");
 
     console.log("protocols --- ", protocols);
     console.log("staking --- ", staking);
     console.log("nfts --- ", nfts);
     console.log("tokensData --- ", tokensData);
 
-    // Clean tokens
     const tokens = (tokensData?.tokens ?? []).map((t: any) => {
       const amount = toUnits(t.balance ?? "0", t.decimals ?? 18);
       const price = t.price ?? 0;
@@ -53,8 +77,6 @@ export const getPortfolio = tool({
         change24hPercent,
       };
     });
-
-    console.log("toksnssss -", tokens);
 
     return {
       protocols,

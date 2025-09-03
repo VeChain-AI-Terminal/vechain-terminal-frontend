@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   useReadContract,
   useReadContracts,
@@ -25,6 +25,8 @@ import { CheckCircleFillIcon } from "@/components/icons";
 import { FaSpinner } from "react-icons/fa";
 import { ArrowRightCircle } from "lucide-react";
 import { toast } from "sonner";
+import { UseChatHelpers } from "@ai-sdk/react";
+import { ChatMessage } from "@/lib/types";
 
 // ========================================
 // ABIs
@@ -677,6 +679,7 @@ type SwapWidgetProps = {
   tokenOut: `0x${string}`; // allow "0x00" for CORE
   amount: string;
   slippagePct: string; // e.g. "0.50"
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
 };
 
 export default function TokenSwap({
@@ -684,6 +687,7 @@ export default function TokenSwap({
   tokenOut,
   amount,
   slippagePct,
+  sendMessage,
 }: SwapWidgetProps) {
   const { address: from } = useAppKitAccount();
   const [slippage, setSlippage] = useState("0.5");
@@ -761,10 +765,25 @@ export default function TokenSwap({
     filteredPaths,
   } = useDynamicSwap({ tokenIn, tokenOut, amountInWei, slippagePct });
 
-  console.log("is approved --- ", isApproved);
-  console.log("approveSuccess --- ", approveSuccess);
+  // console.log("is approved --- ", isApproved);
+  // console.log("approveSuccess --- ", approveSuccess);
   // console.log("approveReceipt --- ", approveReceipt);
-  console.log("filteredPaths --- ", filteredPaths);
+  console.log("swapReceipt --- ", swapReceipt);
+  // console.log("filteredPaths --- ", filteredPaths);
+
+  useEffect(() => {
+    if (swapSuccess && swapReceipt?.status === "success") {
+      sendMessage({
+        role: "system",
+        parts: [
+          {
+            type: "text",
+            text: `Swap for ${amount} ${symbolIn} to ${symbolOut} was successfull.`,
+          },
+        ],
+      });
+    }
+  }, [swapSuccess, swapReceipt]);
   return (
     <div className="flex flex-col gap-2">
       <div className="bg-zinc-900 text-white p-4 rounded-2xl shadow-md w-full border border-zinc-700 max-w-lg">
@@ -839,7 +858,7 @@ export default function TokenSwap({
           </div>
           <h3 className="text-xl font-semibold mb-2">Swap Successful</h3>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-lg font-bold">
+            <span className="text-lg font-bold flex items-center gap-2">
               {amount} {symbolIn} <ArrowRightCircle size={24} />{" "}
               {Number(formatUnits(expectedOut ?? 0n, decimalsOut)).toFixed(3)}{" "}
               {symbolOut}

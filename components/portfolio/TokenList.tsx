@@ -104,7 +104,7 @@ function TokensSection({ address }: { address: string }) {
           <h2 className="text-xl font-semibold">Wallet</h2>
         </div>
         <div className="text-right text-zinc-900 dark:text-zinc-100 font-semibold">
-          {fmtCompact(totals.totalUSD)}
+          Total: {fmtCompact(totals.totalUSD)} USD
         </div>
       </div>
 
