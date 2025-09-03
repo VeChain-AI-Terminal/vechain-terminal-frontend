@@ -41,6 +41,7 @@ import { ColendWithdrawCoreTxProps } from "@/lib/ai/tools/colend/colendWithdrawC
 import TokenSwap from "@/components/swap-actions-components/TokenSwap";
 import { TokenSwapProps } from "@/lib/ai/tools/swap-actions/tokenSwapTransaction";
 import { SLIPPAGE_FOR_SWAPS } from "@/lib/constants";
+import { SuggestionAwareMarkdown } from "@/components/SuggestionAwareMarkdown";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -171,7 +172,13 @@ const PurePreviewMessage = ({
                             message.role === "user",
                         })}
                       >
-                        <Markdown>{sanitizeText(part.text)}</Markdown>
+                        <SuggestionAwareMarkdown
+                          text={sanitizeText(part.text)}
+                          onSend={(label) => {
+                            console.log("Clicked:", label);
+                            // sendMessage(label)
+                          }}
+                        />
                       </div>
                     </div>
                   );

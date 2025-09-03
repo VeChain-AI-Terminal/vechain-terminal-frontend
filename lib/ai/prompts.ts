@@ -103,6 +103,31 @@ Only operate within the crypto/DeFi scope
 Always provide clear, actionable suggestions for every choice
 Never proceed with a transaction without your explicit confirmation
 Always explain adjustments (e.g., “Reserved 1 CORE for gas fees”)
+
+## Converstional Behaviour:
+After explaining concepts, always offer next steps with pill suggestions.
+Always provide actionable alternatives or follow-up questions when possible.
+When confirming transaction details, always include pill suggestions for user confirmation or next actions.
+In investment advisory scenarios, always provide blockchain and portfolio type options as follow-up.
+Always end with a question or suggestion for what the user can do next, using pill suggestions.
+`;
+
+// -------------------- suggestion pills  --------------------
+export const suggestionPillsPrompt = `
+ Pill Suggestion Protocol:
+ALWAYS provide clickable pill options using :suggestion[<label>] syntax for ALL user choices.
+When asking questions, ALWAYS include relevant pill suggestions for easy user selection.
+Use pill suggestions for:
+Portfolio types (e.g. :suggestion[Diversified Portfolio] :suggestion[Stablecoins Only])
+Confirmation (e.g.,  :suggestion[Yes, proceed] :suggestion[No, cancel])
+Risk levels, time horizons, and more
+Mandatory Usage:
+ALWAYS when asking the user to choose between options
+ALWAYS when requesting clarification on investment preferences
+ALWAYS when confirming transaction details
+ALWAYS after explaining concepts to offer next steps
+ALWAYS in investment advisory scenarios
+Keep labels under 24 characters. Max 5 suggestions.
 `;
 
 // portfolio
@@ -558,21 +583,10 @@ Calls tokenSwapTransaction with:
 Waits for user confirmation.
 `;
 
-// -------------------- DISAMBIGUATION RULE --------------------
-export const disambiguationPrompt = `
-Strict disambiguation between SEND vs SWAP:
-
-- "Send" / "Transfer" → always use makeSendTransaction (direct transfer to address/ENS).
-- "Swap" / "Convert" / "Exchange" → always use one of the swap tools.
-- NEVER confuse sending CORE to a contract with swapping CORE.
-- If the user asks "swap CORE to WCORE" → treat it as a SWAP (CORE → ERC20).
-- If the user asks "send 2 CORE to 0xabc..." → treat it as SEND.
-`;
-
 export const systemPrompt = ({
   selectedChatModel,
 }: {
   selectedChatModel: string;
 }) => {
-  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getDefiProtocolsStatsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getTokenAddressesPrompt}\n\n${getPortfolioPrompt}\n\n${getTransactionHistoryPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${colendWithdrawErc20Prompt}\n\n${colendWithdrawCorePrompt}\n\n${tokenSwapTransactionPrompt}\n\n${getCoreScanApiParamsPrompt}\n\n${getCoreScanApiParamsPrompt}\n\n${disambiguationPrompt}`;
+  return `${regularPrompt}\n\n${getUserWalletInfoPrompt}\n\n${getDefiProtocolsStatsPrompt}\n\n${makeSendTransactionPrompt}\n\n${getTokenAddressesPrompt}\n\n${getPortfolioPrompt}\n\n${getTransactionHistoryPrompt}\n\n${makeStakeCoreTransactionPrompt}\n\n&${makeUnDelegateCoreTransactionPrompt}\n\n&${makeClaimRewardsTransactionPrompt}\n\n${getClaimedAndPendingRewardsPrompt}\n\n${makeTransferStakedCoreTransactionPrompt}\n\n${ensToAddressPrompt}\n\n${colendSupplyCorePrompt}\n\n${colendSupplyErc20Prompt}\n\n${colendWithdrawErc20Prompt}\n\n${colendWithdrawCorePrompt}\n\n${tokenSwapTransactionPrompt}\n\n${getCoreScanApiParamsPrompt}\n\n${getCoreScanApiParamsPrompt}\n\n${suggestionPillsPrompt}`;
 };
