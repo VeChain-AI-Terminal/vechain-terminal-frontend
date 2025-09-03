@@ -174,10 +174,7 @@ const PurePreviewMessage = ({
                       >
                         <SuggestionAwareMarkdown
                           text={sanitizeText(part.text)}
-                          onSend={(label) => {
-                            console.log("Clicked:", label);
-                            // sendMessage(label)
-                          }}
+                          sendMessage={sendMessage}
                         />
                       </div>
                     </div>

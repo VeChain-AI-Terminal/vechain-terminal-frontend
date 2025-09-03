@@ -2,6 +2,8 @@
 import React from "react";
 import { Markdown } from "@/components/markdown";
 import { SuggestionPills } from "@/components/suggestion-pills";
+import { UseChatHelpers } from "@ai-sdk/react";
+import { ChatMessage } from "@/lib/types";
 
 const SUGGESTION_RE = /:suggestion\[(.+?)\]/g;
 
@@ -25,10 +27,10 @@ function InlineMD({ children }: { children: string }) {
 
 export function SuggestionAwareMarkdown({
   text,
-  onSend,
+  sendMessage,
 }: {
   text: string;
-  onSend: (label: string) => void;
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
 }) {
   const parts: React.ReactNode[] = [];
   let lastIndex = 0;
@@ -44,7 +46,11 @@ export function SuggestionAwareMarkdown({
 
     const label = m[1];
     parts.push(
-      <SuggestionPills key={`s-${m.index}`} label={label} onSend={onSend} />
+      <SuggestionPills
+        key={`s-${m.index}`}
+        label={label}
+        sendMessage={sendMessage}
+      />
     );
 
     lastIndex = SUGGESTION_RE.lastIndex;
