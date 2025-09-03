@@ -33,7 +33,7 @@ const ProtocolList = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="py-4 text-sm text-gray-400">Loading Protocols…</div>
+      <div className="py-4 text-sm text-gray-400">Loading protocols…</div>
     ),
   }
 );

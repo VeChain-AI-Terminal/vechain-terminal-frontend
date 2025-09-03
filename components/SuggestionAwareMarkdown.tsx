@@ -7,24 +7,6 @@ import { ChatMessage } from "@/lib/types";
 
 const SUGGESTION_RE = /:suggestion\[(.+?)\]/g;
 
-function InlineMD({ children }: { children: string }) {
-  // Force Markdown output to be inline
-  return (
-    <span
-      className="
-      [&_p]:inline [&_p]:m-0
-      [&_ul]:inline [&_ol]:inline
-      [&_li]:inline [&_li]:list-none
-      [&_pre]:inline
-      [&_h1]:inline [&_h2]:inline [&_h3]:inline
-      [&_blockquote]:inline
-    "
-    >
-      <Markdown>{children}</Markdown>
-    </span>
-  );
-}
-
 export function SuggestionAwareMarkdown({
   text,
   sendMessage,
@@ -34,40 +16,37 @@ export function SuggestionAwareMarkdown({
 }) {
   const parts: React.ReactNode[] = [];
   let lastIndex = 0;
-  let m: RegExpExecArray | null;
+  let match: RegExpExecArray | null;
 
-  while ((m = SUGGESTION_RE.exec(text)) !== null) {
-    if (m.index > lastIndex) {
-      // trim a trailing comma right before the token
-      let chunk = text.slice(lastIndex, m.index).replace(/,\s*$/u, " ");
-      if (chunk)
-        parts.push(<InlineMD key={`md-${lastIndex}`}>{chunk}</InlineMD>);
+  while ((match = SUGGESTION_RE.exec(text)) !== null) {
+    // push preceding text
+    if (match.index > lastIndex) {
+      const chunk = text.slice(lastIndex, match.index);
+      if (chunk.trim()) {
+        parts.push(<Markdown key={`md-${lastIndex}`}>{chunk}</Markdown>);
+      }
     }
 
-    const label = m[1];
+    // push pill
+    const label = match[1];
     parts.push(
       <SuggestionPills
-        key={`s-${m.index}`}
+        key={`pill-${match.index}`}
         label={label}
         sendMessage={sendMessage}
       />
     );
 
     lastIndex = SUGGESTION_RE.lastIndex;
+  }
 
-    // eat a comma right after the token
-    if (text[lastIndex] === ",") {
-      lastIndex += 1;
-      while (text[lastIndex] === " ") lastIndex += 1;
-      SUGGESTION_RE.lastIndex = lastIndex;
+  // push trailing text
+  if (lastIndex < text.length) {
+    const tail = text.slice(lastIndex);
+    if (tail.trim()) {
+      parts.push(<Markdown key="md-tail">{tail}</Markdown>);
     }
   }
 
-  if (lastIndex < text.length) {
-    const tail = text.slice(lastIndex);
-    if (tail.trim()) parts.push(<InlineMD key="md-tail">{tail}</InlineMD>);
-  }
-
-  // Inline layout for everything
-  return <div className="flex flex-wrap items-center gap-2">{parts}</div>;
+  return <div>{parts}</div>;
 }
