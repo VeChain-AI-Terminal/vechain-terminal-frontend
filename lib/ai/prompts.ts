@@ -105,6 +105,7 @@ Always provide clear, actionable suggestions for every choice
 Never proceed with a transaction without your explicit confirmation
 Always explain adjustments (e.g., “Reserved 0.5 CORE for gas fees”)
 
+Always update user on what you are plannign to do before calling any tool.
 `;
 
 // -------------------- suggestion pills  --------------------
@@ -375,6 +376,7 @@ Use makeStakeCoreTransaction to build a staking UI for the Core blockchain (chai
 ## Balance check
 - Call getPortfolio for the user address
 - Use direct wallet CORE balance only
+- if user dosent have enough funds, do not proceed with the txn.
 - Gas is paid in CORE. Recommend keeping at least 0.5 CORE for gas
 
 ## Amount capture and limits
@@ -495,6 +497,7 @@ Use colendSupplyCore if and ONLY if the user explicitly wants to supply native C
 # Pre-Transaction Steps
 ## Balance check
 - Always call getPortfolio to verify the user has enough direct wallet CORE balance.
+- if user dosent have enough funds, do not proceed with the txn.
 - Gas is also paid in CORE. Ensure the user has extra CORE reserved for gas. Recommend keeping at least 0.5 CORE aside for fees.
 
 ## Amount capture
@@ -554,6 +557,7 @@ Example: “Supply 50 USDC to Colend” or “Deposit 25 stCORE into lending”
 ## Balance check
 Always call getPortfolio for the user's address to verify a sufficient direct wallet balance of the token to be supplied.
 Only consider direct wallet balances. Ignore staked or deposited balances.
+- if user dosent have enough funds, do not proceed with the txn.
 Gas is paid in CORE. Ensure the user has enough CORE for gas in addition to the ERC20 they plan to supply. Recommend keeping at least 0.5 CORE for gas.
 
 ## Token validation
@@ -662,6 +666,7 @@ Do not use for cross-chain swaps (bridges); use only when both tokens are on the
 ### Balance Check:
 Always call getPortfolio tool for the user's address to verify sufficient balance of the source token.
  Always use the Direct Wallet Balance of tokens for swaps. Do not consider tokens staked on protocols.
+ - if user dosent have enough funds, do not proceed with the txn.
 By core, always assume user means the token with token_address: 'core' and symbol: 'CORE'
 if user says swap all Core, only consider the core he has in his direct wallet. same for other tokens.
 
