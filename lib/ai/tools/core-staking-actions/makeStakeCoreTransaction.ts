@@ -1,12 +1,16 @@
+import { ChatMessage } from "@/lib/types";
 import { toWei } from "@/lib/utils";
+import { UseChatHelpers } from "@ai-sdk/react";
 import { tool } from "ai";
 import z from "zod";
 
 export type StakeComponentProps = {
   candidateAddress: string; // validator operator address
   candidateName: string; // validator operator address
+  humanReadableValue: string;
   valueInWei: string; // amount in wei or decimal CORE string
   chainId: number;
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
 };
 
 export const makeStakeCoreTransaction = tool({
@@ -28,6 +32,7 @@ export const makeStakeCoreTransaction = tool({
     const transaction = {
       candidateAddress,
       candidateName,
+      humanReadableValue: value,
       valueInWei,
       chainId,
     };

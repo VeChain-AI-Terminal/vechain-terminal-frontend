@@ -45,8 +45,10 @@ const chainIdToToken = {
 const StakeComponent: React.FC<StakeComponentProps> = ({
   candidateAddress,
   candidateName,
+  humanReadableValue,
   valueInWei,
   chainId,
+  sendMessage,
 }) => {
   const { isConnected, address: from } = useAppKitAccount();
   const {
@@ -89,11 +91,6 @@ const StakeComponent: React.FC<StakeComponentProps> = ({
   // const { data: gasEstimate } = useEstimateGas(txConfig);
   // console.log("gas estimate ", gasEstimate);
 
-  useEffect(() => {
-    if (sendError) console.error("Stake send error:", sendError);
-    if (isTxError) console.error("Stake tx failed or reverted:", receipt);
-  }, [sendError, isTxError, receipt]);
-
   const handleStake = () => {
     if (!isConnected) {
       console.error("Wallet not connected");
@@ -108,7 +105,24 @@ const StakeComponent: React.FC<StakeComponentProps> = ({
     addr.length > 8 ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : addr;
 
   const isButtonDisabled = isSending || isMining || isSuccess;
+  useEffect(() => {
+    if (sendError) console.error("Stake send error:", sendError);
+    if (isTxError) console.error("Stake tx failed or reverted:", receipt);
+  }, [sendError, isTxError, receipt]);
 
+  useEffect(() => {
+    if (isSuccess && receipt?.status === "success") {
+      sendMessage({
+        role: "system",
+        parts: [
+          {
+            type: "text",
+            text: `Successfully staked ${humanReadableValue} CORE to ${candidateName}`,
+          },
+        ],
+      });
+    }
+  }, [isSuccess, receipt]);
   return (
     <div className="flex flex-col gap-2">
       <div className="bg-zinc-900 text-white p-4 rounded-2xl shadow-md w-full border border-zinc-700 max-w-lg">

@@ -3,7 +3,8 @@ import {
   COLEND_POOL_ADDRESS,
   COLEND_WrappedTokenGatewayV3,
 } from "@/lib/constants";
-import { toWei } from "@/lib/utils";
+import { ChatMessage } from "@/lib/types";
+import { UseChatHelpers } from "@ai-sdk/react";
 import { tool } from "ai";
 import z from "zod";
 
@@ -12,7 +13,12 @@ export type ColendSupplyCoreTxProps = {
   gatewayAddress: string;
   poolAddress: string;
   referralCode: number;
-  amountInWei: string;
+  value: string;
+};
+
+export type ColendSupplyCoreProps = {
+  tx: ColendSupplyCoreTxProps;
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
 };
 
 export const colendSupplyCore = tool({
@@ -26,14 +32,12 @@ export const colendSupplyCore = tool({
   execute: async ({ value }): Promise<ColendSupplyCoreTxProps> => {
     console.log("Executing supplyCore with params:", { value });
 
-    const amountInWei = toWei(value);
-
     const tx: ColendSupplyCoreTxProps = {
       method: "depositETH",
       gatewayAddress: COLEND_WrappedTokenGatewayV3,
       poolAddress: COLEND_POOL_ADDRESS,
       referralCode: 0,
-      amountInWei,
+      value,
     };
 
     return tx;

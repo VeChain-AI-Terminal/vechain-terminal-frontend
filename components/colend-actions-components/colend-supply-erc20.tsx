@@ -1,7 +1,7 @@
 // ColendSupplyErc20.tsx
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FaSpinner, FaCheck, FaTimes } from "react-icons/fa";
 import {
   useWriteContract,
@@ -13,7 +13,10 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import Link from "next/link";
 import Image from "next/image";
 import { CheckCircleFillIcon } from "@/components/icons";
-import { ColendSupplyErc20TxProps } from "@/lib/ai/tools/colend/colendSupplyErc20";
+import {
+  ColendSupplyErc20Props,
+  ColendSupplyErc20TxProps,
+} from "@/lib/ai/tools/colend/colendSupplyErc20";
 import { CHAIN_ID } from "@/lib/constants";
 
 const CORE_SCAN_TX = "https://scan.coredao.org/tx/";
@@ -59,11 +62,10 @@ type Phase =
   | "success"
   | "error";
 
-interface Props {
-  tx: ColendSupplyErc20TxProps;
-}
-
-const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
+const ColendSupplyErc20: React.FC<ColendSupplyErc20Props> = ({
+  tx,
+  sendMessage,
+}) => {
   const { isConnected, address: from } = useAppKitAccount();
 
   const asset = tx.supply.tokenAddress as Address;
@@ -77,6 +79,10 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
   const [lastApproveHash, setLastApproveHash] = useState<`0x${string}`>();
   const [lastSupplyHash, setLastSupplyHash] = useState<`0x${string}`>();
   const [errorMsg, setErrorMsg] = useState<string>("");
+  const [approveHash, setApproveHash] = useState<`0x${string}` | undefined>();
+  const [supplyHash, setSupplyHash] = useState<`0x${string}` | undefined>();
+  const sentApproveRef = useRef(false);
+  const sentSupplyRef = useRef(false);
 
   const { data: metaData, isFetching: metaLoading } = useReadContracts({
     allowFailure: true,
@@ -114,22 +120,30 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
     error: sendError,
   } = useWriteContract();
 
-  const {
-    isLoading: isMining,
-    isSuccess,
-    isError: isTxError,
-    data: receipt,
-  } = useWaitForTransactionReceipt({
-    hash: currentHash,
+  // Replace your single waiter with TWO waiters
+  const approveWait = useWaitForTransactionReceipt({
+    hash: approveHash,
     chainId: CHAIN_ID,
     confirmations: 1,
-    query: { enabled: !!currentHash },
+    query: { enabled: !!approveHash },
   });
 
+  const supplyWait = useWaitForTransactionReceipt({
+    hash: supplyHash,
+    chainId: CHAIN_ID,
+    confirmations: 1,
+    query: { enabled: !!supplyHash },
+  });
+
+  // When wagmi hands you a new write hash, route it to the right bucket
   useEffect(() => {
     if (!writeHash) return;
-    setCurrentHash(writeHash);
-  }, [writeHash]);
+    if (phase === "awaiting_wallet" || phase === "approving") {
+      setApproveHash(writeHash);
+    } else if (phase === "supplying") {
+      setSupplyHash(writeHash);
+    }
+  }, [writeHash, phase]);
 
   useEffect(() => {
     if (sendError) {
@@ -139,24 +153,34 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
     }
   }, [sendError]);
 
+  // When APPROVE confirms, advance and send the approve message once
   useEffect(() => {
-    if (!currentHash) return;
+    if (!approveHash) return;
 
-    if (isTxError) {
-      console.error("[tx] failed:", currentHash, receipt);
-      setErrorMsg("Transaction failed or reverted");
+    if (approveWait.isError) {
+      setErrorMsg("Approve failed or reverted");
       setPhase("error");
+      return;
     }
-    if (isSuccess) {
-      if (phase === "approving" || phase === "awaiting_wallet") {
-        setLastApproveHash(currentHash);
-        setPhase("approved");
-      } else if (phase === "supplying") {
-        setLastSupplyHash(currentHash);
-        setPhase("success");
+    if (approveWait.isSuccess) {
+      setLastApproveHash(approveHash);
+      setPhase("approved");
+
+      if (!sentApproveRef.current) {
+        sentApproveRef.current = true;
+        // Your separate approve message
+        sendMessage({
+          role: "system",
+          parts: [
+            {
+              type: "text",
+              text: `Approval confirmed for ${tx.supply.tokenName}.`,
+            },
+          ],
+        });
       }
     }
-  }, [isMining, isSuccess, isTxError, receipt, currentHash, phase]);
+  }, [approveHash, approveWait.isError, approveWait.isSuccess]);
 
   const parsedAmount = useMemo(() => {
     try {
@@ -167,21 +191,16 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
     }
   }, [amountHuman, tokenDecimals]);
 
+  // Start the flow: write APPROVE
   const handleSupplyFlow = async () => {
     setErrorMsg("");
+    sentApproveRef.current = false;
+    sentSupplyRef.current = false;
 
-    if (!isConnected || !from) {
-      setErrorMsg("Connect your wallet first");
-      return;
-    }
-    if (typeof tokenDecimals !== "number") {
-      setErrorMsg("Could not fetch token decimals");
-      return;
-    }
-    if (!parsedAmount) {
-      setErrorMsg("Invalid amount for token decimals");
-      return;
-    }
+    if (!isConnected || !from) return setErrorMsg("Connect your wallet first");
+    if (typeof tokenDecimals !== "number")
+      return setErrorMsg("Could not fetch token decimals");
+    if (!parsedAmount) return setErrorMsg("Invalid amount for token decimals");
 
     try {
       setPhase("awaiting_wallet");
@@ -198,7 +217,6 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
       console.error("[approve] error:", e);
       setErrorMsg(e?.message || "Approve failed");
       setPhase("error");
-      return;
     }
   };
 
@@ -232,10 +250,37 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
 
   const isButtonDisabled =
     isSending ||
-    isMining ||
     phase === "approving" ||
     phase === "supplying" ||
     phase === "success";
+
+  // When SUPPLY confirms, mark success and send the supply message once
+  useEffect(() => {
+    if (!supplyHash) return;
+
+    if (supplyWait.isError) {
+      setErrorMsg("Supply failed or reverted");
+      setPhase("error");
+      return;
+    }
+    if (supplyWait.isSuccess) {
+      setLastSupplyHash(supplyHash);
+      setPhase("success");
+
+      if (!sentSupplyRef.current) {
+        sentSupplyRef.current = true;
+        sendMessage({
+          role: "system",
+          parts: [
+            {
+              type: "text",
+              text: `Successfully supplied ${tx.supply.amount} ${tx.supply.tokenName} to Colend`,
+            },
+          ],
+        });
+      }
+    }
+  }, [supplyHash, supplyWait.isError, supplyWait.isSuccess]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -263,7 +308,7 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
           onClick={handleSupplyFlow}
           className="mt-2 flex items-center justify-center gap-2 bg-white text-black py-2 px-4 rounded-md font-medium hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed w-full h-10"
         >
-          {isSending || isMining ? (
+          {isSending ? (
             <>
               <FaSpinner className="animate-spin" />
               {phase === "approving" || phase === "awaiting_wallet"
@@ -315,7 +360,7 @@ const ColendSupplyErc20: React.FC<Props> = ({ tx }) => {
       </div>
 
       {/* ✅ Success UI */}
-      {phase === "success" && receipt?.status === "success" && (
+      {phase === "success" && supplyWait.data?.status === "success" && (
         <div className="bg-zinc-800 rounded-xl p-6 mt-6 flex flex-col items-center text-center border border-green-500 max-w-lg">
           <div className="text-green-500 mb-3">
             <CheckCircleFillIcon size={40} />

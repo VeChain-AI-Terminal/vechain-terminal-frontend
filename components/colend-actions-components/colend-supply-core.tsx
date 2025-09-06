@@ -9,9 +9,13 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import Image from "next/image";
 import Link from "next/link";
 import { CheckCircleFillIcon } from "@/components/icons";
-import { ColendSupplyCoreTxProps } from "@/lib/ai/tools/colend/colendSupplyCore";
+import {
+  ColendSupplyCoreProps,
+  ColendSupplyCoreTxProps,
+} from "@/lib/ai/tools/colend/colendSupplyCore";
 // import type { ColendSupplyCoreTxProps } from "@/lib/ai/tools/supply-core"; // <- use your actual path
 import { CHAIN_ID } from "@/lib/constants";
+import { toWei } from "@/lib/utils";
 
 const CORE_SCAN_BASE = "https://scan.coredao.org/tx/";
 
@@ -29,11 +33,10 @@ const gatewayAbi = [
   },
 ] as const;
 
-interface Props {
-  tx: ColendSupplyCoreTxProps; // returned directly from the tool
-}
-
-const ColendSupplyCore: React.FC<Props> = ({ tx }) => {
+const ColendSupplyCore: React.FC<ColendSupplyCoreProps> = ({
+  tx,
+  sendMessage,
+}) => {
   const { isConnected, address: from } = useAppKitAccount();
 
   const {
@@ -72,20 +75,14 @@ const ColendSupplyCore: React.FC<Props> = ({ tx }) => {
     }
 
     // amountInWei is a decimal string; viem expects bigint for `value`
-    let valueWei: bigint;
-    try {
-      valueWei = BigInt(tx.amountInWei);
-    } catch (e) {
-      console.error("Invalid amountInWei from tool:", tx.amountInWei, e);
-      return;
-    }
+    const valueInWei = BigInt(toWei(tx.value));
 
     writeContract({
       address: tx.gatewayAddress as Address,
       abi: gatewayAbi,
       functionName: "depositETH",
       args: [tx.poolAddress as Address, from as Address, tx.referralCode],
-      value: valueWei,
+      value: valueInWei,
       chainId: CHAIN_ID,
       account: from as Address,
     });
@@ -94,6 +91,19 @@ const ColendSupplyCore: React.FC<Props> = ({ tx }) => {
   };
 
   const isButtonDisabled = isSending || isMining || isSuccess;
+  useEffect(() => {
+    if (isSuccess && receipt?.status === "success") {
+      sendMessage({
+        role: "system",
+        parts: [
+          {
+            type: "text",
+            text: `Successfully supplied ${tx.value} CORE to Colend`,
+          },
+        ],
+      });
+    }
+  }, [isSuccess, receipt]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -112,9 +122,7 @@ const ColendSupplyCore: React.FC<Props> = ({ tx }) => {
           <span className="text-right">{tx.referralCode}</span> */}
 
           <span className="text-gray-400">Amount</span>
-          <span className="text-right font-medium">
-            {formatEther(BigInt(tx.amountInWei))} CORE
-          </span>
+          <span className="text-right font-medium">{tx.value} CORE</span>
         </div>
 
         <button
@@ -160,9 +168,7 @@ const ColendSupplyCore: React.FC<Props> = ({ tx }) => {
           <h3 className="text-xl font-semibold mb-2">Supply Successful</h3>
           <div className="flex items-center gap-2 mb-1">
             <Image src="/images/core.png" alt="CORE" width={28} height={28} />
-            <span className="text-lg font-bold">
-              {formatEther(BigInt(tx.amountInWei))} CORE
-            </span>
+            <span className="text-lg font-bold">{tx.value} CORE</span>
           </div>
           <p className="text-gray-500 text-sm">on Colend</p>
           <p>

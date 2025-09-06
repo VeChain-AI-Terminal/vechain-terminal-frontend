@@ -8,8 +8,12 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import Image from "next/image";
 import Link from "next/link";
 import { CheckCircleFillIcon } from "@/components/icons";
-import { ColendWithdrawCoreTxProps } from "@/lib/ai/tools/colend/colendWithdrawCore";
+import {
+  colendWithdrawCoreProps,
+  ColendWithdrawCoreTxProps,
+} from "@/lib/ai/tools/colend/colendWithdrawCore";
 import { CHAIN_ID } from "@/lib/constants";
+import { toWei } from "@/lib/utils";
 
 const CORE_SCAN_BASE = "https://scan.coredao.org/tx/";
 
@@ -27,12 +31,12 @@ const gatewayAbi = [
   },
 ] as const;
 
-interface Props {
-  tx: ColendWithdrawCoreTxProps; // returned directly from the tool
-}
-
-const ColendWithdrawCore: React.FC<Props> = ({ tx }) => {
+const ColendWithdrawCore: React.FC<colendWithdrawCoreProps> = ({
+  tx,
+  sendMessage,
+}) => {
   const { isConnected, address: from } = useAppKitAccount();
+  const amountInWei = toWei(tx.amount);
 
   const {
     writeContract,
@@ -71,9 +75,9 @@ const ColendWithdrawCore: React.FC<Props> = ({ tx }) => {
 
     let valueWei: bigint;
     try {
-      valueWei = BigInt(tx.amountInWei);
+      valueWei = BigInt(amountInWei);
     } catch (e) {
-      console.error("Invalid amountInWei from tool:", tx.amountInWei, e);
+      console.error("Invalid amountInWei from tool:", amountInWei, e);
       return;
     }
 
@@ -91,6 +95,20 @@ const ColendWithdrawCore: React.FC<Props> = ({ tx }) => {
 
   const isButtonDisabled = isSending || isMining || isSuccess;
 
+  useEffect(() => {
+    if (isSuccess && receipt?.status === "success") {
+      sendMessage({
+        role: "system",
+        parts: [
+          {
+            type: "text",
+            text: `Successfully withdrawed ${tx.amount} CORE from Colend`,
+          },
+        ],
+      });
+    }
+  }, [isSuccess, receipt]);
+
   return (
     <div className="flex flex-col gap-2">
       <div className="bg-zinc-900 text-white p-4 rounded-2xl shadow-md w-full border border-zinc-700 max-w-lg">
@@ -101,7 +119,7 @@ const ColendWithdrawCore: React.FC<Props> = ({ tx }) => {
         <div className="text-sm grid grid-cols-2 gap-y-2 mb-6">
           <span className="text-gray-400">Amount</span>
           <span className="text-right font-medium">
-            {formatEther(BigInt(tx.amountInWei))} CORE
+            {formatEther(BigInt(amountInWei))} CORE
           </span>
         </div>
 
@@ -149,7 +167,7 @@ const ColendWithdrawCore: React.FC<Props> = ({ tx }) => {
           <div className="flex items-center gap-2 mb-1">
             <Image src="/images/core.png" alt="CORE" width={28} height={28} />
             <span className="text-lg font-bold">
-              {formatEther(BigInt(tx.amountInWei))} CORE
+              {formatEther(BigInt(amountInWei))} CORE
             </span>
           </div>
           <p className="text-gray-500 text-sm">from Colend</p>

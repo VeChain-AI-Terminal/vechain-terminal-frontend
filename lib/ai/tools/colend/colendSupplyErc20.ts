@@ -1,5 +1,7 @@
 // colend-supply-erc20.ts
 import { COLEND_POOL_ADDRESS } from "@/lib/constants";
+import { ChatMessage } from "@/lib/types";
+import { UseChatHelpers } from "@ai-sdk/react";
 import { tool } from "ai";
 import z from "zod";
 
@@ -23,6 +25,11 @@ export type ColendSupplyErc20TxProps = {
   stage: "erc20-approval-and-supply";
   approval: ColendSupplyErc20Approval;
   supply: ColendSupplyErc20Supply;
+};
+
+export type ColendSupplyErc20Props = {
+  tx: ColendSupplyErc20TxProps;
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
 };
 
 // const MAX_UINT256 =

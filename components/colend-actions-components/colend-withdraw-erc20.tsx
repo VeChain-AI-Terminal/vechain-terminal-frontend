@@ -12,7 +12,10 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import Link from "next/link";
 import Image from "next/image";
 import { CheckCircleFillIcon } from "@/components/icons";
-import { ColendWithdrawErc20TxProps } from "@/lib/ai/tools/colend/colendWithdrawErc20";
+import {
+  colendWithdrawErc20Props,
+  ColendWithdrawErc20TxProps,
+} from "@/lib/ai/tools/colend/colendWithdrawErc20";
 import { CHAIN_ID } from "@/lib/constants";
 
 const CORE_SCAN_TX = "https://scan.coredao.org/tx/";
@@ -50,11 +53,10 @@ const erc20MetaAbi = [
 
 type Phase = "idle" | "awaiting_wallet" | "withdrawing" | "success" | "error";
 
-interface Props {
-  tx: ColendWithdrawErc20TxProps;
-}
-
-const ColendWithdrawErc20: React.FC<Props> = ({ tx }) => {
+const ColendWithdrawErc20: React.FC<colendWithdrawErc20Props> = ({
+  tx,
+  sendMessage,
+}) => {
   const { isConnected, address: from } = useAppKitAccount();
 
   const asset = tx.withdraw.tokenAddress as Address;
@@ -174,7 +176,19 @@ const ColendWithdrawErc20: React.FC<Props> = ({ tx }) => {
 
   const isButtonDisabled =
     isPending || phase === "withdrawing" || phase === "success";
-
+  useEffect(() => {
+    if (phase === "success") {
+      sendMessage({
+        role: "system",
+        parts: [
+          {
+            type: "text",
+            text: `Successfully withdrawed ${tx.withdraw.amount} ${tx.withdraw.tokenName} from Colend`,
+          },
+        ],
+      });
+    }
+  }, [phase]);
   return (
     <div className="flex flex-col gap-3">
       <div className="bg-zinc-900 text-white p-4 rounded-2xl shadow-md w-full border border-zinc-700 max-w-lg">

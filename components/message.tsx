@@ -363,6 +363,8 @@ const PurePreviewMessage = ({
                 }
               }
 
+              // staking actions
+
               if (type === "tool-makeStakeCoreTransaction") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
@@ -378,6 +380,7 @@ const PurePreviewMessage = ({
                   const {
                     candidateAddress,
                     candidateName,
+                    humanReadableValue,
                     valueInWei,
                     chainId,
                   } = output as StakeComponentProps;
@@ -385,9 +388,11 @@ const PurePreviewMessage = ({
                     <StakeComponent
                       candidateAddress={candidateAddress}
                       candidateName={candidateName}
+                      humanReadableValue={humanReadableValue}
                       valueInWei={valueInWei}
                       chainId={chainId}
                       key={toolCallId}
+                      sendMessage={sendMessage}
                     />
                   );
                 }
@@ -487,29 +492,6 @@ const PurePreviewMessage = ({
                   );
                 }
               }
-
-              if (type === "tool-getDefiProtocolsStats") {
-                const { toolCallId, state } = part;
-                if (state === "input-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Gathering information from all protocols..." />
-                    </div>
-                  );
-                }
-
-                if (state === "output-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader
-                        loadingMessage="Gathering information from all protocols"
-                        isFinished
-                      />
-                    </div>
-                  );
-                }
-              }
-
               if (type === "tool-getDelegatedCoreForEachValidator") {
                 const { toolCallId, state } = part;
 
@@ -556,6 +538,29 @@ const PurePreviewMessage = ({
                 }
               }
 
+              // protocol stats
+              if (type === "tool-getDefiProtocolsStats") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Gathering information from all protocols..." />
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader
+                        loadingMessage="Gathering information from all protocols"
+                        isFinished
+                      />
+                    </div>
+                  );
+                }
+              }
+
               if (type === "tool-ensToAddress") {
                 const { toolCallId, state } = part;
 
@@ -579,29 +584,7 @@ const PurePreviewMessage = ({
                 }
               }
 
-              if (type === "tool-getColendStats") {
-                const { toolCallId, state } = part;
-
-                if (state === "input-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Fetching defi stats from colend protocol..." />
-                    </div>
-                  );
-                }
-
-                if (state === "output-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader
-                        loadingMessage="DeFi stats fetched from colend protocol."
-                        isFinished
-                      />
-                    </div>
-                  );
-                }
-              }
-
+              // colend supply and withdraw actions
               if (type === "tool-colendSupplyCore") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
@@ -615,7 +598,13 @@ const PurePreviewMessage = ({
                 if (state === "output-available") {
                   const { output } = part;
                   const tx = output as ColendSupplyCoreTxProps;
-                  return <ColendSupplyCore tx={tx} key={toolCallId} />;
+                  return (
+                    <ColendSupplyCore
+                      tx={tx}
+                      key={toolCallId}
+                      sendMessage={sendMessage}
+                    />
+                  );
                 }
               }
 
@@ -632,7 +621,13 @@ const PurePreviewMessage = ({
                 if (state === "output-available") {
                   const { output } = part;
                   const tx = output as ColendSupplyErc20TxProps;
-                  return <ColendSupplyErc20 tx={tx} key={toolCallId} />;
+                  return (
+                    <ColendSupplyErc20
+                      tx={tx}
+                      key={toolCallId}
+                      sendMessage={sendMessage}
+                    />
+                  );
                 }
               }
 
@@ -649,7 +644,13 @@ const PurePreviewMessage = ({
                 if (state === "output-available") {
                   const { output } = part;
                   const tx = output as ColendWithdrawErc20TxProps;
-                  return <ColendWithdrawErc20 tx={tx} key={toolCallId} />;
+                  return (
+                    <ColendWithdrawErc20
+                      tx={tx}
+                      key={toolCallId}
+                      sendMessage={sendMessage}
+                    />
+                  );
                 }
               }
 
@@ -666,10 +667,17 @@ const PurePreviewMessage = ({
                 if (state === "output-available") {
                   const { output } = part;
                   const tx = output as ColendWithdrawCoreTxProps;
-                  return <ColendWithdrawCore tx={tx} key={toolCallId} />;
+                  return (
+                    <ColendWithdrawCore
+                      tx={tx}
+                      key={toolCallId}
+                      sendMessage={sendMessage}
+                    />
+                  );
                 }
               }
 
+              // swaps
               if (type === "tool-tokenSwapTransaction") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {

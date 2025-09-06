@@ -1,4 +1,6 @@
 // colendWithdrawErc20.ts
+import { ChatMessage } from "@/lib/types";
+import { UseChatHelpers } from "@ai-sdk/react";
 import { tool } from "ai";
 import z from "zod";
 
@@ -11,6 +13,11 @@ export type ColendWithdrawErc20TxProps = {
     tokenName: string;
     amount: string; // human-readable amount
   };
+};
+
+export type colendWithdrawErc20Props = {
+  tx: ColendWithdrawErc20TxProps;
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
 };
 
 export const colendWithdrawErc20 = tool({
