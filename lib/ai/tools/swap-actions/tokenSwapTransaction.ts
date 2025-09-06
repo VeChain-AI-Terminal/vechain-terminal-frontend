@@ -8,6 +8,12 @@ export type TokenSwapProps = {
   amount: string;
   slippage: string;
 };
+const floorToDecimals = (value: string, dp = 3): string => {
+  const num = Number(value) || 0;
+  const factor = 10 ** dp;
+  const floored = Math.floor(num * factor) / factor;
+  return floored.toFixed(dp); // keep trailing zeros if needed
+};
 
 export const tokenSwapTransaction = tool({
   description:
@@ -26,17 +32,18 @@ export const tokenSwapTransaction = tool({
     amount,
     slippage,
   }): Promise<TokenSwapProps> => {
+    const floored3 = floorToDecimals(amount);
     console.log("Executing tokenSwapTransaction with params:", {
       tokenIn,
       tokenOut,
-      amount,
+      floored3,
       slippage,
     });
 
     return {
       tokenIn,
       tokenOut,
-      amount,
+      amount: floored3,
       slippage,
     };
   },

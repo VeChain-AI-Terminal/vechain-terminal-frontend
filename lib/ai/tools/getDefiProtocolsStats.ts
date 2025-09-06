@@ -63,6 +63,7 @@ type ColendPoolSummary = {
   tvlUsd: number;
   apy: number;
   apyReward: number;
+  ilRisk: string;
 };
 
 // DeSyn
@@ -100,6 +101,59 @@ const toMillions = (core: number) => `${(core / 1_000_000).toFixed(2)}M`;
 const pct = (x: number) => `${x.toFixed(2)}%`;
 const safeDiv = (a: number, b: number) => (b === 0 ? 0 : a / b);
 
+function summarizeValidators(
+  coreRaw: ValidatorResponse[] = []
+): ValidatorSummary[] {
+  // Build with numeric fields for sorting, then map to display
+  const enriched = coreRaw
+    .filter((v) => v.status === 17) // active only
+    .map((v) => {
+      const coreAmt = toCore(v.stakedCoreAmount || "0"); // number
+      const coreScore = toCore(v.stakedCoreScore || "0"); // number
+      const rtCoreAmt = toCore(v.realtimeCoreAmount || "0"); // number
+      const coreRewardRateNum = Number(v.estimatedCoreRewardRate || "0"); // e.g. 0.0558
+
+      const scoreEff = coreAmt > 0 ? safeDiv(coreScore, coreAmt) : 0;
+      const deltaCore = rtCoreAmt - coreAmt;
+      const deltaPct = coreAmt > 0 ? safeDiv(deltaCore, coreAmt) * 100 : 0;
+
+      const btcInUnits = Number(v.stakedBTCAmount || "0") / 1e8; // satoshis -> BTC
+
+      return {
+        // original
+        v,
+        // computed numeric for sorting and display
+        _coreAmt: coreAmt,
+        _coreRewardRate: coreRewardRateNum,
+        summary: {
+          name: v.name || "Unknown",
+          operatorAddress: v.operatorAddress || "Unknown",
+          stakedCORE: toMillions(coreAmt),
+          stakedBTC: btcInUnits.toLocaleString(undefined, {
+            maximumFractionDigits: 8,
+          }),
+          coreRewardRate: pct(coreRewardRateNum * 100),
+          btcRewardRate: pct(Number(v.estimatedBTCRewardRate || "0") * 100),
+          hybridScore: Number(v.hybridScore || "0").toLocaleString(),
+          coreScoreEfficiency: `${scoreEff.toFixed(2)}x`,
+          realtimeDeltaCORE_M: `${deltaCore >= 0 ? "+" : ""}${(
+            deltaCore / 1_000_000
+          ).toFixed(2)}M`,
+          realtimeDeltaCOREPct: `${deltaPct >= 0 ? "+" : ""}${pct(deltaPct)}`,
+        } as ValidatorSummary,
+      };
+    });
+
+  // Sort: by CORE amount desc, then by core reward rate desc
+  enriched.sort((a, b) => {
+    if (b._coreAmt !== a._coreAmt) return b._coreAmt - a._coreAmt;
+    return b._coreRewardRate - a._coreRewardRate;
+  });
+
+  // Return display objects
+  return enriched.map((e) => e.summary);
+}
+
 const summarizeColend = (raw: ColendPoolRaw[]): ColendPoolSummary[] =>
   raw.map((p) => ({
     symbol: p.symbol,
@@ -108,6 +162,7 @@ const summarizeColend = (raw: ColendPoolRaw[]): ColendPoolSummary[] =>
     tvlUsd: p.tvlUsd,
     apy: p.apy,
     apyReward: p.apyReward,
+    ilRisk: p.ilRisk,
   }));
 
 const summarizeDesyn = (raw: DesynPoolRaw[]): DesynPoolSummary[] =>
@@ -141,46 +196,16 @@ export const getDefiProtocolsStats = tool({
 
     // --- Core DAO Validators ---
     let coreRaw: ValidatorResponse[] = [];
-    let coreSummary: ValidatorSummary[] = [];
+    let validatorsSummary: ValidatorSummary[] = [];
     try {
       const res = await fetch(VALIDATORS_API);
       if (res.ok) {
         const data = await res.json();
         coreRaw = data?.data?.validatorsList || [];
+        console.log("coreRaw---- ", coreRaw);
 
-        coreSummary =
-          coreRaw
-            .filter((v) => v.status === 17)
-            .map((v) => {
-              const coreAmt = toCore(v.stakedCoreAmount || "0");
-              const coreScore = toCore(v.stakedCoreScore || "0");
-              const rtCoreAmt = toCore(v.realtimeCoreAmount || "0");
-
-              const scoreEff = safeDiv(coreScore, coreAmt);
-              const deltaCore = rtCoreAmt - coreAmt;
-              const deltaPct = safeDiv(deltaCore, coreAmt) * 100;
-
-              return {
-                name: v.name || "Unknown",
-                operatorAddress: v.operatorAddress || "Unknown",
-                stakedCORE: toMillions(coreAmt),
-                stakedBTC: Number(v.stakedBTCAmount || "0").toLocaleString(),
-                coreRewardRate: pct(
-                  Number(v.estimatedCoreRewardRate || "0") * 100
-                ),
-                btcRewardRate: pct(
-                  Number(v.estimatedBTCRewardRate || "0") * 100
-                ),
-                hybridScore: Number(v.hybridScore || "0").toLocaleString(),
-                coreScoreEfficiency: `${scoreEff.toFixed(2)}x`,
-                realtimeDeltaCORE_M: `${deltaCore >= 0 ? "+" : ""}${(
-                  deltaCore / 1_000_000
-                ).toFixed(2)}M`,
-                realtimeDeltaCOREPct: `${deltaPct >= 0 ? "+" : ""}${pct(
-                  deltaPct
-                )}`,
-              };
-            }) || [];
+        validatorsSummary = summarizeValidators(coreRaw);
+        console.log("validatorsSummary---- ", validatorsSummary);
       }
     } catch (err) {
       console.error("Error fetching Core validators:", err);
@@ -226,18 +251,15 @@ export const getDefiProtocolsStats = tool({
     return {
       results: [
         {
-          protocol: "core-dao",
-          raw: { validators: coreRaw },
-          summary: { validators: coreSummary },
+          protocol: "core-dao-validators",
+          summary: { validators: validatorsSummary },
         },
         {
           protocol: "colend",
-          raw: { pools: colendRaw },
           summary: { pools: colendSummary },
         },
         {
           protocol: "desyn",
-          raw: { pools: desynRaw },
           summary: { pools: desynSummary },
         },
       ],

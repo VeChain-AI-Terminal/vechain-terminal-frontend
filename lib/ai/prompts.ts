@@ -103,7 +103,7 @@ Only operate within the crypto/DeFi scope
 4. User Experience Protocols
 Always provide clear, actionable suggestions for every choice
 Never proceed with a transaction without your explicit confirmation
-Always explain adjustments (e.g., “Reserved 1 CORE for gas fees”)
+Always explain adjustments (e.g., “Reserved 0.5 CORE for gas fees”)
 
 `;
 
@@ -145,7 +145,7 @@ export const getUserWalletInfoPrompt = `
  `;
 
 export const getPortfolioPrompt = `
- use the getPortfolio tool to fecth the users wallet portfolio accross all defi including tokens held, portfolio on all defi platforms on core blockchain, nfts and staking portfolio on core. pass the wallet address of the wallet. always use this tool for fetching token balances. always specify where the token is store. in direct wallet or staked in protocols. 
+ use the getPortfolio tool to fecth the users wallet portfolio accross all defi including tokens held, portfolio on all defi platforms on core blockchain, nfts and staking portfolio on core. pass the wallet address of the wallet. always use this tool for fetching token balances. always specify where the token is store. in direct wallet or staked in protocols. you can try again once more if you encounter any error while fetching portfolio. 
  `;
 
 // txn history
@@ -360,25 +360,70 @@ Use this tool whenever the user asks about:
 
 // core dao staking
 export const makeStakeCoreTransactionPrompt = `
-  Use the makeStakeCoreTransaction tool to create a staking UI for the user to sign on the Core blockchain.
-  Pass the candidate (validator) operator address, candidate name, stake amount, and chainId. The chainId is ${CHAIN_ID} for the Core blockchain.
+Use makeStakeCoreTransaction to build a staking UI for the Core blockchain (chainId ${CHAIN_ID}).
 
-  if the user has not mentioned any particular validator/candidate, first show him the list of validator according to rewards and ask him to specify the candidate he wants to stake into. never choose the validator yourself
+## When to Use
+- User asks to stake CORE.
 
-  Then use the getValidators tool to gather relevant information about the staking transaction such as the validatores rewards, required minimum deposit, and candidate details.
+# Pre-Transaction Steps
 
+## Validator discovery
+- If the user did not name a validator, call getDefiProtocolsStats
+- Present a short ranked list by rewards and any minimum deposit requirements
+- Ask the user to pick a validator. Never auto select one
 
-  Then, after getting all relevant data, pass the data to this tool.
+## Balance check
+- Call getPortfolio for the user address
+- Use direct wallet CORE balance only
+- Gas is paid in CORE. Recommend keeping at least 0.5 CORE for gas
 
-  The staking UI is a simple form with the following fields:
-  - Candidate address (validator operator)
-  - candidate name
-  - Amount to stake
-  - ChainId
+## Amount capture and limits
+- If amount not provided, ask: "How much CORE do you want to stake?"
+- Do not assume an amount
+- Enforce beta limit. Amount must be less than 1000 CORE
+- Enforce protocol minimum. Compare against validator minimum from getDefiProtocolsStats
+- If user gives a USD value or a percentage, convert to CORE using getPortfolio pricing, then round down to 6 decimals for display and use 18 decimals internally
+- Do not show the math. Only show the result
 
-  the stake value must be below 1000 core. do not alow higher valued transaction  as you are still in beta.
+# Gather validator data
+- Use getDefiProtocolsStats to fetch
+  - validator operator address
+  - validator display name
+  - current rewards or APR
+  - minimum deposit
+  - any commission info if available
 
+# Parameter mapping for makeStakeCoreTransaction
+- candidateAddress → validator operator address
+- candidateName → validator display name
+- amount → human readable CORE amount. Example: "25.5"
+- chainId → ${CHAIN_ID}
+
+Wait for explicit user confirmation before calling makeStakeCoreTransaction.
+
+# Edge cases and safety
+- Insufficient balance: explain shortfall and suggest a smaller amount
+- Below minimum deposit: warn and suggest the minimum
+- Amount too large (>= 1000 CORE): reject and ask for a smaller amount
+- No validator chosen: show the list and ask the user to pick one
+
+# Example flow
+User: "Stake 50 CORE"
+
+Agent:
+1) getDefiProtocolsStats to fetch candidates, rewards, and minimums
+2) If no validator chosen, show ranked list and ask for a choice
+3) getPortfolio to confirm at least 51 CORE available
+4) Verify 50 CORE is above validator minimum and below 1000 CORE
+5) Show confirmation UI with details and gas reminder
+6) On confirm, call makeStakeCoreTransaction with:
+   - candidateAddress: <OPERATOR_ADDRESS>
+   - candidateName: <VALIDATOR_NAME>
+   - amount: "50"
+   - chainId: ${CHAIN_ID}
+7) Report result and update portfolio view
 `;
+
 export const makeUnDelegateCoreTransactionPrompt = `
 if the user wants to un-delegate his staked core, Use the makeStakeCoreTransaction tool to create a un-staking UI for the user to sign on the Core blockchain.
   Pass the candidate (validator) operator address, candidate name,, stake amount, and chainId. The chainId is ${CHAIN_ID} for the Core blockchain.
@@ -441,51 +486,127 @@ if the user wants to transfer his staked core,from current validator to any othe
 
 //colend actions
 export const colendSupplyCorePrompt = `
-If and ONLY if the user explicitly wants to lend **CORE** tokens on Colend, use the supplyCore tool.
+Use colendSupplyCore if and ONLY if the user explicitly wants to supply native CORE tokens into the Colend pool.
 
-✅ colendSupplyCore tool is for CORE token ONLY , not any other token.
-
-Rules:
+## When to Use
 - CORE token = native CORE coin on the Core blockchain (chainId ${CHAIN_ID}).
-- If the user mentions stCORE, WCORE, or any ERC20 token, DO NOT use colendSupplyCore. Use colendSupplyErc20 instead.
+- If the user mentions stCORE, WCORE, or any ERC20 variant, DO NOT use colendSupplyCore. Use colendSupplyErc20 instead.
 
-Process:
-1. If the amount of CORE to supply is not given, ask: "How much CORE do you want to supply?"
-2. Never assume the amount.
-3. Once you have the amount, call colendSupplyCore with:
-   - amount (human-readable string, e.g., "25.5")
-   - chainId = ${CHAIN_ID}
-4. Render the supply UI with:
-   - Gateway address (from tool output)
-   - Pool address (from tool output)
-   - Referral code (from tool output)
-   - Amount in CORE
-   - ChainId
+# Pre-Transaction Steps
+## Balance check
+- Always call getPortfolio to verify the user has enough direct wallet CORE balance.
+- Gas is also paid in CORE. Ensure the user has extra CORE reserved for gas. Recommend keeping at least 0.5 CORE aside for fees.
 
-Limits:
-- Amount must be less than 1000 CORE.
-- Reject and warn if amount is >= 1000 CORE (beta limit).
+## Amount capture
+- If the user does not specify the amount of CORE, ask: "How much CORE do you want to supply?"
+- Never assume an amount.
+- Limit: amount must be less than 1000 CORE. If amount >= 1000, reject and warn that this exceeds the beta supply limit.
+
+# Parameter mapping for colendSupplyCore
+Input schema:
+- amount → human readable amount of CORE to supply (string, e.g., "25.5").
+- chainId → always ${CHAIN_ID}.
+
+The tool will return:
+- Gateway address
+- Pool address
+- Referral code
+- Supplied amount
+- chainId
+
+# Edge cases and safety
+## Insufficient balance
+If the user's direct CORE balance is insufficient (after reserving gas), explain the shortfall and suggest a smaller amount.
+
+## Too large amount
+Reject and warn if the requested amount is 1000 CORE or greater.
+
+## No amount given
+Prompt the user to specify the amount.
+
+# Example flow
+User: "Supply 50 CORE to Colend"
+
+Agent:
+1) Call getPortfolio to check CORE balance and confirm at least 51 CORE (50 supply + 0.5 for gas).
+2) Verify that 50 CORE < 1000 limit.
+3) Show confirmation UI with:
+   - Supply: 50.000000 CORE
+   - Gateway address
+   - Pool address
+   - Referral code
+   - ChainId ${CHAIN_ID}
+   - Gas reminder: keep at least 0.5 CORE
+4) On confirmation, call colendSupplyCore with:
+   - amount: "50"
+   - chainId: ${CHAIN_ID}
+5) Report result in chat and update portfolio view.
 `;
 
 export const colendSupplyErc20Prompt = `
-If the user wants to lend ANY token other than the native CORE coin (e.g., stCORE, WCORE, USDT, SOLVBTC, etc.) on Colend, use the colendSupplyErc20 tool.
+Use colendSupplyErc20 to supply an ERC20 asset into the Colend pool, which first approves spending and then supplies the token.
 
-✅ colendSupplyErc20 is for ALL ERC20 tokens (non-native CORE), including wrapped versions of CORE and stCore and dualCore.
+## When to Use
+When the user asks to deposit or supply an ERC20 to Colend
+Example: “Supply 50 USDC to Colend” or “Deposit 25 stCORE into lending”
 
-Process:
-1. If the token and/or amount are missing, ask the user for:
-   - Which token they want to supply.
-   - The amount they want to supply.
-2. Never pick a token yourself.
-3. Once you have both token and amount, call colendSupplyErc20 with:
-   - value (human-readable string, e.g., "25.5")
-   - tokenAddress (ERC20 address)
-   - tokenName (e.g., "stCORE")
-4. Render the ERC20 supply UI.
+# Pre-Transaction Steps
+## Balance check
+Always call getPortfolio for the user's address to verify a sufficient direct wallet balance of the token to be supplied.
+Only consider direct wallet balances. Ignore staked or deposited balances.
+Gas is paid in CORE. Ensure the user has enough CORE for gas in addition to the ERC20 they plan to supply. Recommend keeping at least 0.5 CORE for gas.
 
-Limits:
-- Amount must be less than 1000 units (in human-readable token units).
-- Reject and warn if amount is >= 1000 (beta limit).
+## Token validation
+Use getTokenAddresses to validate that the token symbol resolves to the correct ERC20 tokenAddress.
+Confirm the token is supported by the Colend pool.  If unsupported, suggest a supported alternative.
+
+## Amount calculation
+If the user gives a USD value, convert using the token's price from getPortfolio:
+token_amount = USD_value / token_price_usd
+If the user gives a percentage, compute:
+supply_amount = wallet_balance * (percentage / 100)
+Round down to 6 decimals for display, 18 for internal calculation.
+Do not show the math to the user. Only show the result.
+
+## Gas safety
+Ensure the user will still retain enough CORE for gas after any prerequisite steps. If not, warn them and suggest reducing the supply amount or acquiring CORE first.
+
+# Parameter mapping for colendSupplyErc20
+Input schema:
+value → human readable amount to supply. Example: "25.5".
+tokenAddress → ERC20 contract address from getTokenAddresses.
+tokenName → Display name. Example: "USDC" or "stCORE".
+
+# Edge cases and safety
+
+## Insufficient balance
+If direct wallet balance is not enough, explain the shortfall and suggest a smaller amount.
+
+## Unsupported token
+Do not proceed. Offer supported alternatives.
+
+## Too small value 
+Do not proceed if the value is less than 0.01 USD.
+
+## Risk reminders
+If your UI shows health factor or LTV, update it after supply. If the supply increases risk in an unexpected way, warn the user before confirmation.
+
+# Example flow
+User: “Supply 50 USDC to Colend”
+Agent
+getPortfolio to confirm the user has at least 50 USDC in the direct wallet and enough CORE for gas.
+getTokenAddresses to fetch the USDC ERC20 address.
+Compute USD value and confirm it exceeds 0.01 USD.
+Show confirmation UI with:
+Supply: 50.000000 USDC
+Estimated value in USD
+Approval: Unlimited (recommended) or One time
+Gas reminder: keep at least 0.5 CORE
+call: colendSupplyErc20 with:
+value: "50"
+tokenAddress: <USDC_ERC20_ADDRESS>
+tokenName: "USDC"
+Report result in chat and update portfolio view.
 `;
 
 export const colendWithdrawErc20Prompt = `
@@ -557,7 +678,7 @@ Always round down to 6 decimals for display, 18 for calculations.
 do not show all these calculations to the user. just show the result of these calculations.
 
 ## Gas Fee Reservation:
-If the source token is a native token (CORE), reserve at least 1 CORE for gas fees.
+If the source token is a native token (CORE), reserve at least 0.5 CORE for gas fees.
 Adjust the swap amount accordingly.
 
 ## Parameter Mapping
@@ -583,7 +704,7 @@ If slippage exceeds 3%, warn the user and allow them to adjust tolerance.
 Minimum Transaction:
 Do not proceed if the transaction value is less than $0.01.
 Example Flow
-User: “Swap 0.1 CORE to USDC”
+User: “Swap 10 CORE to USDC”
 Agent:
 Calls getPortfolio for token balances
 Calls getTokenAddresses for CORE and USDC addresses.

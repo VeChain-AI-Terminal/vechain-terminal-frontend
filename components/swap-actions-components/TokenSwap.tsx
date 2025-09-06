@@ -674,7 +674,7 @@ export function useDynamicSwap({
 // Example UI usage (wire to your screen/buttons)
 // ========================================
 
-type SwapWidgetProps = {
+type TokenSwapProps = {
   tokenIn: `0x${string}`; // allow "0x00" for CORE
   tokenOut: `0x${string}`; // allow "0x00" for CORE
   amount: string;
@@ -688,11 +688,8 @@ export default function TokenSwap({
   amount,
   slippagePct,
   sendMessage,
-}: SwapWidgetProps) {
-  const { address: from } = useAppKitAccount();
-  const [slippage, setSlippage] = useState("0.5");
-  const [loading, setLoading] = useState(true); // Track loading state
-
+}: TokenSwapProps) {
+  // console.log("amount --- ", amount);
   // --- Metadata for tokenIn and tokenOut
   const { data: metaData } = useReadContracts({
     allowFailure: true,
@@ -768,7 +765,7 @@ export default function TokenSwap({
   // console.log("is approved --- ", isApproved);
   // console.log("approveSuccess --- ", approveSuccess);
   // console.log("approveReceipt --- ", approveReceipt);
-  console.log("swapReceipt --- ", swapReceipt);
+  // console.log("swapReceipt --- ", swapReceipt);
   // console.log("filteredPaths --- ", filteredPaths);
 
   useEffect(() => {

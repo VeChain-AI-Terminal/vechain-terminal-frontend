@@ -25,12 +25,12 @@ export type ColendSupplyErc20TxProps = {
   supply: ColendSupplyErc20Supply;
 };
 
-const MAX_UINT256 =
-  "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+// const MAX_UINT256 =
+//   "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
 export const colendSupplyErc20 = tool({
   description:
-    "Create a two-stage Colend ERC20 supply payload: (1) approve unlimited allowance to the pool, (2) supply the token to the pool. Input: human-readable amount, token address, token name.",
+    "Create a two-stage Colend ERC20 supply payload: (1) approve allowance to the pool, (2) supply the token to the pool. Input: human-readable amount, token address, token name.",
   inputSchema: z.object({
     value: z
       .string()
@@ -63,7 +63,7 @@ export const colendSupplyErc20 = tool({
         method: "approve",
         tokenAddress,
         spender: COLEND_POOL_ADDRESS,
-        amount: MAX_UINT256,
+        amount: value,
       },
       supply: {
         method: "supply",

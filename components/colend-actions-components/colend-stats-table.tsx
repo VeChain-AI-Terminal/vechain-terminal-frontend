@@ -1,4 +1,5 @@
 import React from "react";
+// this component not used anywhere
 
 type ColendRow = {
   symbol: string;

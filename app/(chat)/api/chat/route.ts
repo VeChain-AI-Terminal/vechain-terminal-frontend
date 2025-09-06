@@ -34,7 +34,6 @@ import type { ChatMessage } from "@/lib/types";
 import type { ChatModel } from "@/lib/ai/models";
 import type { VisibilityType } from "@/components/visibility-selector";
 
-import { getValidators } from "@/lib/ai/tools/core-staking-actions/getValidators";
 import { getDefiProtocolsStats } from "@/lib/ai/tools/getDefiProtocolsStats";
 //utils
 import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
@@ -185,7 +184,6 @@ export async function POST(request: Request) {
             selectedChatModel === "chat-model-reasoning"
               ? []
               : [
-                  // "getValidators",
                   "getDefiProtocolsStats",
                   "makeSendTransaction",
                   "makeStakeCoreTransaction",
@@ -210,7 +208,6 @@ export async function POST(request: Request) {
                 ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
-            // getValidators,
             getDefiProtocolsStats,
             makeSendTransaction,
             makeStakeCoreTransaction,

@@ -488,28 +488,6 @@ const PurePreviewMessage = ({
                 }
               }
 
-              if (type === "tool-getValidators") {
-                const { toolCallId, state } = part;
-                if (state === "input-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Getting validators..." />
-                    </div>
-                  );
-                }
-
-                if (state === "output-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader
-                        loadingMessage="Validators fetched"
-                        isFinished
-                      />
-                    </div>
-                  );
-                }
-              }
-
               if (type === "tool-getDefiProtocolsStats") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
