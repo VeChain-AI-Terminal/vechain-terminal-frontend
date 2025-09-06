@@ -46,8 +46,10 @@ const TransferComponent: React.FC<TransferStakedCoreTransactionProps> = ({
   sourceCandidateName,
   targetCandidateAddress,
   targetCandidateName,
+  humanReadableValue,
   valueInWei,
   chainId,
+  sendMessage,
 }) => {
   const { isConnected, address: from } = useAppKitAccount();
   const {
@@ -106,7 +108,19 @@ const TransferComponent: React.FC<TransferStakedCoreTransactionProps> = ({
 
   const shortenAddress = (addr: string) =>
     addr.length > 8 ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : addr;
-
+  useEffect(() => {
+    if (isSuccess && receipt?.status === "success") {
+      sendMessage({
+        role: "system",
+        parts: [
+          {
+            type: "text",
+            text: `Successfully transfered ${humanReadableValue} CORE from ${sourceCandidateName} to ${targetCandidateName}`,
+          },
+        ],
+      });
+    }
+  }, [isSuccess, receipt]);
   return (
     <div className="flex flex-col gap-2">
       <div className="bg-zinc-900 text-white p-4 rounded-2xl shadow-md w-full border border-zinc-700 max-w-lg">

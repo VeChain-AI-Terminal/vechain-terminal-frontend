@@ -43,6 +43,7 @@ import { TokenSwapProps } from "@/lib/ai/tools/swap-actions/tokenSwapTransaction
 import { SLIPPAGE_FOR_SWAPS } from "@/lib/constants";
 import { SuggestionAwareMarkdown } from "@/components/SuggestionAwareMarkdown";
 import { InfoIcon } from "lucide-react";
+import { UnDelegateComponentProps } from "@/lib/ai/tools/core-staking-actions/makeUnDelegateCoreTransaction";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -364,7 +365,6 @@ const PurePreviewMessage = ({
               }
 
               // staking actions
-
               if (type === "tool-makeStakeCoreTransaction") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
@@ -413,16 +413,19 @@ const PurePreviewMessage = ({
                   const {
                     candidateAddress,
                     candidateName,
+                    humanReadableValue,
                     valueInWei,
                     chainId,
-                  } = output as StakeComponentProps;
+                  } = output as UnDelegateComponentProps;
                   return (
                     <UnDelegateComponent
                       candidateAddress={candidateAddress}
                       candidateName={candidateName}
+                      humanReadableValue={humanReadableValue}
                       valueInWei={valueInWei}
                       chainId={chainId}
                       key={toolCallId}
+                      sendMessage={sendMessage}
                     />
                   );
                 }
@@ -443,6 +446,7 @@ const PurePreviewMessage = ({
                   const {
                     candidateAddress,
                     candidateName,
+                    humanReadableValue,
                     valueInWei,
                     chainId,
                   } = output as StakeComponentProps;
@@ -450,9 +454,11 @@ const PurePreviewMessage = ({
                     <ClaimRewardsComponent
                       candidateAddress={candidateAddress}
                       candidateName={candidateName}
+                      humanReadableValue={humanReadableValue}
                       valueInWei={valueInWei}
                       chainId={chainId}
                       key={toolCallId}
+                      sendMessage={sendMessage}
                     />
                   );
                 }
@@ -475,6 +481,7 @@ const PurePreviewMessage = ({
                     sourceCandidateName,
                     targetCandidateAddress,
                     targetCandidateName,
+                    humanReadableValue,
                     valueInWei,
                     chainId,
                   } = output as TransferStakedCoreTransactionProps;
@@ -485,9 +492,11 @@ const PurePreviewMessage = ({
                       sourceCandidateName={sourceCandidateName}
                       targetCandidateAddress={targetCandidateAddress}
                       targetCandidateName={targetCandidateName}
+                      humanReadableValue={humanReadableValue}
                       valueInWei={valueInWei}
                       chainId={chainId}
                       key={toolCallId}
+                      sendMessage={sendMessage}
                     />
                   );
                 }
@@ -760,7 +769,7 @@ export const ThinkingMessage = () => {
 
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col gap-4 text-muted-foreground">
-            Hmm...
+            Thinking...
           </div>
         </div>
       </div>

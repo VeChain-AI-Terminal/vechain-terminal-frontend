@@ -1,4 +1,6 @@
+import { ChatMessage } from "@/lib/types";
 import { toWei } from "@/lib/utils";
+import { UseChatHelpers } from "@ai-sdk/react";
 import { tool } from "ai";
 import z from "zod";
 
@@ -7,8 +9,10 @@ export type TransferStakedCoreTransactionProps = {
   sourceCandidateName: string;
   targetCandidateAddress: string;
   targetCandidateName: string;
+  humanReadableValue: string;
   valueInWei: string;
   chainId: number;
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
 };
 
 export const makeTransferStakedCoreTransaction = tool({

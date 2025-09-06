@@ -46,8 +46,10 @@ const chainIdToToken = {
 const UnDelegateComponent: React.FC<UnDelegateComponentProps> = ({
   candidateAddress,
   candidateName,
+  humanReadableValue,
   valueInWei,
   chainId,
+  sendMessage,
 }) => {
   const { isConnected, address: from } = useAppKitAccount();
 
@@ -106,6 +108,19 @@ const UnDelegateComponent: React.FC<UnDelegateComponentProps> = ({
   };
 
   const isButtonDisabled = isSending || isMining || isSuccess;
+  useEffect(() => {
+    if (isSuccess && receipt?.status === "success") {
+      sendMessage({
+        role: "system",
+        parts: [
+          {
+            type: "text",
+            text: `Successfully undelegated ${humanReadableValue} CORE from ${candidateName}`,
+          },
+        ],
+      });
+    }
+  }, [isSuccess, receipt]);
 
   return (
     <div className="flex flex-col gap-2">

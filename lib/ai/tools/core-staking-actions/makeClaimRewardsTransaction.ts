@@ -1,12 +1,16 @@
+import { ChatMessage } from "@/lib/types";
 import { toWei } from "@/lib/utils";
+import { UseChatHelpers } from "@ai-sdk/react";
 import { tool } from "ai";
 import z from "zod";
 
 export interface ClaimRewardsComponentProps {
   candidateAddress: string;
   candidateName?: string;
+  humanReadableValue: string;
   valueInWei: string;
   chainId: number;
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
 }
 
 // 1. Unstake (undelegate) CORE
@@ -31,6 +35,7 @@ export const makeClaimRewardsTransaction = tool({
     const transaction = {
       candidateAddress,
       candidateName,
+      humanReadableValue: value,
       valueInWei,
       chainId,
     };

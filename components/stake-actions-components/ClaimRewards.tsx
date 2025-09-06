@@ -47,8 +47,10 @@ const chainIdToToken = {
 const ClaimRewardsComponent: React.FC<ClaimRewardsComponentProps> = ({
   candidateAddress,
   candidateName,
+  humanReadableValue,
   valueInWei,
   chainId,
+  sendMessage,
 }) => {
   const { isConnected, address: from } = useAppKitAccount();
 
@@ -108,7 +110,19 @@ const ClaimRewardsComponent: React.FC<ClaimRewardsComponentProps> = ({
   };
 
   const isButtonDisabled = isSending || isMining || isSuccess;
-
+  useEffect(() => {
+    if (isSuccess && receipt?.status === "success") {
+      sendMessage({
+        role: "system",
+        parts: [
+          {
+            type: "text",
+            text: `Successfully claimed ${humanReadableValue} ${token} CORE from ${candidateName}`,
+          },
+        ],
+      });
+    }
+  }, [isSuccess, receipt]);
   return (
     <div className="flex flex-col gap-2">
       <div className="bg-zinc-900 text-white p-4 rounded-2xl shadow-md w-full border border-zinc-700 max-w-lg">
