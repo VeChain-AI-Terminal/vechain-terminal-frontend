@@ -109,7 +109,8 @@ export default function TransactionHistoryComp({
 
               {/* Right: gas fee */}
               <div className="text-xs text-gray-500">
-                Gas Fee {tx.tx.eth_gas_fee.toFixed(4)} CORE
+                Gas Fee {tx.tx.eth_gas_fee ? tx.tx.eth_gas_fee.toFixed(4) : 0}{" "}
+                CORE
               </div>
             </div>
 
