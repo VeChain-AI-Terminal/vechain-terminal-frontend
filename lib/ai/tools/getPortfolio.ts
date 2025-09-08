@@ -25,7 +25,8 @@ export const getPortfolio = tool({
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) {
         // Turn non-OK into a rejection so allSettled captures it
-        throw new Error(`HTTP ${res.status} for ${url}`);
+        return "There was some error fetching porfolio, please try again.";
+        // throw new Error(`HTTP ${res.status} for ${url}`);
       }
       return res.json();
     }

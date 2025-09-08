@@ -188,7 +188,9 @@ export const algebraFactoryAbi = [
 // ========================================
 
 const toWcoreIfNative = (addr: `0x${string}`) =>
-  addr.toLowerCase() === "0x00" ? (WCORE_TOKEN_ADDRESS as `0x${string}`) : addr;
+  addr.toLowerCase() === "0x0000000000000000000000000000000000000000"
+    ? (WCORE_TOKEN_ADDRESS as `0x${string}`)
+    : addr;
 
 const sameAddr = (a?: string, b?: string) =>
   !!a && !!b && a.toLowerCase() === b.toLowerCase();
@@ -302,8 +304,8 @@ const pairsFromPaths = (paths: `0x${string}`[][]) => {
 // ========================================
 
 type UseDynamicSwapArgs = {
-  tokenIn: `0x${string}`; // "0x00" sentinel for CORE is allowed
-  tokenOut: `0x${string}`; // "0x00" sentinel for CORE is allowed
+  tokenIn: `0x${string}`; // "0x0000000000000000000000000000000000000000" sentinel for CORE is allowed
+  tokenOut: `0x${string}`; // "0x0000000000000000000000000000000000000000" sentinel for CORE is allowed
   amountInWei: bigint;
   slippagePct: string; // e.g. "0.50" for 0.50%
 };
@@ -318,11 +320,15 @@ export function useDynamicSwap({
 
   // Build candidate paths
   const canonicalIn = useMemo(
-    () => tokenIn ?? ("0x00" as `0x${string}`),
+    () =>
+      tokenIn ??
+      ("0x0000000000000000000000000000000000000000" as `0x${string}`),
     [tokenIn]
   );
   const canonicalOut = useMemo(
-    () => tokenOut ?? ("0x00" as `0x${string}`),
+    () =>
+      tokenOut ??
+      ("0x0000000000000000000000000000000000000000" as `0x${string}`),
     [tokenOut]
   );
 
@@ -459,7 +465,8 @@ export function useDynamicSwap({
   const minOut = useMemo(() => bestPathQuote?.minOut ?? 0n, [bestPathQuote]);
 
   // Allowance (ERC-20 tokenIn only)
-  const needsApproval = tokenIn !== "0x00";
+  const needsApproval =
+    tokenIn !== "0x0000000000000000000000000000000000000000";
   const { data: allowanceRaw } = useReadContract({
     address: tokenIn,
     abi: erc20MetaAbi,
@@ -510,8 +517,8 @@ export function useDynamicSwap({
     const deadline = BigInt(Math.floor(Date.now() / 1000) + 600);
     const amountOutMinimum = bestPathQuote.minOut;
 
-    const isCoreIn = tokenIn === "0x00";
-    const isCoreOut = tokenOut === "0x00";
+    const isCoreIn = tokenIn === "0x0000000000000000000000000000000000000000";
+    const isCoreOut = tokenOut === "0x0000000000000000000000000000000000000000";
 
     // Safety: CORE-in must start with WCORE
     if (
@@ -675,8 +682,8 @@ export function useDynamicSwap({
 // ========================================
 
 type TokenSwapProps = {
-  tokenIn: `0x${string}`; // allow "0x00" for CORE
-  tokenOut: `0x${string}`; // allow "0x00" for CORE
+  tokenIn: `0x${string}`; // allow "0x0000000000000000000000000000000000000000" for CORE
+  tokenOut: `0x${string}`; // allow "0x0000000000000000000000000000000000000000" for CORE
   amount: string;
   slippagePct: string; // e.g. "0.50"
   sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
@@ -695,52 +702,69 @@ export default function TokenSwap({
     allowFailure: true,
     contracts: [
       {
-        address: tokenIn !== "0x00" ? tokenIn : WCORE_TOKEN_ADDRESS, // Check if tokenIn is "CORE"
+        address:
+          tokenIn !== "0x0000000000000000000000000000000000000000"
+            ? tokenIn
+            : WCORE_TOKEN_ADDRESS, // Check if tokenIn is "CORE"
         abi: erc20MetaAbi,
         functionName: "decimals",
       },
       {
-        address: tokenIn !== "0x00" ? tokenIn : WCORE_TOKEN_ADDRESS, // Check if tokenIn is "CORE"
+        address:
+          tokenIn !== "0x0000000000000000000000000000000000000000"
+            ? tokenIn
+            : WCORE_TOKEN_ADDRESS, // Check if tokenIn is "CORE"
         abi: erc20MetaAbi,
         functionName: "symbol",
       },
       {
-        address: tokenOut !== "0x00" ? tokenOut : WCORE_TOKEN_ADDRESS, // Check if tokenOut is "CORE"
+        address:
+          tokenOut !== "0x0000000000000000000000000000000000000000"
+            ? tokenOut
+            : WCORE_TOKEN_ADDRESS, // Check if tokenOut is "CORE"
         abi: erc20MetaAbi,
         functionName: "decimals",
       },
       {
-        address: tokenOut !== "0x00" ? tokenOut : WCORE_TOKEN_ADDRESS, // Check if tokenOut is "CORE"
+        address:
+          tokenOut !== "0x0000000000000000000000000000000000000000"
+            ? tokenOut
+            : WCORE_TOKEN_ADDRESS, // Check if tokenOut is "CORE"
         abi: erc20MetaAbi,
         functionName: "symbol",
       },
     ],
     query: { enabled: !!tokenIn && !!tokenOut },
   });
+  console.log("swap txn ------------------");
+  console.log("token in --- ", tokenIn);
+  console.log("tokenOut --- ", tokenOut);
+  console.log("amount --- ", amount);
+  console.log("slippagePct --- ", slippagePct);
 
   const decimalsIn = useMemo(() => {
-    if (tokenIn === "0x00") {
+    if (tokenIn === "0x0000000000000000000000000000000000000000") {
       return 18; // If it's the native token (CORE), return 18 decimals
     }
     return typeof metaData?.[0]?.result === "number" ? metaData[0].result : 18; // Ensure it's a valid number or fallback to 18
   }, [metaData, tokenIn]);
 
   const symbolIn = useMemo(() => {
-    if (tokenIn === "0x00") {
+    if (tokenIn === "0x0000000000000000000000000000000000000000") {
       return "CORE"; // If it's the native token (CORE), set symbol to "CORE"
     }
     return typeof metaData?.[1]?.result === "string" ? metaData[1].result : ""; // Ensure it's a valid string or fallback to an empty string
   }, [metaData, tokenIn]);
 
   const decimalsOut = useMemo(() => {
-    if (tokenOut === "0x00") {
+    if (tokenOut === "0x0000000000000000000000000000000000000000") {
       return 18; // If it's the native token (CORE), return 18 decimals
     }
     return typeof metaData?.[2]?.result === "number" ? metaData[2].result : 18; // Ensure it's a valid number or fallback to 18
   }, [metaData, tokenOut]);
 
   const symbolOut = useMemo(() => {
-    if (tokenOut === "0x00") {
+    if (tokenOut === "0x0000000000000000000000000000000000000000") {
       return "CORE"; // If it's the native token (CORE), set symbol to "CORE"
     }
     return typeof metaData?.[3]?.result === "string" ? metaData[3].result : ""; // Ensure it's a valid string or fallback to an empty string

@@ -26,7 +26,10 @@ async function getTokensData(walletAddress: string): Promise<TokenData[]> {
     });
 
     const rawTokens = await res.json();
-    // console.log("rawtokens", rawTokens);
+    console.log("rawtokens", rawTokens);
+    if (!rawTokens || rawTokens.length === 0) {
+      return [];
+    }
 
     return rawTokens.map((t: any) => ({
       token_address: t.id,
