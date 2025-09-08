@@ -33,6 +33,7 @@ export const tokenSwapTransaction = tool({
     amount,
     slippage,
   }): Promise<TokenSwapProps> => {
+    // floor to 3 decimals
     const floored3 = floorToDecimals(amount);
     console.log("Executing tokenSwapTransaction with params:", {
       tokenIn,

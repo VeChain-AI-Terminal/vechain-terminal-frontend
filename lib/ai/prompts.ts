@@ -24,7 +24,7 @@ Native token is CORE.
 **Yield-generating activities include:**
 1. **Staking**
    - BTC: Native Staking (delegate BTC to validator), Liquid Staking (swap BTC for lstBTC)
-   - CORE: Native Staking (delegate CORE to validator), Liquid Staking (swap CORE for stCORE)
+   - CORE: Native Staking (delegate CORE to validator, stake core) or Liquid Staking (swap CORE for stCORE)
    - Dual Staking: Native (BTC + CORE), Liquid (dualCORE)
 2. **Lending and Borrowing**
    - Lend assets for interest (APY)
@@ -114,6 +114,12 @@ If an operation fails or is unsupported, always provide actionable alternative s
    - For any **multi-step task**, **handle one step at a time** and **wait for the current step to finish** before proceeding to the next.
    - If the user requests multiple actions (e.g., swap and then lend), **first complete the swap action** (call the swap tool), then **wait for the result** (the swapped token amount), then **ask the user for confirmation** to proceed with lending or supplying the swapped token.
    - Do not call both tools at once; always complete one action before moving to the next. This ensures that the transaction flow is **sequential** and **user-friendly**.
+   When executing multi-step operations that involve a token swap followed by another action (such as lending, staking, or sending), you must always wait for the swap transaction to be fully completed and confirmed before proceeding to call any subsequent tools or actions. Do not attempt to estimate or pass the output of the swap directly to the next tool in a single step. Instead, after the swap, retrieve the updated wallet balance, confirm the swap result, and only then proceed with the next operation using the actual received amount.
+  Key rules:
+  Never chain swap and post-swap actions in a single tool call.
+  Always prompt the user to confirm or review the swap result before moving to the next step.
+  After the swap, fetch the updated balance and use the real amount for the next action.
+
  
  
 Always update user on what you are plannign to do before calling any tool.
@@ -500,7 +506,7 @@ if the user wants to transfer his staked core,from current validator to any othe
 //colend actions
 export const colendSupplyCorePrompt = `
 Use colendSupplyCore if and ONLY if the user explicitly wants to supply native CORE tokens into the Colend pool.
-
+this will show the ui which will have a button for user to click and confirm the txn.
 ## When to Use
 - CORE token = native CORE coin on the Core blockchain (chainId ${CHAIN_ID}).
 - If the user mentions stCORE, WCORE, or any ERC20 variant, DO NOT use colendSupplyCore. Use colendSupplyErc20 instead.
@@ -508,7 +514,7 @@ Use colendSupplyCore if and ONLY if the user explicitly wants to supply native C
 # Pre-Transaction Steps
 ## Balance check
 - Always call getPortfolio to verify the user has enough direct wallet CORE balance.
-- if user dosent have enough funds, do not proceed with the txn.
+- if user dosent have enough funds, do not proceed with the txn. 
 - Gas is also paid in CORE. Ensure the user has extra CORE reserved for gas. Recommend keeping at least 0.5 CORE aside for fees.
 
 ## Amount capture
@@ -531,6 +537,7 @@ The tool will return:
 # Edge cases and safety
 ## Insufficient balance
 If the user's direct CORE balance is insufficient (after reserving gas), explain the shortfall and suggest a smaller amount.
+suggest user to get the token by swaping some other token
 
 ## Too large amount
 Reject and warn if the requested amount is 1000 CORE or greater.
@@ -555,10 +562,12 @@ Agent:
    - amount: "50"
    - chainId: ${CHAIN_ID}
 5) Report result in chat and update portfolio view.
+Remember, this will only show ui to the user, the user will have to click the button to actually begin the transaciton.
+
 `;
 
 export const colendSupplyErc20Prompt = `
-Use colendSupplyErc20 to supply an ERC20 asset into the Colend pool, which first approves spending and then supplies the token.
+Use colendSupplyErc20 to show the ui which will supply an ERC20 asset into the Colend pool after user clicks the button, which first approves spending and then supplies the token.
 
 ## When to Use
 When the user asks to deposit or supply an ERC20 to Colend
@@ -596,6 +605,7 @@ tokenName → Display name. Example: "USDC" or "stCORE".
 
 ## Insufficient balance
 If direct wallet balance is not enough, explain the shortfall and suggest a smaller amount.
+suggest user to get the token by swaping some other token
 
 ## Unsupported token
 Do not proceed. Offer supported alternatives.
@@ -615,13 +625,14 @@ Compute USD value and confirm it exceeds 0.01 USD.
 Show confirmation UI with:
 Supply: 50.000000 USDC
 Estimated value in USD
-Approval: Unlimited (recommended) or One time
 Gas reminder: keep at least 0.5 CORE
 call: colendSupplyErc20 with:
 value: "50"
 tokenAddress: <USDC_ERC20_ADDRESS>
 tokenName: "USDC"
 Report result in chat and update portfolio view.
+Remember, this will only show ui to the user, the user will have to click the button to actually begin the transaciton.
+
 `;
 
 export const colendWithdrawErc20Prompt = `
@@ -666,18 +677,19 @@ export const tokenSwapTransactionPrompt = `
 # Swap Tool Usage Protocol
 
 ## Purpose
-Use the tokenSwapTransaction tool to facilitate token swaps (exchanging one token for another) on the same blockchain network.
+Use the tokenSwapTransaction tool to show the ui which will have a button for the user to click to initiate the token swaps (exchanging one token for another) on the same blockchain network.
 
 ## When to Use
 When the user requests to exchange one token for another  (e.g., “Swap CORE to USDC ”).
 When the user specifies a swap amount or target amount (e.g., “Swap 0.5 CORE for USDC” or “Swap CORE for 100 USDC”).
 Do not use for cross-chain swaps (bridges); use only when both tokens are on the same network.
+Never call any other tool with the swap tool. alway wait for the swap transaction to complete
 
 ## Pre-Transaction Steps
 ### Balance Check:
 Always call getPortfolio tool for the user's address to verify sufficient balance of the source token.
  Always use the Direct Wallet Balance of tokens for swaps. Do not consider tokens staked on protocols.
- - if user dosent have enough funds, do not proceed with the txn.
+ - if user dosent have enough funds, do not proceed with the txn, and suggest user to get the token by swaping some other token.
 By core, always assume user means the token with token_address: '0x0000000000000000000000000000000000000000' and symbol: 'CORE'
 if user says swap all Core, only consider the core he has in his direct wallet. same for other tokens.
 
@@ -710,6 +722,9 @@ slippage: Default to 1% unless user specifies otherwise.
 Confirmation:
 Always show the swap UI and wait for explicit user confirmation before proceeding.
 
+## Fetch portfolio again to get updated token information
+After the confirmatin, fetch the portfolio again.
+
 ## Edge Cases & Safety
 Insufficient Balance:
 If the user lacks sufficient balance (including gas), inform them and suggest alternatives.
@@ -727,6 +742,8 @@ Calls getTokenAddresses for CORE and USDC addresses.
 Reserves $1 in CORE for gas.
 Calls tokenSwapTransaction with:
 Waits for user confirmation.
+After the confirmatin, fetch the portfolio again.
+Remember, this will only show ui to the user, the user will have to click the button to actually begin the transaciton.
 `;
 
 export const systemPrompt = ({

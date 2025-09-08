@@ -736,11 +736,11 @@ export default function TokenSwap({
     ],
     query: { enabled: !!tokenIn && !!tokenOut },
   });
-  console.log("swap txn ------------------");
-  console.log("token in --- ", tokenIn);
-  console.log("tokenOut --- ", tokenOut);
-  console.log("amount --- ", amount);
-  console.log("slippagePct --- ", slippagePct);
+  // console.log("swap txn ------------------");
+  // console.log("token in --- ", tokenIn);
+  // console.log("tokenOut --- ", tokenOut);
+  // console.log("amount --- ", amount);
+  // console.log("slippagePct --- ", slippagePct);
 
   const decimalsIn = useMemo(() => {
     if (tokenIn === "0x0000000000000000000000000000000000000000") {
@@ -799,7 +799,9 @@ export default function TokenSwap({
         parts: [
           {
             type: "text",
-            text: `Swap for ${amount} ${symbolIn} to ${symbolOut} was successfull.`,
+            text: `Swap for ${amount} ${symbolIn} to ${Number(
+              formatUnits(expectedOut ?? 0n, decimalsOut)
+            ).toFixed(3)} ${symbolOut} was successfull.`,
           },
         ],
       });
