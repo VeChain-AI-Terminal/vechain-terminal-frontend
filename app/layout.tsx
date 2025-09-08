@@ -84,8 +84,8 @@ export default async function RootLayout({
         <AppKitProvider initialState={initialState}>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
-            enableSystem
+            defaultTheme="dark"
+            // enableSystem
             disableTransitionOnChange
           >
             <Toaster position="top-center" />
