@@ -553,7 +553,7 @@ const PurePreviewMessage = ({
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Gathering information from all protocols..." />
+                      <ToolCallLoader loadingMessage="Gathering information from protocols..." />
                     </div>
                   );
                 }
@@ -562,7 +562,7 @@ const PurePreviewMessage = ({
                   return (
                     <div key={toolCallId}>
                       <ToolCallLoader
-                        loadingMessage="Gathering information from all protocols"
+                        loadingMessage="Gathering information from protocols"
                         isFinished
                       />
                     </div>

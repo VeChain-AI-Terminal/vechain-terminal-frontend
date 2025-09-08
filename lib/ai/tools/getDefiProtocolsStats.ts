@@ -101,7 +101,7 @@ const toMillions = (core: number) => `${(core / 1_000_000).toFixed(2)}M`;
 const pct = (x: number) => `${x.toFixed(2)}%`;
 const safeDiv = (a: number, b: number) => (b === 0 ? 0 : a / b);
 
-function summarizeValidators(
+function summarizeCoreDaoValidators(
   coreRaw: ValidatorResponse[] = []
 ): ValidatorSummary[] {
   // Build with numeric fields for sorting, then map to display
@@ -204,7 +204,7 @@ export const getDefiProtocolsStats = tool({
         coreRaw = data?.data?.validatorsList || [];
         console.log("coreRaw---- ", coreRaw);
 
-        validatorsSummary = summarizeValidators(coreRaw);
+        validatorsSummary = summarizeCoreDaoValidators(coreRaw);
         console.log("validatorsSummary---- ", validatorsSummary);
       }
     } catch (err) {

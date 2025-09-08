@@ -147,11 +147,28 @@ const ColendSupplyErc20: React.FC<ColendSupplyErc20Props> = ({
 
   useEffect(() => {
     if (sendError) {
-      console.error("[writeContract] error:", sendError);
-      setErrorMsg((sendError as any)?.message || "Transaction error");
-      setPhase("error");
+      const errorMessage = (sendError as any)?.message || "Transaction error";
+
+      if (errorMessage.includes("User rejected the request")) {
+        setErrorMsg("User rejected the request");
+        setPhase("error");
+
+        sendMessage({
+          role: "system",
+          parts: [
+            {
+              type: "text",
+              text: "User cancelled the transaction.",
+            },
+          ],
+        });
+      } else {
+        console.error("[writeContract] error:", sendError);
+        setErrorMsg(errorMessage);
+        setPhase("error");
+      }
     }
-  }, [sendError]);
+  }, [sendError, sendMessage]);
 
   // When APPROVE confirms, advance and send the approve message once
   useEffect(() => {
@@ -169,15 +186,15 @@ const ColendSupplyErc20: React.FC<ColendSupplyErc20Props> = ({
       if (!sentApproveRef.current) {
         sentApproveRef.current = true;
         // Your separate approve message
-        sendMessage({
-          role: "system",
-          parts: [
-            {
-              type: "text",
-              text: `Approval confirmed for ${tx.supply.tokenName}.`,
-            },
-          ],
-        });
+        // sendMessage({
+        //   role: "system",
+        //   parts: [
+        //     {
+        //       type: "text",
+        //       text: `Approval confirmed for ${tx.supply.tokenName}.`,
+        //     },
+        //   ],
+        // });
       }
     }
   }, [approveHash, approveWait.isError, approveWait.isSuccess]);
@@ -248,6 +265,15 @@ const ColendSupplyErc20: React.FC<ColendSupplyErc20Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
+  const isAwaitingApproval =
+    phase === "awaiting_wallet" ||
+    phase === "approving" ||
+    (!!approveHash && !approveWait.isSuccess && !approveWait.isError);
+
+  const isAwaitingSupply =
+    phase === "supplying" ||
+    (!!supplyHash && !supplyWait.isSuccess && !supplyWait.isError);
+
   const isButtonDisabled =
     isSending ||
     phase === "approving" ||
@@ -282,6 +308,43 @@ const ColendSupplyErc20: React.FC<ColendSupplyErc20Props> = ({
     }
   }, [supplyHash, supplyWait.isError, supplyWait.isSuccess]);
 
+  function ButtonContent() {
+    if (isAwaitingApproval) {
+      return (
+        <>
+          <FaSpinner className="animate-spin" />
+          Approving...
+        </>
+      );
+    }
+    if (isAwaitingSupply) {
+      return (
+        <>
+          <FaSpinner className="animate-spin" />
+          Supplying...
+        </>
+      );
+    }
+    if (phase === "success") {
+      return (
+        <>
+          <FaCheck />
+          Supplied
+        </>
+      );
+    }
+    if (phase === "error") {
+      return (
+        <>
+          <FaTimes />
+          Retry
+        </>
+      );
+    }
+    // idle or approved but not yet supplying
+    return <>Approve then Supply</>;
+  }
+
   return (
     <div className="flex flex-col gap-3">
       <div className="bg-zinc-900 text-white p-4 rounded-2xl shadow-md w-full border border-zinc-700 max-w-lg">
@@ -308,28 +371,8 @@ const ColendSupplyErc20: React.FC<ColendSupplyErc20Props> = ({
           onClick={handleSupplyFlow}
           className="mt-2 flex items-center justify-center gap-2 bg-white text-black py-2 px-4 rounded-md font-medium hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed w-full h-10"
         >
-          {isSending ? (
-            <>
-              <FaSpinner className="animate-spin" />
-              {phase === "approving" || phase === "awaiting_wallet"
-                ? "Approving..."
-                : "Supplying..."}
-            </>
-          ) : phase === "success" ? (
-            <>
-              <FaCheck />
-              Supplied
-            </>
-          ) : phase === "error" ? (
-            <>
-              <FaTimes />
-              Retry
-            </>
-          ) : (
-            "Approve then Supply"
-          )}
+          <ButtonContent />
         </button>
-
         <div className="text-xs text-gray-400 mt-3 space-y-1">
           {lastApproveHash && (
             <div>

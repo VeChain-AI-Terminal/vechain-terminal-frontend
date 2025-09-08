@@ -24,24 +24,24 @@ function PureSuggestedActions({
 
   const suggestedActions = [
     {
-      title: "Best APY for my 500 usdc?",
-      label: "for finding best investment strategy",
-      action: "Best ways to earn highest reward on Core using 500 usdc.",
+      title: "Best yield-generating opportunity for my CORE",
+      label: "find the most rewarding strategy",
+      action: "What is the best yield-generating opportunity for my CORE?",
     },
     {
-      title: "Best yeilds aggregated from all protocols",
-      label: "for getting highest rewards",
-      action: "Show me best yeilds in from all the protocols",
+      title: "Highest APYs right now across protocols",
+      label: "to make your tokens work for you",
+      action: "List the highest APYs available right now across protocols.",
     },
 
     {
-      title: "Swap all my usdc to core",
-      label: "for 1-click swaps",
-      action: "Swap all my usdc to core",
+      title: "Swap all my USDC to CORE",
+      label: "instant 1-click swap",
+      action: "Swap all my USDC to CORE",
     },
     {
       title: "What is dual staking?",
-      label: "for earning more rewards",
+      label: "learn all about CORE",
       action: "Explain how dual staking works in Core blockchain",
     },
   ];
