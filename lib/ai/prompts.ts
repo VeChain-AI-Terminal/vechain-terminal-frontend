@@ -743,6 +743,10 @@ Reserves $1 in CORE for gas.
 Calls tokenSwapTransaction with:
 Waits for user confirmation.
 After the confirmatin, fetch the portfolio again.
+
+
+# very important : In any strategy - if there is swap involved, please check the amount of tokens received after the swap and then proceed for further actions in the plan
+
 Remember, this will only show ui to the user, the user will have to click the button to actually begin the transaciton.
 `;
 
