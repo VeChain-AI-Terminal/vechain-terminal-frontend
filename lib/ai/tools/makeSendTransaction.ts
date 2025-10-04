@@ -35,6 +35,7 @@ export const makeSendTransaction = tool({
       receiver_ensName,
       value: valueInWei,
       network,
+      type: "simple_transfer" as const,
       clauses: [
         {
           to: receiver_address,

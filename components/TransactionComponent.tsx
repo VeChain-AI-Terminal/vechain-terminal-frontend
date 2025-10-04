@@ -89,8 +89,34 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
   const { account, connection } = useWallet();
   const [txId, setTxId] = useState<string | null>(null);
 
+  // Debug: Log the clauses to see what's being passed
+  console.log("TransactionComponent clauses:", clauses);
+  console.log("TransactionComponent props:", { from, value, network, type });
+
   // Use the clauses provided by our tools (they're already properly formatted)
-  const transactionClauses = clauses;
+  // If no clauses are provided, we can't proceed with the transaction
+  const transactionClauses = clauses && clauses.length > 0 ? clauses : [];
+  
+  // Validate that we have clauses before proceeding
+  const hasValidClauses = transactionClauses && transactionClauses.length > 0;
+  
+  // Extra debugging
+  console.log("TransactionComponent transactionClauses:", transactionClauses);
+  console.log("TransactionComponent hasValidClauses:", hasValidClauses);
+
+  // Configure useSendTransaction without clauses - clauses go to sendTransaction call
+  const sendTxConfig = {
+    signerAccountAddress: account?.address || from,
+    onTxConfirmed: () => {
+      console.log("Transaction confirmed");
+    },
+    onTxFailedOrCancelled: (error) => {
+      console.error("Transaction failed or cancelled:", error);
+    },
+  };
+  
+  console.log("useSendTransaction config:", sendTxConfig);
+  console.log("Clauses to be sent:", transactionClauses);
 
   const {
     sendTransaction,
@@ -99,15 +125,7 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
     txReceipt,
     status,
     error: sendError,
-  } = useSendTransaction({
-    clauses: transactionClauses,
-    onTxConfirmed: () => {
-      console.log("Transaction confirmed");
-    },
-    onTxFailedOrCancelled: (error) => {
-      console.error("Transaction failed or cancelled:", error);
-    },
-  });
+  } = useSendTransaction(sendTxConfig);
 
   const isSuccess = status === "success";
   const isTxError = status === "error"
@@ -129,8 +147,18 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
       console.error("Wallet not connected");
       return;
     }
+    
+    if (!hasValidClauses) {
+      console.error("No valid transaction clauses provided");
+      return;
+    }
+    
+    // Debug: Log clauses right before sending
+    console.log("handleSendTx: About to send transaction with clauses:", transactionClauses);
+    
     try {
-      await sendTransaction();
+      // Pass clauses directly to sendTransaction call, not in hook config
+      await sendTransaction(transactionClauses);
     } catch (error) {
       console.error("Transaction failed:", error);
     }
@@ -144,7 +172,7 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
   const networkName = networkToName[network];
   const token = networkToToken[network];
 
-  const isButtonDisabled = isSending || isMining || isSuccess;
+  const isButtonDisabled = isSending || isMining || isSuccess || !hasValidClauses;
 
   const getTransactionTitle = () => {
     switch (type) {
