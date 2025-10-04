@@ -46,7 +46,7 @@ export async function GET(
   } catch (error) {
     console.error("Error fetching chat:", error);
     return new ChatSDKError(
-      "database:api",
+      "bad_request:database",
       "Failed to fetch chat"
     ).toResponse();
   }

@@ -12,8 +12,8 @@ import {
   lt,
   type SQL,
 } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import Database from "better-sqlite3";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 
 import {
   user,
@@ -25,16 +25,13 @@ import {
   stream,
 } from "./schema";
 import { generateUUID } from "../utils";
-import { generateHashedPassword } from "./utils";
 import type { VisibilityType } from "@/components/visibility-selector";
 import { ChatSDKError } from "../errors";
 
 // biome-ignore lint: Forbidden non-null assertion.
-const dbPath = process.env.POSTGRES_URL!;
-console.log("Database path:", dbPath);
-console.log("Resolved database path:", require('path').resolve(dbPath));
-const sqlite = new Database(dbPath);
-const db = drizzle(sqlite);
+const connectionString = process.env.DATABASE_URL!;
+const client = postgres(connectionString);
+const db = drizzle(client);
 
 export async function getUser(address: string): Promise<Array<User>> {
   try {

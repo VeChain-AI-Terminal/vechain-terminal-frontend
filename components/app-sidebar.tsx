@@ -71,7 +71,7 @@ export function AppSidebar() {
           status={
             connection.isConnected && account?.address 
               ? "authenticated" 
-              : connection.isConnecting 
+              : connection.isLoading 
                 ? "loading" 
                 : "unauthenticated"
           } 

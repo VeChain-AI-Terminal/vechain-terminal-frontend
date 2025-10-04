@@ -5,7 +5,6 @@ import { useChat } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 import useSWR, { useSWRConfig } from "swr";
 import { ChatHeader } from "@/components/chat-header";
-import type { Vote } from "@/lib/db/schema";
 import { fetcher, fetchWithErrorHandlers, generateUUID } from "@/lib/utils";
 import { MultimodalInput } from "./multimodal-input";
 import { Messages } from "./messages";
@@ -13,7 +12,6 @@ import type { VisibilityType } from "./visibility-selector";
 import { unstable_serialize } from "swr/infinite";
 import { getChatHistoryPaginationKey } from "./sidebar-history";
 import { toast } from "./toast";
-import type { Session } from "next-auth";
 import { useSearchParams } from "next/navigation";
 import { useChatVisibility } from "@/hooks/use-chat-visibility";
 import { useAutoResume } from "@/hooks/use-auto-resume";
@@ -36,7 +34,7 @@ export function Chat({
   initialChatModel: string;
   initialVisibilityType: VisibilityType;
   isReadonly: boolean;
-  session?: Session;
+  session?: any;
   autoResume: boolean;
 }) {
   const { visibilityType } = useChatVisibility({

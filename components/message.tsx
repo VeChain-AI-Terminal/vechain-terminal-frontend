@@ -265,7 +265,7 @@ const PurePreviewMessage = ({
                     gasLimit,
                     comment,
                     clauses,
-                  } = output;
+                  } = output as any;
                   return (
                     <TransactionComponent
                       from={from}
@@ -345,7 +345,7 @@ const PurePreviewMessage = ({
                     network,
                     clauses,
                     comment,
-                  } = output;
+                  } = output as any;
                   return (
                     <TransactionComponent
                       from={from}
@@ -385,7 +385,7 @@ const PurePreviewMessage = ({
                     network,
                     clauses,
                     comment,
-                  } = output;
+                  } = output as any;
                   return (
                     <TransactionComponent
                       from={from}
@@ -419,7 +419,7 @@ const PurePreviewMessage = ({
                   return (
                     <VETVTHOBalance
                       key={toolCallId}
-                      data={output}
+                      data={output as any}
                       isLoading={false}
                     />
                   );
@@ -440,7 +440,7 @@ const PurePreviewMessage = ({
                   return (
                     <AccountStats
                       key={toolCallId}
-                      data={output}
+                      data={output as any}
                       isLoading={false}
                     />
                   );
@@ -462,7 +462,7 @@ const PurePreviewMessage = ({
                   return (
                     <TokenList
                       key={toolCallId}
-                      data={output}
+                      data={output as any}
                       isLoading={false}
                     />
                   );
@@ -484,7 +484,7 @@ const PurePreviewMessage = ({
                   return (
                     <NFTList
                       key={toolCallId}
-                      data={output}
+                      data={output as any}
                       isLoading={false}
                     />
                   );
@@ -506,7 +506,7 @@ const PurePreviewMessage = ({
                   return (
                     <NetworkStats
                       key={toolCallId}
-                      data={output}
+                      data={output as any}
                       isLoading={false}
                     />
                   );
@@ -528,7 +528,7 @@ const PurePreviewMessage = ({
                   return (
                     <TransactionInfo
                       key={toolCallId}
-                      data={output}
+                      data={output as any}
                       isLoading={false}
                     />
                   );
@@ -550,7 +550,7 @@ const PurePreviewMessage = ({
                   return (
                     <ContractInfo
                       key={toolCallId}
-                      data={output}
+                      data={output as any}
                       isLoading={false}
                     />
                   );
@@ -572,7 +572,7 @@ const PurePreviewMessage = ({
                   return (
                     <AddressEmission
                       key={toolCallId}
-                      data={output}
+                      data={output as any}
                       isLoading={false}
                     />
                   );
@@ -593,7 +593,7 @@ const PurePreviewMessage = ({
                   return (
                     <BlockEmission
                       key={toolCallId}
-                      data={output}
+                      data={output as any}
                       isLoading={false}
                     />
                   );
@@ -614,7 +614,7 @@ const PurePreviewMessage = ({
                   return (
                     <TransactionEmission
                       key={toolCallId}
-                      data={output}
+                      data={output as any}
                       isLoading={false}
                     />
                   );
@@ -635,7 +635,7 @@ const PurePreviewMessage = ({
                   return (
                     <NetworkEmission
                       key={toolCallId}
-                      data={output}
+                      data={output as any}
                       isLoading={false}
                     />
                   );

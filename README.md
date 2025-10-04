@@ -1,113 +1,341 @@
-# VeChain Terminal
+# VeChain AI Terminal ~ Frontend
 
-AI co-pilot for VeChain blockchain, built with **Next.js**.
+![VeChain AI Terminal Banner](https://raw.githubusercontent.com/VeChain-AI-Terminal/vechain-terminal-mcp/main/src/docs/images/vechain-terminal-banner.png)
 
-VeChain Terminal provides AI-powered blockchain interactions for VeChain ecosystem:
+A modern web interface for VeChain AI Terminal that provides natural language blockchain interactions through advanced AI capabilities. Built with Next.js and React, this frontend enables users to perform complex VeChain operations through conversational commands.
 
-- Real-time VeChain blockchain data and analytics.
-- AI-powered insights for VeChain transactions and smart contracts.
-- Seamless wallet integration with VeChain DApp Kit.
+## Overview
 
----
+VeChain AI Terminal Frontend serves as the primary user interface for interacting with the VeChain blockchain ecosystem through AI-powered natural language processing. The application integrates real-time blockchain data, wallet connectivity, and comprehensive transaction management in a seamless user experience.
 
-## 1) Prerequisites
+## Architecture
 
-- **Node.js** ≥ 18.17 (LTS recommended)
-- **pnpm** ≥ 8 (or npm ≥ 9 / yarn ≥ 1.22)
-- **Git**
-- **Env Variables as mentioned in `.env.example`**
+```mermaid
+graph TB
+    subgraph "Frontend Application"
+        A[Next.js App Router]
+        B[React Components]
+        C[AI Chat Interface]
+        D[Wallet Integration]
+    end
+    
+    subgraph "AI Layer"
+        E[Vercel AI SDK]
+        F[Tool Registry]
+        G[Streaming Responses]
+    end
+    
+    subgraph "Blockchain Integration"
+        H[VeChain Kit]
+        I[DApp Kit React]
+        J[Transaction Engine]
+    end
+    
+    subgraph "External APIs"
+        K[VeChainStats API]
+        L[WanBridge API]
+        M[XFlows API]
+        N[Carbon Emission API]
+    end
+    
+    subgraph "Database & Storage"
+        O[Drizzle ORM]
+        P[SQLite/PostgreSQL]
+        Q[Vercel Blob Storage]
+    end
+    
+    A --> B
+    B --> C
+    C --> E
+    E --> F
+    F --> G
+    D --> H
+    H --> I
+    I --> J
+    
+    F --> K
+    F --> L
+    F --> M
+    F --> N
+    
+    A --> O
+    O --> P
+    A --> Q
+```
 
----
+## System Components
 
-## 2) Quick Start
+### Frontend Framework
+- **Next.js 15**: React framework with App Router for modern web development
+- **TypeScript**: Type-safe development with comprehensive type definitions
+- **Tailwind CSS**: Utility-first styling with responsive design patterns
+- **Framer Motion**: Advanced animations and interactive transitions
+
+### AI Integration
+- **Vercel AI SDK**: Streaming AI responses with tool calling capabilities
+- **OpenAI Integration**: GPT models fine-tuned for VeChain blockchain context
+- **Tool System**: 50+ blockchain tools for comprehensive VeChain operations
+- **Real-time Streaming**: Live AI responses with progressive data loading
+
+### Blockchain Connectivity
+- **VeChain Kit**: Official VeChain wallet integration and transaction handling
+- **DApp Kit React**: React hooks for seamless wallet connectivity
+- **Transaction Engine**: Automated transaction creation, signing, and broadcasting
+- **Multi-Network Support**: Testnet and Mainnet compatibility
+
+## Features
+
+### AI-Powered Interactions
+- **Natural Language Processing**: Convert conversational commands to blockchain operations
+- **Context-Aware Responses**: AI understands VeChain ecosystem terminology and concepts
+- **Tool Execution**: Automated execution of blockchain operations through AI tools
+- **Progressive Loading**: Real-time streaming of AI responses and blockchain data
+
+### Blockchain Operations
+- **Token Management**: VET, VTHO, and VIP-180 token operations with real-time balances
+- **Smart Contract Interaction**: Dynamic contract calls with ABI resolution
+- **Transaction Monitoring**: Real-time transaction status tracking and confirmation
+- **Gas Optimization**: Automatic fee estimation and optimization strategies
+
+### Cross-Chain Capabilities
+- **WanBridge Integration**: Secure asset transfers to 25+ blockchain networks
+- **XFlows Support**: Advanced cross-chain swap protocols with optimal routing
+- **Bridge Monitoring**: Real-time tracking of cross-chain transaction status
+- **Multi-Chain Analytics**: Comprehensive data across connected networks
+
+### Data Analytics
+- **Real-Time Blockchain Data**: Live network statistics and transaction monitoring
+- **Carbon Footprint Tracking**: Environmental impact analysis for blockchain operations
+- **Historical Analytics**: Comprehensive transaction and balance history
+- **Market Data Integration**: Real-time token prices and market information
+
+## External API Integrations
+
+### **VeChainStats API**
+Comprehensive blockchain analytics providing real-time network statistics, token information, transaction history, and market data. Powers the data layer for all blockchain insights and analytics features.
+
+### **WanBridge API**
+Cross-chain bridge operations enabling secure asset transfers between VeChain and 25+ destination blockchains including Ethereum, Polygon, BSC, and more. Handles automated transaction routing and fee optimization.
+
+### **XFlows API**
+Advanced cross-chain swap protocols with intelligent routing algorithms for optimal transaction paths across multiple blockchain networks. Provides automated slippage protection and MEV resistance.
+
+### **Carbon Emission APIs**
+Environmental impact tracking for blockchain operations, providing carbon footprint calculations for transactions, smart contract interactions, and network participation.
+
+## Technology Stack
+
+### Core Framework
+- **Next.js 15**: Modern React framework with App Router architecture
+- **React 19 RC**: Latest React features with concurrent rendering
+- **TypeScript 5.6**: Enhanced type safety and developer experience
+- **Tailwind CSS 3.4**: Responsive utility-first styling system
+
+### AI & Data Processing
+- **Vercel AI SDK 5.0**: Advanced AI integration with streaming capabilities
+- **OpenAI GPT**: Fine-tuned models for blockchain domain expertise
+- **Streaming APIs**: Real-time data processing and response generation
+- **Tool Registry**: Modular system for blockchain operation tools
+
+### Blockchain Integration
+- **VeChain Kit 2.0**: Official VeChain wallet integration
+- **DApp Kit React 2.0**: React hooks for blockchain connectivity
+- **VeChain SDK**: Low-level blockchain interaction capabilities
+- **Multi-Network Support**: Testnet and mainnet compatibility
+
+### Database & Storage
+- **Drizzle ORM 0.34**: Type-safe database operations
+- **Better SQLite3**: High-performance local database
+- **Vercel Postgres**: Scalable cloud database option
+- **Vercel Blob Storage**: File and asset management
+
+### Development Tools
+- **Biome**: Fast code formatting and linting
+- **Playwright**: End-to-end testing framework
+- **ESLint**: Code quality and consistency
+- **Vercel Analytics**: Performance monitoring and insights
+
+## Quick Start
+
+### Prerequisites
+- Node.js 18 or higher
+- pnpm package manager
+- VeChain wallet (VeWorld, Sync2, or compatible)
+- Environment variables configured
+
+### Installation
+
+1. **Clone and install dependencies**
+   ```bash
+   git clone https://github.com/VeChain-AI-Terminal/vechain-terminal-frontend
+   cd vechain-terminal-frontend
+   pnpm install
+   ```
+
+2. **Configure environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   Edit `.env.local` with your API keys and configuration:
+   ```env
+   VECHAINSTATS_API_KEY=your_vechainstats_api_key
+   OPENAI_API_KEY=your_openai_api_key
+   VECHAIN_NETWORK=testnet
+   DATABASE_URL=your_database_url
+   ```
+
+3. **Initialize database**
+   ```bash
+   pnpm db:generate
+   pnpm db:migrate
+   ```
+
+4. **Start development server**
+   ```bash
+   pnpm dev
+   ```
+   
+   The application will be available at `http://localhost:3000`
+
+### Database Management
 
 ```bash
-# 1) Install dependencies
-pnpm install
+# Generate database migrations
+pnpm db:generate
 
-# 2) Copy environment variables
-cp .env.example .env.local
-# Fill in values as per your configuration
+# Run migrations
+pnpm db:migrate
 
-# 3) Start the development server
+# Open database studio
+pnpm db:studio
+
+# Push schema changes
+pnpm db:push
+```
+
+## Usage Examples
+
+### Token Operations
+```
+"Check my VET and VTHO balance"
+"Transfer 100 VET to 0x742d35Cc6651Fb66D8dD9b2a5D35bfa2F9d2E7c7"
+"Show me all VIP-180 tokens in my wallet"
+"Get the current VET price and market cap"
+```
+
+### Smart Contract Interactions
+```
+"Verify the contract at 0x0000000000000000000000000000456E65726779"
+"Show me the contract code for the VTHO token"
+"Get contract statistics for the last 30 days"
+```
+
+### Cross-Chain Operations
+```
+"Bridge 500 VET to Ethereum using WanBridge"
+"Check bridge fees for VET to Polygon"
+"Show me my cross-chain transaction history"
+```
+
+### Analytics and Data
+```
+"Show me VeChain network statistics"
+"What's my carbon footprint from blockchain transactions?"
+"Get my transaction history for the last week"
+"Analyze my NFT portfolio"
+```
+
+## Development
+
+### Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router pages
+├── components/             # React components
+├── lib/
+│   ├── ai/                # AI integration and tools
+│   │   ├── tools/         # Blockchain operation tools
+│   │   └── prompts.ts     # AI prompt engineering
+│   ├── db/                # Database configuration
+│   └── utils/             # Utility functions
+├── styles/                # Global styles and themes
+└── types/                 # TypeScript type definitions
+```
+
+### Adding New Tools
+
+1. **Create tool file in `lib/ai/tools/`**
+   ```typescript
+   import { tool } from "ai";
+   import z from "zod";
+
+   export const customTool = tool({
+     description: "Custom blockchain operation",
+     inputSchema: z.object({
+       address: z.string().describe("Target address")
+     }),
+     execute: async ({ address }) => {
+       // Implementation
+     }
+   });
+   ```
+
+2. **Register tool in `app/(chat)/api/chat/route.ts`**
+3. **Add appropriate prompts in `lib/ai/prompts.ts`**
+4. **Update UI components in `components/message.tsx`**
+
+### Testing
+
+```bash
+# Run development server
 pnpm dev
-# Runs on http://localhost:3000
 
-# 4) Optional checks
+# Type checking
 pnpm typecheck
+
+# Linting and formatting
 pnpm lint
+pnpm format
+
+# End-to-end testing
+pnpm test
 ```
 
----
+## Security Considerations
 
-## 3) Scripts
+### Wallet Security
+- Client-side wallet integration with VeChain Kit
+- No private key storage on servers
+- Secure transaction signing through browser wallets
+- Network isolation between testnet and mainnet
 
-```jsonc
-{
-  "scripts": {
-    "dev": "next dev --turbo",
-    "build": "tsx lib/db/migrate && next build",
-    "start": "next start",
-    "lint": "next lint && biome lint --write --unsafe",
-    "lint:fix": "next lint --fix && biome lint --write --unsafe",
-    "format": "biome format --write",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "npx tsx lib/db/migrate.ts",
-    "db:studio": "drizzle-kit studio",
-    "db:push": "drizzle-kit push",
-    "db:pull": "drizzle-kit pull",
-    "db:check": "drizzle-kit check",
-    "db:up": "drizzle-kit up",
-    "test": "export PLAYWRIGHT=True && pnpm exec playwright test"
-  }
-}
-```
+### API Security
+- Environment variable protection for API keys
+- Rate limiting on external API calls
+- Input validation and sanitization
+- HTTPS-only communication
 
----
+### Application Security
+- Content Security Policy implementation
+- XSS protection through React's built-in safeguards
+- SQL injection prevention with Drizzle ORM
+- Secure session management
 
-## 4) Project Architecture
+## Contributing
 
-**Framework**
+This project welcomes contributions for improving AI-blockchain integration patterns:
 
-- Next.js (App Router)
-- TypeScript
-- Tailwind CSS
-- lucide-react, framer-motion
+1. Fork the repository and create feature branches
+2. Follow TypeScript and React best practices
+3. Add comprehensive tests for new functionality
+4. Update documentation for UI/UX changes
+5. Submit pull requests with detailed descriptions
 
-**AI Layer**
+## License
 
-- Vercel AI SDK for streaming AI responses.
-- GPT fine-tuned for VeChain context integrated with real-time blockchain data tools
-
-**Blockchain Tools**
-
-- VeChain SDK for on-chain reads/writes
-- VeChain DApp Kit for wallet connection
-
-**VeChain Integrations**
-
-- VeChain blockchain data and transaction tools.
-- Smart contract interactions.
-- VTHO and VET token utilities.
-- Transactions via VeChain wallets.
+MIT License - see LICENSE file for complete terms and conditions.
 
 ---
 
-## 5) Development Notes
-
-- **Auth**: Uses VeChain Kit for wallet authentication.
-- **Network**: Configured for VeChain TestNet by default.
-
----
-
-## 6) For Adding Tool & Action Conventions
-
-Each blockchain/DeFi action is implemented as a “tool”:
-For adding a new tool follow the below steps:
-
-1. Make your tool using ai sdk in the `/lib/ai/tools` folder
-2. add the tool to the ai agent in the `/app/(chat)/api/chat/route.ts` file
-3. add an appropriate prompt to tell the ai about this tool in the `/lib/ai/prompts.ts` file
-4. for showing messages while the tool is being called or after the tool has finished, you can add it in the `/components/message.tsx` file.
-
----
+**VeChain AI Terminal Frontend** - Bridging artificial intelligence with blockchain technology through intuitive web interfaces.

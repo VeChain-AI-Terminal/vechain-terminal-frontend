@@ -21,7 +21,7 @@ export const InfoList = () => {
           Network: {connection.network}
         </div>
         <div className="mb-2 p-2 bg-white rounded shadow-sm">
-          Connection Source: {connection.source}
+          Connection Source: {String(connection.source)}
         </div>
         {smartAccount?.address && (
           <div className="mb-2 p-2 bg-white rounded shadow-sm">

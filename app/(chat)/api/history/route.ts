@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Error fetching chat history:", error);
     return new ChatSDKError(
-      "internal_server_error:api",
+      "bad_request:database",
       "Failed to fetch chat history"
     ).toResponse();
   }

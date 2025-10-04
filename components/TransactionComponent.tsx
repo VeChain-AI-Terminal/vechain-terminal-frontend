@@ -294,7 +294,7 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
             </div>
             {receiveAmount && (
               <div className="mb-4 flex justify-between items-center border-b border-zinc-700 pb-3">
-                <span className="text-gray-400">You'll Receive</span>
+                <span className="text-gray-400">You&apos;ll Receive</span>
                 <span className="text-green-400">{receiveAmount}</span>
               </div>
             )}

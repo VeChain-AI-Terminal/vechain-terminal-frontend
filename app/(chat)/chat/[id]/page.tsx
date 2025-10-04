@@ -29,7 +29,7 @@ export default function Page(props: { params: Promise<{ id: string }> }) {
         setLoading(true);
         
         // Fetch chat details (this would need to be through an API route)
-        const chatResponse = await fetch(`/api/chat/${params.id}?wallet_address=${encodeURIComponent(address)}`);
+        const chatResponse = await fetch(`/api/chat/${params!.id}?wallet_address=${encodeURIComponent(address!)}`);
         if (!chatResponse.ok) {
           if (chatResponse.status === 404) {
             notFound();

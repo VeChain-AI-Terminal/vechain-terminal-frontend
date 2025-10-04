@@ -143,8 +143,8 @@ export async function POST(request: Request) {
           chatId: id,
           id: message.id,
           role: "user",
-          parts: message.parts,
-          attachments: [],
+          parts: JSON.stringify(message.parts),
+          attachments: JSON.stringify([]),
           createdAt: new Date(),
         },
       ],
@@ -159,9 +159,9 @@ export async function POST(request: Request) {
         console.log("vTools keys:", Object.keys(vTools));
         console.log("First few tools:", Object.keys(vTools).slice(0, 3).map(key => ({
           key,
-          hasDescription: !!vTools[key as keyof typeof vTools]?.description,
-          hasInputSchema: !!vTools[key as keyof typeof vTools]?.inputSchema,
-          hasExecute: !!vTools[key as keyof typeof vTools]?.execute,
+          hasDescription: !!(vTools as any)[key]?.description,
+          hasInputSchema: !!(vTools as any)[key]?.inputSchema,
+          hasExecute: !!(vTools as any)[key]?.execute,
         })));
 
         const result = streamText({
@@ -197,9 +197,9 @@ export async function POST(request: Request) {
           messages: messages.map((message) => ({
             id: message.id,
             role: message.role,
-            parts: message.parts,
+            parts: JSON.stringify(message.parts),
             createdAt: new Date(),
-            attachments: (message as any).attachments || [],
+            attachments: JSON.stringify((message as any).attachments || []),
             chatId: id,
           })),
         });
