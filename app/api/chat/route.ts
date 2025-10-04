@@ -17,7 +17,7 @@ import {
   saveMessages,
 } from "@/lib/db/queries";
 import { convertToUIMessages, generateUUID } from "@/lib/utils";
-import { generateTitleFromUserMessage } from "../../actions";
+import { generateTitleFromUserMessage } from "./actions";
 import { isProductionEnvironment } from "@/lib/constants";
 import { myProvider } from "@/lib/ai/providers";
 // import { entitlementsByUserType } from "@/lib/ai/entitlements";
