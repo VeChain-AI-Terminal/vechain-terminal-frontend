@@ -20,6 +20,7 @@ import { useAutoResume } from "@/hooks/use-auto-resume";
 import { ChatSDKError } from "@/lib/errors";
 import type { Attachment, ChatMessage } from "@/lib/types";
 import { useDataStream } from "./data-stream-provider";
+import { useAutoRegisterUser } from "@/hooks/useAutoRegisterUser";
 
 export function Chat({
   id,
@@ -45,6 +46,9 @@ export function Chat({
 
   const { mutate } = useSWRConfig();
   const { setDataStream } = useDataStream();
+  
+  // VeChain Kit wallet integration with auto-registration
+  const { fetchWithWalletHeaders, account, isConnected, getWalletHeaders } = useAutoRegisterUser();
 
   const [input, setInput] = useState<string>("");
 
@@ -65,7 +69,11 @@ export function Chat({
       api: "/api/chat",
       fetch: fetchWithErrorHandlers,
       prepareSendMessagesRequest({ messages, id, body }) {
+        // Get wallet headers from centralized hook
+        const walletHeaders = getWalletHeaders();
+
         return {
+          headers: walletHeaders,
           body: {
             id,
             message: messages.at(-1),

@@ -34,40 +34,8 @@ import type { ChatMessage } from "@/lib/types";
 import type { ChatModel } from "@/lib/ai/models";
 import type { VisibilityType } from "@/components/visibility-selector";
 
-import { getDefiProtocolsStats } from "@/lib/ai/tools/getDefiProtocolsStats";
-//utils
-import { ensToAddress } from "@/lib/ai/tools/ensToAddress";
-import { convertHexToDecimal } from "@/lib/ai/tools/convertHexToDecimal";
-
-//send transaction
-import { makeSendTransaction } from "@/lib/ai/tools/makeSendTransaction";
-
-//staking
-import { makeStakeCoreTransaction } from "@/lib/ai/tools/core-staking-actions/makeStakeCoreTransaction";
-import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/core-staking-actions/getDelegatedCoreForEachValidator";
-import { getClaimedAndPendingRewards } from "@/lib/ai/tools/core-staking-actions/getClaimedAndPendingRewards";
-import { makeUnDelegateCoreTransaction } from "@/lib/ai/tools/core-staking-actions/makeUnDelegateCoreTransaction";
-import { makeClaimRewardsTransaction } from "@/lib/ai/tools/core-staking-actions/makeClaimRewardsTransaction";
-import { makeTransferStakedCoreTransaction } from "@/lib/ai/tools/core-staking-actions/makeTransferStakedCoreTransaction";
-
-// chain info
-import { getTokenAddresses } from "@/lib/ai/tools/getTokenAddresses";
-import { getCoreScanApiParams } from "@/lib/ai/tools/coreScanTools";
-import { makeCoreScanApiCall } from "@/lib/ai/tools/coreScanTools";
-import {} from "@/lib/ai/tools/coreScanTools";
-//portfolio
-import { getPortfolio } from "@/lib/ai/tools/getPortfolio";
-import { getTransactionHistory } from "@/lib/ai/tools/getTransactionHistory";
-import { getUserWalletInfo } from "@/lib/ai/tools/getUserWalletInfo";
-
-//colend
-import { colendSupplyCore } from "@/lib/ai/tools/colend/colendSupplyCore";
-import { colendSupplyErc20 } from "@/lib/ai/tools/colend/colendSupplyErc20";
-import { colendWithdrawErc20 } from "@/lib/ai/tools/colend/colendWithdrawErc20";
-import { colendWithdrawCore } from "@/lib/ai/tools/colend/colendWithdrawCore";
-
-//swaps
-import { tokenSwapTransaction } from "@/lib/ai/tools/swap-actions/tokenSwapTransaction";
+// Import all VeChain tools from index
+import * as vTools from "@/lib/ai/tools";
 
 export const maxDuration = 60;
 
@@ -183,53 +151,9 @@ export async function POST(request: Request) {
           experimental_activeTools:
             selectedChatModel === "chat-model-reasoning"
               ? []
-              : [
-                  "getDefiProtocolsStats",
-                  "makeSendTransaction",
-                  "makeStakeCoreTransaction",
-                  "getDelegatedCoreForEachValidator",
-                  "getClaimedAndPendingRewards",
-                  "makeUnDelegateCoreTransaction",
-                  "makeClaimRewardsTransaction",
-                  "makeTransferStakedCoreTransaction",
-                  "getTokenAddresses",
-                  "getCoreScanApiParams",
-                  "makeCoreScanApiCall",
-                  "getPortfolio",
-                  "getTransactionHistory",
-                  "ensToAddress",
-                  "convertHexToDecimal",
-                  "getUserWalletInfo",
-                  "colendSupplyCore",
-                  "colendSupplyErc20",
-                  "colendWithdrawErc20",
-                  "colendWithdrawCore",
-                  "tokenSwapTransaction",
-                ],
+              : Object.keys(vTools),
           experimental_transform: smoothStream({ chunking: "word" }),
-          tools: {
-            getDefiProtocolsStats,
-            makeSendTransaction,
-            makeStakeCoreTransaction,
-            getDelegatedCoreForEachValidator,
-            getClaimedAndPendingRewards,
-            makeUnDelegateCoreTransaction,
-            makeClaimRewardsTransaction,
-            makeTransferStakedCoreTransaction,
-            getTokenAddresses,
-            getCoreScanApiParams,
-            makeCoreScanApiCall,
-            getPortfolio,
-            getTransactionHistory,
-            ensToAddress,
-            convertHexToDecimal,
-            getUserWalletInfo,
-            colendSupplyCore,
-            colendSupplyErc20,
-            colendWithdrawErc20,
-            colendWithdrawCore,
-            tokenSwapTransaction,
-          },
+          tools: vTools,
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,
             functionId: "stream-text",

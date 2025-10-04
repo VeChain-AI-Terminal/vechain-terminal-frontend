@@ -4,18 +4,12 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 
 import "./globals.css";
-import { SessionProvider } from "next-auth/react";
-import { headers } from "next/headers";
-
-import { cookieToInitialState } from "wagmi";
-
-import { wagmiAdapter } from "@/config/index";
-import AppKitProvider from "@/context";
+import VeChainKitProviderWrapper from "@/components/VeChainKitProvider";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://chat.vercel.ai"),
-  title: "Orange Terminal",
-  description: "AI co-pilot for Bitcoin on CORE",
+  title: "VeChain Terminal",
+  description: "AI co-pilot for VeChain blockchain",
 };
 
 export const viewport = {
@@ -54,15 +48,11 @@ const THEME_COLOR_SCRIPT = `\
   updateThemeColor();
 })();`;
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const headersData = await headers();
-  const cookies = headersData.get("cookie");
-  const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig, cookies);
-
   return (
     <html
       lang="en"
@@ -81,7 +71,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <AppKitProvider initialState={initialState}>
+        <VeChainKitProviderWrapper>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -89,9 +79,9 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <Toaster position="top-center" />
-            <SessionProvider>{children}</SessionProvider>
+            {children}
           </ThemeProvider>
-        </AppKitProvider>
+        </VeChainKitProviderWrapper>
       </body>
     </html>
   );

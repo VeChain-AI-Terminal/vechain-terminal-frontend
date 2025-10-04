@@ -57,6 +57,14 @@ export { getBlockEmission } from './carbon/getBlockEmission';
 export { getTransactionEmission } from './carbon/getTransactionEmission';
 export { getNetworkEmission } from './carbon/getNetworkEmission';
 
+// Transaction Tools
+export { makeSendTransaction } from './makeSendTransaction';
+export { makeContractTransaction } from './makeContractTransaction';
+export { makeBridgeTransaction } from './makeBridgeTransaction';
+export { makeTokenTransfer } from './token/makeTokenTransfer';
+export { makeTokenApproval } from './token/makeTokenApproval';
+export { signMessage } from './signMessage';
+
 // Utility Tools
 export { convertHexToDecimal } from './convertHexToDecimal';
 export { getAPIInfo } from './utils/getAPIInfo';
