@@ -32,7 +32,7 @@ export const makeContractTransaction = tool({
     comment,
   }) => {
     // Convert human readable value to wei (18 decimals for VET)
-    const valueInWei = value === "0" ? "0x0" : `0x${(parseFloat(value) * Math.pow(10, 18)).toString(16)}`;
+    const valueInWei = value === "0" ? "0x0" : `0x${(parseFloat(value!) * Math.pow(10, 18)).toString(16)}`;
     
     // If data is provided, use it directly, otherwise try to encode from function info
     let encodedData = data;
