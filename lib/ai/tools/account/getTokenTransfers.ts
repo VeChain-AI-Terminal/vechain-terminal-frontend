@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getTokenTransfers = tool({
   description: 'Get VIP180 token transfers where an address is either sender or receiver',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('VeChain wallet address'),
     token_type: z.enum(['vip180']).optional().default('vip180').describe('Token type'),
     page: z.number().optional().default(1).describe('Page number for pagination'),

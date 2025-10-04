@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getVTHOInfo = tool({
   description: 'Get VTHO generation and usage information for an address - paid, generated, and sponsored VTHO',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('VeChain wallet address'),
   }),
   execute: async ({ address }): Promise<any> => {

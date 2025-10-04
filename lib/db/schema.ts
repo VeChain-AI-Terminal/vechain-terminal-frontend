@@ -54,47 +54,6 @@ export const message = sqliteTable("Message_v2", {
 
 export type DBMessage = InferSelectModel<typeof message>;
 
-// DEPRECATED: The following schema is deprecated and will be removed in the future.
-// Read the migration guide at https://chat-sdk.dev/docs/migration-guides/message-parts
-export const voteDeprecated = sqliteTable(
-  "Vote",
-  {
-    chatId: text("chatId")
-      .notNull()
-      .references(() => chat.id),
-    messageId: text("messageId")
-      .notNull()
-      .references(() => messageDeprecated.id),
-    isUpvoted: integer("isUpvoted", { mode: "boolean" }).notNull(),
-  },
-  (table) => {
-    return {
-      pk: primaryKey({ columns: [table.chatId, table.messageId] }),
-    };
-  }
-);
-
-export type VoteDeprecated = InferSelectModel<typeof voteDeprecated>;
-
-export const vote = sqliteTable(
-  "Vote_v2",
-  {
-    chatId: text("chatId")
-      .notNull()
-      .references(() => chat.id),
-    messageId: text("messageId")
-      .notNull()
-      .references(() => message.id),
-    isUpvoted: integer("isUpvoted", { mode: "boolean" }).notNull(),
-  },
-  (table) => {
-    return {
-      pk: primaryKey({ columns: [table.chatId, table.messageId] }),
-    };
-  }
-);
-
-export type Vote = InferSelectModel<typeof vote>;
 
 export const stream = sqliteTable(
   "Stream",

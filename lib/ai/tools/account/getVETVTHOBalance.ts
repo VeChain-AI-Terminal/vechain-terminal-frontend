@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getVETVTHOBalance = tool({
   description: 'Get VET and VTHO balance for a VeChain address. Returns the native VET balance, VTHO balance, and staked VET amount.',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('VeChain wallet address to check balance for'),
   }),
   execute: async ({ address }): Promise<any> => {

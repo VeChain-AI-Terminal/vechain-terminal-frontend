@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getTransactionStatus = tool({
   description: 'Get the status and possible EVM error of a VeChain transaction',
-  parameters: z.object({
+  inputSchema: z.object({
     txid: z.string().describe('Transaction hash/ID'),
   }),
   execute: async ({ txid }): Promise<any> => {

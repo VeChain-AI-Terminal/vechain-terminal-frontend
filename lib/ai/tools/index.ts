@@ -66,5 +66,4 @@ export { makeTokenApproval } from './token/makeTokenApproval';
 export { signMessage } from './signMessage';
 
 // Utility Tools
-export { convertHexToDecimal } from './convertHexToDecimal';
 export { getAPIInfo } from './utils/getAPIInfo';

@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getTransactionInfo = tool({
   description: 'Get detailed information and receipt for a VeChain transaction',
-  parameters: z.object({
+  inputSchema: z.object({
     txid: z.string().describe('Transaction hash/ID'),
   }),
   execute: async ({ txid }): Promise<any> => {

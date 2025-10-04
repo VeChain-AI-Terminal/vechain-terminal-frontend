@@ -3,7 +3,9 @@ import { z } from 'zod';
 
 export const getAPIInfo = tool({
   description: 'Get information about your VeChainStats API key plan and usage limits',
-  parameters: z.object({}),
+  inputSchema: z.object({
+    // No parameters required for this endpoint
+  }),
   execute: async (): Promise<any> => {
     try {
       const response = await fetch(

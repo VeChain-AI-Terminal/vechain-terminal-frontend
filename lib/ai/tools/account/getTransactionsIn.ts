@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getTransactionsIn = tool({
   description: 'Get incoming transactions to a VeChain address with pagination support',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('VeChain wallet address'),
     page: z.number().optional().default(1).describe('Page number for pagination'),
     sort: z.enum(['asc', 'desc']).optional().default('desc').describe('Sort order by timestamp'),

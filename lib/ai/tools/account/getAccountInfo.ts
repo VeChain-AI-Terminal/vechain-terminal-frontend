@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getAccountInfo = tool({
   description: 'Get detailed information about a VeChain account including balances, first/last seen blocks, and transaction history indicators',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('VeChain wallet address'),
     expanded: z.boolean().optional().default(true).describe('Include expanded information'),
   }),

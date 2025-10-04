@@ -20,7 +20,6 @@ import {
   chat,
   type User,
   message,
-  vote,
   type DBMessage,
   type Chat,
   stream,
@@ -31,7 +30,10 @@ import type { VisibilityType } from "@/components/visibility-selector";
 import { ChatSDKError } from "../errors";
 
 // biome-ignore lint: Forbidden non-null assertion.
-const sqlite = new Database(process.env.POSTGRES_URL!);
+const dbPath = process.env.POSTGRES_URL!;
+console.log("Database path:", dbPath);
+console.log("Resolved database path:", require('path').resolve(dbPath));
+const sqlite = new Database(dbPath);
 const db = drizzle(sqlite);
 
 export async function getUser(address: string): Promise<Array<User>> {
@@ -68,7 +70,8 @@ export async function upsertUserByAddress(address: string): Promise<User> {
       .values(newUser)
       .returning();
     return created;
-  } catch {
+  } catch (error) {
+    console.error("Error in upsertUserByAddress:", error);
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to upsert user by address"
@@ -103,7 +106,6 @@ export async function saveChat({
 
 export async function deleteChatById({ id }: { id: string }) {
   try {
-    await db.delete(vote).where(eq(vote.chatId, id));
     await db.delete(message).where(eq(message.chatId, id));
     await db.delete(stream).where(eq(stream.chatId, id));
 
@@ -232,47 +234,6 @@ export async function getMessagesByChatId({ id }: { id: string }): Promise<DBMes
   }
 }
 
-export async function voteMessage({
-  chatId,
-  messageId,
-  type,
-}: {
-  chatId: string;
-  messageId: string;
-  type: "up" | "down";
-}) {
-  try {
-    const [existingVote] = await db
-      .select()
-      .from(vote)
-      .where(and(eq(vote.messageId, messageId)));
-
-    if (existingVote) {
-      return await db
-        .update(vote)
-        .set({ isUpvoted: type === "up" })
-        .where(and(eq(vote.messageId, messageId), eq(vote.chatId, chatId)));
-    }
-    return await db.insert(vote).values({
-      chatId,
-      messageId,
-      isUpvoted: type === "up",
-    });
-  } catch (error) {
-    throw new ChatSDKError("bad_request:database", "Failed to vote message");
-  }
-}
-
-export async function getVotesByChatId({ id }: { id: string }) {
-  try {
-    return await db.select().from(vote).where(eq(vote.chatId, id));
-  } catch (error) {
-    throw new ChatSDKError(
-      "bad_request:database",
-      "Failed to get votes by chat id"
-    );
-  }
-}
 
 export async function getMessageById({ id }: { id: string }) {
   try {
@@ -303,11 +264,6 @@ export async function deleteMessagesByChatIdAfterTimestamp({
     const messageIds = messagesToDelete.map((message) => message.id);
 
     if (messageIds.length > 0) {
-      await db
-        .delete(vote)
-        .where(
-          and(eq(vote.chatId, chatId), inArray(vote.messageId, messageIds))
-        );
 
       return await db
         .delete(message)

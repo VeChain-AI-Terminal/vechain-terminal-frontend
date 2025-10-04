@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getAPIPing = tool({
   description: 'Ping the VeChainStats API to ensure connection is live',
-  inputSchema: z.object({}).optional(),
+  inputSchema: z.object({}),
   execute: async () => {
     try {
       const response = await fetch(

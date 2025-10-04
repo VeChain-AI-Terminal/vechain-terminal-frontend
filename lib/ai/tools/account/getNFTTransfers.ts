@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getNFTTransfers = tool({
   description: 'Get NFT transfers where an address is either sender or receiver',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('VeChain wallet address'),
     page: z.number().optional().default(1).describe('Page number for pagination'),
     sort: z.enum(['asc', 'desc']).optional().default('desc').describe('Sort order by timestamp'),

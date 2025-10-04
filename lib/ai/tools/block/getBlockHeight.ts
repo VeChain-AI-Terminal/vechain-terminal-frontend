@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getBlockHeight = tool({
   description: 'Get the most recent VeChain block height and information',
-  inputSchema: z.object({}).optional(),
+  inputSchema: z.object({}),
   execute: async () => {
     try {
       const response = await fetch(

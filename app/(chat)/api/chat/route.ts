@@ -155,6 +155,15 @@ export async function POST(request: Request) {
 
     const stream = createUIMessageStream({
       execute: ({ writer: dataStream }) => {
+        // Debug the tools object
+        console.log("vTools keys:", Object.keys(vTools));
+        console.log("First few tools:", Object.keys(vTools).slice(0, 3).map(key => ({
+          key,
+          hasDescription: !!vTools[key as keyof typeof vTools]?.description,
+          hasInputSchema: !!vTools[key as keyof typeof vTools]?.inputSchema,
+          hasExecute: !!vTools[key as keyof typeof vTools]?.execute,
+        })));
+
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
           system: systemPrompt({ selectedChatModel }),
@@ -165,7 +174,7 @@ export async function POST(request: Request) {
           experimental_activeTools:
             selectedChatModel === "chat-model-reasoning"
               ? []
-              : Object.keys(vTools),
+              : (Object.keys(vTools) as Array<keyof typeof vTools>),
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: vTools,
           experimental_telemetry: {
@@ -190,7 +199,7 @@ export async function POST(request: Request) {
             role: message.role,
             parts: message.parts,
             createdAt: new Date(),
-            attachments: message.attachments || [],
+            attachments: (message as any).attachments || [],
             chatId: id,
           })),
         });
@@ -217,7 +226,7 @@ export async function POST(request: Request) {
       return error.toResponse();
     } else {
       console.error("Unexpected error:", error);
-      return new ChatSDKError("database:api", "Internal server error").toResponse();
+      return new ChatSDKError("bad_request:database", "Internal server error").toResponse();
     }
   }
 }
@@ -259,7 +268,7 @@ export async function DELETE(request: Request) {
   } catch (error) {
     console.error("Error deleting chat:", error);
     return new ChatSDKError(
-      "database:api",
+      "bad_request:database",
       "Failed to delete chat"
     ).toResponse();
   }

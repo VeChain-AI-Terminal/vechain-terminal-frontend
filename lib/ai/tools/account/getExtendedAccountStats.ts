@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getExtendedAccountStats = tool({
   description: 'Get extended statistics on accounts including 7-day activity metrics (Premium endpoint)',
-  parameters: z.object({
+  inputSchema: z.object({
     date: z.string().describe('Date in YYYY-MM-DD format'),
   }),
   execute: async ({ date }): Promise<any> => {
