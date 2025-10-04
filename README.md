@@ -8,7 +8,9 @@ A modern web interface for VeChain AI Terminal that provides natural language bl
 
 VeChain AI Terminal Frontend serves as the primary user interface for interacting with the VeChain blockchain ecosystem through AI-powered natural language processing. The application integrates real-time blockchain data, wallet connectivity, and comprehensive transaction management in a seamless user experience.
 
-## Architecture
+## Architecture Frontend 
+![VeChain AI Terminal Banner](docs/images/vechain-terminal-frontendArc.png)
+
 
 ```mermaid
 graph TB
