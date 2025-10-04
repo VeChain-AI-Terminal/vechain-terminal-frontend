@@ -2,15 +2,14 @@
 
 import React, { ReactNode, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { LoadingScreen } from '@/components/ui/loading-screen';
 
 // Dynamically import VeChain Kit with no SSR
 const VeChainKitProvider = dynamic(
   () => import('@vechain/vechain-kit').then(mod => mod.VeChainKitProvider),
   { 
     ssr: false,
-    loading: () => <div className="flex items-center justify-center min-h-screen">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-    </div>
+    loading: () => <LoadingScreen message="VeChain AI Terminal" submessage="Loading blockchain components..." />
   }
 );
 
@@ -27,9 +26,7 @@ export default function VeChainKitProviderWrapper({
 
   if (!isMounted) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
+      <LoadingScreen message="VeChain AI Terminal" submessage="Preparing blockchain environment..." />
     );
   }
 
@@ -48,7 +45,7 @@ export default function VeChainKitProviderWrapper({
         walletConnectOptions: {
           projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "a01e2f3b4c5d6e7f8g9h0i1j2k3l4m5n",
           metadata: {
-            name: "VeChain Terminal",
+            name: "VeChain AI Terminal",
             description: "AI-powered VeChain blockchain terminal",
             url: typeof window !== "undefined" ? window.location.origin : "https://vechain.org",
             icons: ["/images/vechain.png"],

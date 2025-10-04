@@ -7,6 +7,7 @@ import { Chat } from "@/components/chat";
 import { DEFAULT_CHAT_MODEL } from "@/lib/ai/models";
 import { useWalletAuth } from "@/hooks/use-wallet-auth";
 import { ConnectButton } from "@/components/ConnectButton";
+import { LoadingScreen } from "@/components/ui/loading-screen";
 
 export default function Page(props: { params: Promise<{ id: string }> }) {
   const [params, setParams] = useState<{ id: string } | null>(null);
@@ -65,9 +66,7 @@ export default function Page(props: { params: Promise<{ id: string }> }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
-      </div>
+      <LoadingScreen message="VeChain AI Terminal" submessage="Loading chat session..." />
     );
   }
 

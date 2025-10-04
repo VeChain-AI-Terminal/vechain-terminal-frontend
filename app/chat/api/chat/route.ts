@@ -168,7 +168,7 @@ export async function POST(request: Request) {
           model: myProvider.languageModel(selectedChatModel),
           system: systemPrompt({ selectedChatModel, walletAddress }),
           messages: convertToModelMessages(uiMessages),
-          stopWhen: stepCountIs(10),
+          stopWhen: stepCountIs(20),//bridge can be long
 
           toolChoice: "auto",
           experimental_activeTools:

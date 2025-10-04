@@ -70,7 +70,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased">
+      <body className="antialiased bg-background dark" style={{ backgroundColor: 'hsl(240deg 10% 3.92%)' }}>
         <VeChainKitProviderWrapper>
           <ThemeProvider
             attribute="class"
