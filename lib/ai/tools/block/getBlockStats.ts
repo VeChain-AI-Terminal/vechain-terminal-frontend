@@ -10,7 +10,12 @@ export const getBlockStats = tool({
   execute: async ({ date, expanded = true }) => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/block/stats?date=${date}&expanded=${expanded}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/block/stats?date=${date}&expanded=${expanded}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

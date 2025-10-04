@@ -9,7 +9,12 @@ export const getAPIInfo = tool({
   execute: async (): Promise<any> => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/api-info?VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/api-info`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

@@ -145,7 +145,7 @@ export default function NFTList({
                 
                 <div className="mt-2 pt-2 border-t border-zinc-700">
                   <code className="text-xs text-zinc-500 break-all">
-                    {nft.contract_address.slice(0, 10)}...{nft.contract_address.slice(-8)}
+                    {nft.contract_address?.slice(0, 10)}...{nft.contract_address?.slice(-8)}
                   </code>
                 </div>
               </div>

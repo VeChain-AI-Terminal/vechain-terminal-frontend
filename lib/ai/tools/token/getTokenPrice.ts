@@ -10,7 +10,12 @@ export const getTokenPrice = tool({
   execute: async ({ token, expanded = true }) => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/token/price?token=${token.toLowerCase()}&expanded=${expanded}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/token/price?token=${token.toLowerCase()}&expanded=${expanded}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

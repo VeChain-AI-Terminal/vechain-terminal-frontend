@@ -8,8 +8,8 @@ export const makeContractTransaction = tool({
     from: z.string().describe("The sender address"),
     contractAddress: z.string().describe("The smart contract address"),
     functionName: z.string().describe("The contract function name (e.g., 'transfer', 'approve', 'swap')"),
-    functionArgs: z.array(z.any()).optional().describe("Array of function arguments in order"),
-    abi: z.array(z.any()).optional().describe("Contract ABI (if available)"),
+    functionArgs: z.array(z.string()).optional().describe("Array of function arguments in order"),
+    abi: z.array(z.object({}).passthrough()).optional().describe("Contract ABI (if available)"),
     data: z.string().optional().describe("Pre-encoded function call data (alternative to functionName/args)"),
     value: z
       .string()

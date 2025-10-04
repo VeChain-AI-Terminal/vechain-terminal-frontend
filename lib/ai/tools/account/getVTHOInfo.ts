@@ -9,7 +9,12 @@ export const getVTHOInfo = tool({
   execute: async ({ address }): Promise<any> => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/account/vtho-info?address=${address}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/account/vtho-info?address=${address}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

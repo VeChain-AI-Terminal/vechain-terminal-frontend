@@ -9,7 +9,12 @@ export const getBlockInfo = tool({
   execute: async ({ blocknum }) => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/block/info?blocknum=${blocknum}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/block/info?blocknum=${blocknum}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

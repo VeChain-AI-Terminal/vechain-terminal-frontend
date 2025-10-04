@@ -11,7 +11,12 @@ export const getTransactionsIn = tool({
   execute: async ({ address, page = 1, sort = 'desc' }): Promise<any> => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/account/txin?address=${address}&page=${page}&sort=${sort}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/account/txin?address=${address}&page=${page}&sort=${sort}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
 
       if (!response.ok) {

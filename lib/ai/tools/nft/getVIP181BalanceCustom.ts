@@ -10,7 +10,12 @@ export const getVIP181BalanceCustom = tool({
   execute: async ({ address, contract }) => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/nft/vip181-custom?address=${address}&contract=${contract}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/nft/vip181-custom?address=${address}&contract=${contract}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

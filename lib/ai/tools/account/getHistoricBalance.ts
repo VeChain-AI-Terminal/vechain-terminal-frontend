@@ -15,7 +15,12 @@ export const getHistoricBalance = tool({
       if (blocknum) params += `&blocknum=${blocknum}`;
       
       const response = await fetch(
-        `https://api.vechainstats.com/v2/account/historic-vet-vtho?${params}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/account/historic-vet-vtho?${params}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

@@ -9,7 +9,12 @@ export const getExtendedAccountStats = tool({
   execute: async ({ date }): Promise<any> => {
     try {
       const response = await fetch(
-        `https://api.vedev.io/v2/account/extended-stats?date=${date}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vedev.io/v2/account/extended-stats?date=${date}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

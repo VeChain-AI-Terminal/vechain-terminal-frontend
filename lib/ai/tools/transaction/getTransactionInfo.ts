@@ -9,7 +9,12 @@ export const getTransactionInfo = tool({
   execute: async ({ txid }): Promise<any> => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/transaction/info?txid=${txid}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/transaction/info?txid=${txid}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

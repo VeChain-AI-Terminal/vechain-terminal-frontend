@@ -9,7 +9,12 @@ export const getNetworkEmission = tool({
   execute: async ({ timeframe }) => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/carbon/co2e-network?timeframe=${timeframe}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/carbon/co2e-network?timeframe=${timeframe}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

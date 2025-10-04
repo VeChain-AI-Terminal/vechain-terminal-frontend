@@ -285,10 +285,16 @@ Pass the message to be signed - user will sign with their connected wallet.
 
 export const systemPrompt = ({
   selectedChatModel,
+  walletAddress,
 }: {
   selectedChatModel: string;
+  walletAddress?: string;
 }) => {
-  return `${regularPrompt}
+  const walletInfo = walletAddress 
+    ? `\n\n## Connected Wallet Information\n**User's Connected Wallet Address:** ${walletAddress}\n\nIMPORTANT: When using VeChain tools that require an address parameter (like getVETVTHOBalance, getAccountInfo, getAccountStats, etc.), always use this connected wallet address: ${walletAddress}\n\nDo not use placeholder addresses like "0xYourVeChainAddress" - always use the actual connected address above.`
+    : '';
+    
+  return `${regularPrompt}${walletInfo}
 
 ${suggestionPillsPrompt}
 

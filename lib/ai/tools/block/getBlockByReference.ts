@@ -9,7 +9,12 @@ export const getBlockByReference = tool({
   execute: async ({ blockref }) => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/block/blockref?blockref=${blockref}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/block/blockref?blockref=${blockref}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

@@ -9,7 +9,12 @@ export const getTransactionEmission = tool({
   execute: async ({ txid }) => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/carbon/co2e-transaction?txid=${txid}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/carbon/co2e-transaction?txid=${txid}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

@@ -9,7 +9,12 @@ export const getAddressEmission = tool({
   execute: async ({ address }) => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/carbon/co2e-address?address=${address}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/carbon/co2e-address?address=${address}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

@@ -16,7 +16,12 @@ export const getVIP181Balance = tool({
     try {
       const idParam = id ? `&id=${id}` : '';
       const response = await fetch(
-        `https://api.vechainstats.com/v2/nft/vip181?address=${address}${idParam}&expanded=${expanded}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/nft/vip181?address=${address}${idParam}&expanded=${expanded}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
 
       if (!response.ok) {

@@ -7,7 +7,12 @@ export const getBlockHeight = tool({
   execute: async () => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/block/height?VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/block/height`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

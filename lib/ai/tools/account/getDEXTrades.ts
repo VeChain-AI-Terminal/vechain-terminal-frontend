@@ -14,8 +14,12 @@ export const getDEXTrades = tool({
     sort = 'desc',
   }) => {
     try {
-      const url = `https://api.vechainstats.com/v2/account/dex-trades?address=${address}&page=${page}&sort=${sort}&VCS_API_KEY=${process.env.VCS_API_KEY}`;
-      const response = await fetch(url);
+      const url = `https://api.vechainstats.com/v2/account/dex-trades?address=${address}&page=${page}&sort=${sort}`;
+      const response = await fetch(url, {
+        headers: {
+          'X-API-Key': process.env.VCS_API_KEY || ''
+        }
+      });
 
       if (!response.ok) {
         throw new Error(`Failed to fetch DEX trades: ${response.statusText}`);

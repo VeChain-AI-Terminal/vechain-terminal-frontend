@@ -9,7 +9,12 @@ export const getBlockByTimestamp = tool({
   execute: async ({ blockts }) => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/block/blocktime?blockts=${blockts}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/block/blocktime?blockts=${blockts}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {

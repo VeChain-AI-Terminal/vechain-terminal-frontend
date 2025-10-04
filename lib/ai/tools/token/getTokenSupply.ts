@@ -9,7 +9,12 @@ export const getTokenSupply = tool({
   execute: async ({ token }) => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/token/supply?token=${token.toLowerCase()}&VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/token/supply?token=${token.toLowerCase()}`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
       
       if (!response.ok) {
