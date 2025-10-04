@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getTransactionEmission = tool({
   description: 'Get CO2 emissions for a VeChain transaction',
-  parameters: z.object({
+  inputSchema: z.object({
     txid: z.string().describe('Transaction hash/ID'),
   }),
   execute: async ({ txid }) => {

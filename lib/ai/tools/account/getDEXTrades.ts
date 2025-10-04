@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getDEXTrades = tool({
   description: 'Get DEX trades executed by a VeChain address',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('VeChain wallet address'),
     page: z.number().optional().default(1).describe('Page number for pagination'),
     sort: z.enum(['asc', 'desc']).optional().default('desc').describe('Sort order by timestamp'),
@@ -12,10 +12,6 @@ export const getDEXTrades = tool({
     address,
     page = 1,
     sort = 'desc',
-  }: {
-    address: string;
-    page?: number;
-    sort?: 'asc' | 'desc';
   }) => {
     try {
       const url = `https://api.vechainstats.com/v2/account/dex-trades?address=${address}&page=${page}&sort=${sort}&VCS_API_KEY=${process.env.VCS_API_KEY}`;

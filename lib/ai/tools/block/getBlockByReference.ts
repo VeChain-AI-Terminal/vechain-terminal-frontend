@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getBlockByReference = tool({
   description: 'Get block number and variables for a given block reference (blockref)',
-  parameters: z.object({
+  inputSchema: z.object({
     blockref: z.string().describe('Block reference (e.g., 0x00fb6fb52e0d6d67)'),
   }),
   execute: async ({ blockref }) => {

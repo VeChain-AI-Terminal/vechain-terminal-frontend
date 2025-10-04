@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getBlockStats = tool({
   description: 'Get metadata and statistics of blocks produced on a given date',
-  parameters: z.object({
+  inputSchema: z.object({
     date: z.string().describe('Date in YYYY-MM-DD format'),
     expanded: z.boolean().optional().default(true).describe('Include expanded statistics'),
   }),

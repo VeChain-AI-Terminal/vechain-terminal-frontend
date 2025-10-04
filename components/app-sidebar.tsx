@@ -36,13 +36,13 @@ export function AppSidebar() {
               className="flex flex-row gap-1 items-center"
             >
               <Image
-                src="/images/orange-terminal.png"
-                alt="Orange Terminal"
+                src="/images/vechain.png"
+                alt="VeChain Terminal"
                 width={30}
                 height={30}
               />
               <h1 className="text-lg font-semibold text-theme-orange dark:text-theme-orange">
-                Orange Terminal
+                VeChain Terminal
               </h1>
             </Link>
             <Tooltip>
@@ -67,8 +67,14 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarHistory 
-          user={connection.isConnected ? { address: account?.address } : undefined} 
-          status={connection.isConnected ? "authenticated" : "loading"} 
+          user={connection.isConnected && account?.address ? { address: account.address } : undefined} 
+          status={
+            connection.isConnected && account?.address 
+              ? "authenticated" 
+              : connection.isConnecting 
+                ? "loading" 
+                : "unauthenticated"
+          } 
         />
       </SidebarContent>
       {/* <SidebarFooter>{user && <SidebarUserNav user={user} />}</SidebarFooter> */}

@@ -4,7 +4,7 @@ import { useWallet } from '@vechain/vechain-kit';
 import { useCallback } from 'react';
 
 export function useWalletAPI() {
-  const { account, isConnected, network } = useWallet();
+  const { account, connection } = useWallet();
 
   const fetchWithWalletHeaders = useCallback(async (url: string, options: RequestInit = {}) => {
     const headers: Record<string, string> = {
@@ -13,28 +13,30 @@ export function useWalletAPI() {
     };
 
     // Add wallet headers if connected
-    if (isConnected && account?.address) {
+    if (connection.isConnected && account?.address) {
       headers['x-wallet-address'] = account.address;
-      headers['x-wallet-network'] = network || 'test';
+      headers['x-wallet-network'] = connection.network || 'test';
     }
 
     return fetch(url, {
       ...options,
       headers,
     });
-  }, [isConnected, account?.address, network]);
+  }, [connection.isConnected, account?.address, connection.network]);
 
   return {
     fetchWithWalletHeaders,
     account,
-    isConnected,
-    network,
+    connection,
+    // Expose connection state for backward compatibility
+    isConnected: connection.isConnected,
+    network: connection.network,
     // Helper function to get wallet headers
     getWalletHeaders: () => {
       const headers: Record<string, string> = {};
-      if (isConnected && account?.address) {
+      if (connection.isConnected && account?.address) {
         headers['x-wallet-address'] = account.address;
-        headers['x-wallet-network'] = network || 'test';
+        headers['x-wallet-network'] = connection.network || 'test';
       }
       return headers;
     },

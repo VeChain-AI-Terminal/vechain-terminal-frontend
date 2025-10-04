@@ -6,7 +6,7 @@ export const getTransactionInfo = tool({
   parameters: z.object({
     txid: z.string().describe('Transaction hash/ID'),
   }),
-  execute: async ({ txid }) => {
+  execute: async ({ txid }): Promise<any> => {
     try {
       const response = await fetch(
         `https://api.vechainstats.com/v2/transaction/info?txid=${txid}&VCS_API_KEY=${process.env.VCS_API_KEY}`

@@ -6,7 +6,7 @@ export const convertHexToDecimal = tool({
   inputSchema: z.object({
     hexNumber: z.string().describe("The hex number with the prefix 0x"),
   }),
-  execute: async ({ hexNumber }) => {
+  execute: async ({ hexNumber }): Promise<any> => {
     console.log("convertHexToDecimal", hexNumber);
 
     // // Normalize input (remove 0x if present)

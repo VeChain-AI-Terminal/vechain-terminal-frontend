@@ -6,7 +6,7 @@ export const getExtendedAccountStats = tool({
   parameters: z.object({
     date: z.string().describe('Date in YYYY-MM-DD format'),
   }),
-  execute: async ({ date }) => {
+  execute: async ({ date }): Promise<any> => {
     try {
       const response = await fetch(
         `https://api.vedev.io/v2/account/extended-stats?date=${date}&VCS_API_KEY=${process.env.VCS_API_KEY}`

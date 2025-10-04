@@ -79,6 +79,7 @@ export function Chat({
             message: messages.at(-1),
             selectedChatModel: initialChatModel,
             selectedVisibilityType: visibilityType,
+            walletAddress: account?.address, // Add wallet address to body as backup
             ...body,
           },
         };

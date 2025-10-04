@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getTokenList = tool({
   description: 'Get a list of all VIP180 and native tokens supported on VeChain',
-  parameters: z.object({}),
+  inputSchema: z.object({}).optional(),
   execute: async () => {
     try {
       const response = await fetch(

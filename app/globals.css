@@ -59,38 +59,38 @@
         --sidebar-ring: 217.2 91.2% 59.8%;
     }
     .dark {
-        --background: 240 10% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 240 10% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 240 10% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 240 5.9% 10%;
-        --secondary: 240 3.7% 15.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 240 3.7% 15.9%;
-        --muted-foreground: 240 5% 64.9%;
-        --accent: 240 3.7% 15.9%;
-        --accent-foreground: 0 0% 98%;
+        --background: 220 13% 8%;
+        --foreground: 210 20% 95%;
+        --card: 220 13% 10%;
+        --card-foreground: 210 20% 95%;
+        --popover: 220 13% 10%;
+        --popover-foreground: 210 20% 95%;
+        --primary: 26 78% 61%;
+        --primary-foreground: 220 13% 8%;
+        --secondary: 220 13% 15%;
+        --secondary-foreground: 210 20% 95%;
+        --muted: 220 13% 15%;
+        --muted-foreground: 220 9% 60%;
+        --accent: 220 13% 18%;
+        --accent-foreground: 210 20% 95%;
         --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 240 3.7% 15.9%;
-        --input: 240 3.7% 15.9%;
-        --ring: 240 4.9% 83.9%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
+        --destructive-foreground: 210 20% 95%;
+        --border: 220 13% 18%;
+        --input: 220 13% 18%;
+        --ring: 26 78% 61%;
+        --chart-1: 26 78% 61%;
+        --chart-2: 200 80% 50%;
+        --chart-3: 160 60% 45%;
         --chart-4: 280 65% 60%;
         --chart-5: 340 75% 55%;
-        --sidebar-background: 240 5.9% 10%;
-        --sidebar-foreground: 240 4.8% 95.9%;
-        --sidebar-primary: 224.3 76.3% 48%;
-        --sidebar-primary-foreground: 0 0% 100%;
-        --sidebar-accent: 240 3.7% 15.9%;
-        --sidebar-accent-foreground: 240 4.8% 95.9%;
-        --sidebar-border: 240 3.7% 15.9%;
-        --sidebar-ring: 217.2 91.2% 59.8%;
+        --sidebar-background: 220 13% 6%;
+        --sidebar-foreground: 210 20% 85%;
+        --sidebar-primary: 26 78% 61%;
+        --sidebar-primary-foreground: 220 13% 8%;
+        --sidebar-accent: 220 13% 12%;
+        --sidebar-accent-foreground: 210 20% 85%;
+        --sidebar-border: 220 13% 15%;
+        --sidebar-ring: 26 78% 61%;
     }
 }
 
@@ -121,6 +121,43 @@
     .skeleton-div {
         @apply bg-foreground/20 animate-pulse;
     }
+}
+
+/* VeChain Terminal Branding */
+.vechain-gradient {
+    background: linear-gradient(135deg, #fc8d36 0%, #ff6b35 100%);
+}
+
+.vechain-border {
+    border-color: #fc8d36;
+}
+
+.vechain-glow {
+    box-shadow: 0 0 20px rgba(252, 141, 54, 0.3);
+}
+
+.terminal-bg {
+    background: 
+        radial-gradient(circle at 25% 25%, rgba(252, 141, 54, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(252, 141, 54, 0.03) 0%, transparent 50%);
+}
+
+/* Scrollbar styling for dark theme */
+.dark::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dark::-webkit-scrollbar-track {
+    background: hsl(220, 13%, 12%);
+}
+
+.dark::-webkit-scrollbar-thumb {
+    background: hsl(220, 13%, 20%);
+    border-radius: 4px;
+}
+
+.dark::-webkit-scrollbar-thumb:hover {
+    background: hsl(26, 78%, 61%);
 }
 
 .ProseMirror {

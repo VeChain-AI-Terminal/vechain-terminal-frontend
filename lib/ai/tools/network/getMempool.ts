@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getMempool = tool({
   description: 'Get information on the status of the VeChain mempool',
-  parameters: z.object({
+  inputSchema: z.object({
     expanded: z.boolean().optional().default(true).describe('Include transaction list'),
   }),
   execute: async ({ expanded = true }) => {

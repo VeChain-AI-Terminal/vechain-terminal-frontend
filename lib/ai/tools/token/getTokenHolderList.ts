@@ -3,14 +3,14 @@ import { z } from 'zod';
 
 export const getTokenHolderList = tool({
   description: 'Get list of addresses holding a VIP180 token with their balances',
-  parameters: z.object({
+  inputSchema: z.object({
     token: z.string().describe('Token symbol (e.g., vet, vtho, oce, sha)'),
     threshold: z.number().optional().describe('Minimum token amount threshold'),
     page: z.number().optional().default(1).describe('Page number for pagination'),
   }),
   execute: async ({ token, threshold, page = 1 }) => {
     try {
-      let params = `token=${token.toLowerCase()}&page=${page}`;
+      let params = `token=${(token as string).toLowerCase()}&page=${page}`;
       if (threshold) params += `&threshold=${threshold}`;
       
       const response = await fetch(

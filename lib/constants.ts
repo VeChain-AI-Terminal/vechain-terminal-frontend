@@ -10,6 +10,7 @@ export const DUMMY_PASSWORD = generateDummyPassword();
 // VeChain network constants
 export const VECHAIN_MAINNET_CHAIN_ID = 39;
 export const VECHAIN_TESTNET_CHAIN_ID = 40;
+export const CHAIN_ID = VECHAIN_TESTNET_CHAIN_ID;
 
 // VeChain transaction limits
 export const MAX_TRANSACTION_AMOUNT = 1000;

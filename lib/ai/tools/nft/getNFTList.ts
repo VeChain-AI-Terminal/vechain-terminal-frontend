@@ -3,8 +3,8 @@ import { z } from 'zod';
 
 export const getNFTList = tool({
   description: 'Get a list of all NFT projects supported on VeChain',
-  parameters: z.object({}),
-  execute: async () => {
+  inputSchema: z.object({}),
+  execute: async (): Promise<any> => {
     try {
       const response = await fetch(
         `https://api.vechainstats.com/v2/nft/list?VCS_API_KEY=${process.env.VCS_API_KEY}`

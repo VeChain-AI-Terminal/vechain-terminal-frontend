@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getNetworkGasStats = tool({
   description: 'Get gas limit and gas used statistics for VeChain network on a given date',
-  parameters: z.object({
+  inputSchema: z.object({
     timeframe: z.string().describe('Date or period (e.g., 2023-09-28)'),
   }),
   execute: async ({ timeframe }) => {

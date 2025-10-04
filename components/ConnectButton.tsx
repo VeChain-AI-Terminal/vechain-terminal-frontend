@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useWallet } from "@vechain/vechain-kit";
+import { useWallet, useConnectModal } from "@vechain/vechain-kit";
 import { Button } from "@/components/ui/button";
 
 export const ConnectButton = () => {
   const [isMobile, setIsMobile] = useState(false);
-  const { account, isConnected, connect, disconnect } = useWallet();
+  const { account, connection, disconnect } = useWallet();
+  const { open: openConnectModal } = useConnectModal();
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -20,12 +21,8 @@ export const ConnectButton = () => {
     return addr.length > 8 ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : addr;
   };
 
-  const handleConnect = async () => {
-    try {
-      await connect();
-    } catch (error) {
-      console.error("Failed to connect wallet:", error);
-    }
+  const handleConnect = () => {
+    openConnectModal();
   };
 
   const handleDisconnect = async () => {
@@ -36,7 +33,7 @@ export const ConnectButton = () => {
     }
   };
 
-  if (isConnected && account) {
+  if (connection.isConnected && account) {
     return (
       <div className="border border-theme-orange rounded-full flex items-center gap-2 px-3 py-1">
         <div className="w-2 h-2 bg-green-500 rounded-full"></div>

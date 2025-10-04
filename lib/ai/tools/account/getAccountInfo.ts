@@ -7,7 +7,7 @@ export const getAccountInfo = tool({
     address: z.string().describe('VeChain wallet address'),
     expanded: z.boolean().optional().default(true).describe('Include expanded information'),
   }),
-  execute: async ({ address, expanded = true }) => {
+  execute: async ({ address, expanded = true }): Promise<any> => {
     try {
       const response = await fetch(
         `https://api.vechainstats.com/v2/account/info?address=${address}&expanded=${expanded}&VCS_API_KEY=${process.env.VCS_API_KEY}`

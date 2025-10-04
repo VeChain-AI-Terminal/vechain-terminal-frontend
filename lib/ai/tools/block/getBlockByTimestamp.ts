@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getBlockByTimestamp = tool({
   description: 'Get the next VeChain block produced at or after a given timestamp',
-  parameters: z.object({
+  inputSchema: z.object({
     blockts: z.number().describe('Unix timestamp'),
   }),
   execute: async ({ blockts }) => {

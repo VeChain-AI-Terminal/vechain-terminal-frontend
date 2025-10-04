@@ -23,7 +23,7 @@ export const makeTokenTransfer = tool({
     network,
   }) => {
     // Convert amount to base units (wei equivalent for the token)
-    const amountInBaseUnits = BigInt(Math.floor(parseFloat(amount) * Math.pow(10, tokenDecimals)));
+    const amountInBaseUnits = BigInt(Math.floor(parseFloat(amount) * Math.pow(10, tokenDecimals!)));
     
     // Build ERC20 transfer data: transfer(address,uint256) = 0xa9059cbb
     const methodId = "0xa9059cbb";

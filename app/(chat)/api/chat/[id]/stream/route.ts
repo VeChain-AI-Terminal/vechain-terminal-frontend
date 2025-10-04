@@ -1,10 +1,10 @@
-import { auth } from '@/app/(auth)/auth';
 import {
   getChatById,
   getMessagesByChatId,
   getStreamIdsByChatId,
 } from '@/lib/db/queries';
-import type { Chat } from '@/lib/db/schema';
+import { authenticateWallet } from '@/lib/auth/wallet-auth';
+import type { Chat, DBMessage } from '@/lib/db/schema';
 import { ChatSDKError } from '@/lib/errors';
 import type { ChatMessage } from '@/lib/types';
 import { createUIMessageStream, JsonToSseTransformStream } from 'ai';
@@ -12,10 +12,12 @@ import { getStreamContext } from '../../route';
 import { differenceInSeconds } from 'date-fns';
 
 export async function GET(
-  _: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id: chatId } = await params;
+  const { searchParams } = new URL(request.url);
+  const walletAddress = searchParams.get("wallet_address") || request.headers.get('x-wallet-address');
 
   const streamContext = getStreamContext();
   const resumeRequestedAt = new Date();
@@ -28,16 +30,24 @@ export async function GET(
     return new ChatSDKError('bad_request:api').toResponse();
   }
 
-  const session = await auth();
-
-  if (!session?.user) {
-    return new ChatSDKError('unauthorized:chat').toResponse();
+  if (!walletAddress) {
+    return new ChatSDKError(
+      "unauthorized:api",
+      "Wallet address is required. Please connect your wallet."
+    ).toResponse();
   }
 
   let chat: Chat;
+  let user;
 
   try {
     chat = await getChatById({ id: chatId });
+    if (!chat) {
+      return new ChatSDKError('not_found:chat').toResponse();
+    }
+    
+    // Authenticate wallet and get/create user
+    user = await authenticateWallet(walletAddress);
   } catch {
     return new ChatSDKError('not_found:chat').toResponse();
   }
@@ -46,7 +56,7 @@ export async function GET(
     return new ChatSDKError('not_found:chat').toResponse();
   }
 
-  if (chat.visibility === 'private' && chat.userId !== session.user.id) {
+  if (chat.visibility === 'private' && chat.userId !== user.id) {
     return new ChatSDKError('forbidden:chat').toResponse();
   }
 
@@ -56,7 +66,7 @@ export async function GET(
     return new ChatSDKError('not_found:stream').toResponse();
   }
 
-  const recentStreamId = streamIds.at(-1);
+  const recentStreamId = streamIds.at(-1) as string | undefined;
 
   if (!recentStreamId) {
     return new ChatSDKError('not_found:stream').toResponse();
@@ -75,7 +85,7 @@ export async function GET(
    * but the resumable stream has concluded at this point.
    */
   if (!stream) {
-    const messages = await getMessagesByChatId({ id: chatId });
+    const messages: DBMessage[] = await getMessagesByChatId({ id: chatId });
     const mostRecentMessage = messages.at(-1);
 
     if (!mostRecentMessage) {

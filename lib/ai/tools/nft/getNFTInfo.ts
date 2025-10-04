@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getNFTInfo = tool({
   description: 'Get contract and social information about a VeChain NFT project',
-  parameters: z.object({
+  inputSchema: z.object({
     id: z.string().describe('NFT project ID'),
     expanded: z.boolean().optional().default(true).describe('Include expanded information'),
   }),

@@ -1,43 +1,46 @@
 {
-  "id": "22f704c8-7481-412d-acba-6bb7d0a23abc",
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "7c555898-0727-4445-b4cd-0243a9e61dc0",
   "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "7",
-  "dialect": "postgresql",
   "tables": {
-    "public.Chat": {
+    "Chat": {
       "name": "Chat",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "title": {
           "name": "title",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "userId": {
           "name": "userId",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "visibility": {
           "name": "visibility",
-          "type": "varchar",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
           "default": "'private'"
         }
       },
@@ -60,46 +63,50 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.Message_v2": {
+    "Message_v2": {
       "name": "Message_v2",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "autoincrement": false
         },
         "chatId": {
           "name": "chatId",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "role": {
           "name": "role",
-          "type": "varchar",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "parts": {
           "name": "parts",
-          "type": "json",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "attachments": {
           "name": "attachments",
-          "type": "json",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -121,40 +128,43 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.Message": {
+    "Message": {
       "name": "Message",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "autoincrement": false
         },
         "chatId": {
           "name": "chatId",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "role": {
           "name": "role",
-          "type": "varchar",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "content": {
           "name": "content",
-          "type": "json",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -176,28 +186,29 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.Stream": {
+    "Stream": {
       "name": "Stream",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
-          "primaryKey": false,
+          "type": "text",
+          "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "autoincrement": false
         },
         "chatId": {
           "name": "chatId",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -216,32 +227,25 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {
-        "Stream_id_pk": {
-          "name": "Stream_id_pk",
-          "columns": [
-            "id"
-          ]
-        }
-      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.User": {
+    "User": {
       "name": "User",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "autoincrement": false
         },
         "address": {
           "name": "address",
-          "type": "varchar",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -249,27 +253,29 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.Vote_v2": {
+    "Vote_v2": {
       "name": "Vote_v2",
-      "schema": "",
       "columns": {
         "chatId": {
           "name": "chatId",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "messageId": {
           "name": "messageId",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "isUpvoted": {
           "name": "isUpvoted",
-          "type": "boolean",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -303,36 +309,38 @@
       },
       "compositePrimaryKeys": {
         "Vote_v2_chatId_messageId_pk": {
-          "name": "Vote_v2_chatId_messageId_pk",
           "columns": [
             "chatId",
             "messageId"
-          ]
+          ],
+          "name": "Vote_v2_chatId_messageId_pk"
         }
       },
       "uniqueConstraints": {}
     },
-    "public.Vote": {
+    "Vote": {
       "name": "Vote",
-      "schema": "",
       "columns": {
         "chatId": {
           "name": "chatId",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "messageId": {
           "name": "messageId",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "isUpvoted": {
           "name": "isUpvoted",
-          "type": "boolean",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -366,22 +374,23 @@
       },
       "compositePrimaryKeys": {
         "Vote_chatId_messageId_pk": {
-          "name": "Vote_chatId_messageId_pk",
           "columns": [
             "chatId",
             "messageId"
-          ]
+          ],
+          "name": "Vote_chatId_messageId_pk"
         }
       },
       "uniqueConstraints": {}
     }
   },
   "enums": {},
-  "schemas": {},
-  "sequences": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
   }
 }

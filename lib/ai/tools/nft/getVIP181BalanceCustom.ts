@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getVIP181BalanceCustom = tool({
   description: 'Get VIP181 NFT balance for a given address and contract',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('VeChain wallet address'),
     contract: z.string().describe('VIP181 NFT contract address'),
   }),

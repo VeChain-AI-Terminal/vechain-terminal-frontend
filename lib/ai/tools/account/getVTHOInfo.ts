@@ -6,7 +6,7 @@ export const getVTHOInfo = tool({
   parameters: z.object({
     address: z.string().describe('VeChain wallet address'),
   }),
-  execute: async ({ address }) => {
+  execute: async ({ address }): Promise<any> => {
     try {
       const response = await fetch(
         `https://api.vechainstats.com/v2/account/vtho-info?address=${address}&VCS_API_KEY=${process.env.VCS_API_KEY}`

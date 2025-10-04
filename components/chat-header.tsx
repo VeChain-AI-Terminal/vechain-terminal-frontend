@@ -13,16 +13,12 @@ import { memo } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { type VisibilityType, VisibilitySelector } from "./visibility-selector";
 import { ConnectButton } from "@/components/ConnectButton";
-import { FaSuitcase } from "react-icons/fa";
-import { Wallet } from "lucide-react";
-import { useWallet } from "@vechain/vechain-kit";
 
 function PureChatHeader() {
   const router = useRouter();
   const { open } = useSidebar();
 
   const { width: windowWidth } = useWindowSize();
-  const { account, connection } = useWallet();
   return (
     <header className="flex sticky top-0 bg-background py-1.5 items-center justify-between px-2 md:px-2 gap-2 z-10">
       <div className="flex items-center gap-2">
@@ -64,16 +60,6 @@ function PureChatHeader() {
         )} */}
       </div>
       <div className="flex flex-row gap-2 items-center">
-        {connection.isConnected && (
-          <Link
-            href={"/portfolio"}
-            className="flex flex-row gap-2 border border-theme-orange rounded-full px-3 py-2 items-center hover:bg-zinc-900 h-full"
-          >
-            <Wallet size={20} className="w-4 h-4 md:w-5 md:h-5" />{" "}
-            <span className="text-xs md:text-sm">Portfolio</span>
-          </Link>
-        )}
-
         <ConnectButton />
       </div>
     </header>

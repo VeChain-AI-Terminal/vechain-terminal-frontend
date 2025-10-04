@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 import type { Chat } from "@/lib/db/schema";
 import { fetcher } from "@/lib/utils";
+import { useWalletAPI } from "@/hooks/useWalletAPI";
 import { ChatItem } from "./sidebar-history-item";
 import useSWRInfinite from "swr/infinite";
 import { LoaderIcon } from "./icons";
@@ -78,8 +79,13 @@ const groupChatsByDate = (chats: Chat[]): GroupedChats => {
 
 export function getChatHistoryPaginationKey(
   pageIndex: number,
-  previousPageData: ChatHistory
+  previousPageData: ChatHistory,
+  walletAddress?: string
 ) {
+  if (!walletAddress) {
+    return null;
+  }
+
   if (previousPageData && previousPageData.hasMore === false) {
     return null;
   }
@@ -106,6 +112,16 @@ export function SidebarHistory({
 }) {
   const { setOpenMobile } = useSidebar();
   const { id } = useParams();
+  const { fetchWithWalletHeaders } = useWalletAPI();
+
+  // Create a wallet-aware fetcher
+  const walletFetcher = async (url: string) => {
+    const response = await fetchWithWalletHeaders(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch');
+    }
+    return response.json();
+  };
 
   const {
     data: paginatedChatHistories,
@@ -113,9 +129,14 @@ export function SidebarHistory({
     isValidating,
     isLoading,
     mutate,
-  } = useSWRInfinite<ChatHistory>(getChatHistoryPaginationKey, fetcher, {
-    fallbackData: [],
-  });
+  } = useSWRInfinite<ChatHistory>(
+    (pageIndex, previousPageData) => 
+      getChatHistoryPaginationKey(pageIndex, previousPageData, user?.address),
+    walletFetcher,
+    {
+      fallbackData: [],
+    }
+  );
 
   const router = useRouter();
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -129,7 +150,12 @@ export function SidebarHistory({
     : false;
 
   const handleDelete = async () => {
-    const deletePromise = fetch(`/api/chat?id=${deleteId}`, {
+    if (!user?.address) {
+      toast.error("Wallet not connected");
+      return;
+    }
+
+    const deletePromise = fetchWithWalletHeaders(`/api/chat?id=${deleteId}`, {
       method: "DELETE",
     });
 

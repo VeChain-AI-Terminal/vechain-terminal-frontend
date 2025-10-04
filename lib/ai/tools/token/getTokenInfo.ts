@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getTokenInfo = tool({
   description: 'Get detailed information about a VeChain token including socials, holder count, and contract details',
-  parameters: z.object({
+  inputSchema: z.object({
     token: z.string().describe('Token symbol (e.g., vet, vtho, oce, sha)'),
     expanded: z.boolean().optional().default(true).describe('Include expanded information'),
   }),

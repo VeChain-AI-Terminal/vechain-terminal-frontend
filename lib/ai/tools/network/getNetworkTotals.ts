@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getNetworkTotals = tool({
   description: 'Get total key metrics of the VeChain blockchain since genesis',
-  parameters: z.object({}),
+  inputSchema: z.object({}).optional(),
   execute: async () => {
     try {
       const response = await fetch(

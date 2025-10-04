@@ -6,7 +6,6 @@ import {
   stepCountIs,
   streamText,
 } from "ai";
-import { auth } from "@/app/(auth)/auth";
 import { systemPrompt } from "@/lib/ai/prompts";
 import {
   createStreamId,
@@ -84,16 +83,31 @@ export async function POST(request: Request) {
       selectedVisibilityType: VisibilityType;
     } = requestBody;
 
-    const session = await auth();
-
-    if (!session?.user) {
-      return new ChatSDKError("unauthorized:chat").toResponse();
+    // Get wallet address from request body or headers
+    const walletAddress = requestBody.walletAddress || request.headers.get('x-wallet-address');
+    
+    if (!walletAddress) {
+      return new ChatSDKError(
+        "unauthorized:api",
+        "Wallet address is required. Please connect your wallet."
+      ).toResponse();
     }
 
-    // const userType: UserType = session.user.type;
+    // Get or create user
+    let user;
+    try {
+      const { authenticateWallet } = await import("@/lib/auth/wallet-auth");
+      user = await authenticateWallet(walletAddress);
+    } catch (error) {
+      console.error("Failed to authenticate wallet:", error);
+      return new ChatSDKError(
+        "unauthorized:api",
+        "Failed to authenticate wallet"
+      ).toResponse();
+    }
 
     const messageCount = await getMessageCountByUserId({
-      id: session.user.id,
+      id: user.id,
       differenceInHours: 24,
     });
 
@@ -110,12 +124,12 @@ export async function POST(request: Request) {
 
       await saveChat({
         id,
-        userId: session.user.id,
+        userId: user.id,
         title,
         visibility: selectedVisibilityType,
       });
     } else {
-      if (chat.userId !== session.user.id) {
+      if (chat.userId !== user.id) {
         return new ChatSDKError("forbidden:chat").toResponse();
       }
     }
@@ -176,7 +190,7 @@ export async function POST(request: Request) {
             role: message.role,
             parts: message.parts,
             createdAt: new Date(),
-            attachments: [],
+            attachments: message.attachments || [],
             chatId: id,
           })),
         });
@@ -203,7 +217,7 @@ export async function POST(request: Request) {
       return error.toResponse();
     } else {
       console.error("Unexpected error:", error);
-      return new Response("Internal Server Error", { status: 500 });
+      return new ChatSDKError("database:api", "Internal server error").toResponse();
     }
   }
 }
@@ -211,24 +225,42 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
+  const walletAddress = searchParams.get("wallet_address") || request.headers.get('x-wallet-address');
 
   if (!id) {
     return new ChatSDKError("bad_request:api").toResponse();
   }
 
-  const session = await auth();
-
-  if (!session?.user) {
-    return new ChatSDKError("unauthorized:chat").toResponse();
+  if (!walletAddress) {
+    return new ChatSDKError(
+      "unauthorized:api",
+      "Wallet address is required. Please connect your wallet."
+    ).toResponse();
   }
 
-  const chat = await getChatById({ id });
+  try {
+    // Get user from wallet address
+    const { authenticateWallet } = await import("@/lib/auth/wallet-auth");
+    const user = await authenticateWallet(walletAddress);
 
-  if (chat.userId !== session.user.id) {
-    return new ChatSDKError("forbidden:chat").toResponse();
+    const chat = await getChatById({ id });
+
+    if (!chat) {
+      return new ChatSDKError("not_found:api", "Chat not found").toResponse();
+    }
+
+    if (chat.userId !== user.id) {
+      return new ChatSDKError("forbidden:chat").toResponse();
+    }
+
+    const deletedChat = await deleteChatById({ id });
+
+    return Response.json(deletedChat, { status: 200 });
+  } catch (error) {
+    console.error("Error deleting chat:", error);
+    return new ChatSDKError(
+      "database:api",
+      "Failed to delete chat"
+    ).toResponse();
   }
-
-  const deletedChat = await deleteChatById({ id });
-
-  return Response.json(deletedChat, { status: 200 });
 }

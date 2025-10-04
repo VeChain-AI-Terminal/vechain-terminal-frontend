@@ -12,8 +12,8 @@ import {
   lt,
   type SQL,
 } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/better-sqlite3";
+import Database from "better-sqlite3";
 
 import {
   user,
@@ -30,13 +30,9 @@ import { generateHashedPassword } from "./utils";
 import type { VisibilityType } from "@/components/visibility-selector";
 import { ChatSDKError } from "../errors";
 
-// Optionally, if not using email/pass login, you can
-// use the Drizzle adapter for Auth.js / NextAuth
-// https://authjs.dev/reference/adapter/drizzle
-
 // biome-ignore lint: Forbidden non-null assertion.
-const client = postgres(process.env.POSTGRES_URL!);
-const db = drizzle(client);
+const sqlite = new Database(process.env.POSTGRES_URL!);
+const db = drizzle(sqlite);
 
 export async function getUser(address: string): Promise<Array<User>> {
   try {
@@ -62,9 +58,14 @@ export async function upsertUserByAddress(address: string): Promise<User> {
       .limit(1);
     if (existing.length > 0) return existing[0];
 
+    const newUser = {
+      id: generateUUID(),
+      address: addr,
+    };
+
     const [created] = await db
       .insert(user)
-      .values({ address: addr })
+      .values(newUser)
       .returning();
     return created;
   } catch {
@@ -198,7 +199,7 @@ export async function getChatsByUserId({
 export async function getChatById({ id }: { id: string }) {
   try {
     const [selectedChat] = await db.select().from(chat).where(eq(chat.id, id));
-    return selectedChat;
+    return selectedChat || null;
   } catch (error) {
     throw new ChatSDKError("bad_request:database", "Failed to get chat by id");
   }
@@ -216,7 +217,7 @@ export async function saveMessages({
   }
 }
 
-export async function getMessagesByChatId({ id }: { id: string }) {
+export async function getMessagesByChatId({ id }: { id: string }): Promise<DBMessage[]> {
   try {
     return await db
       .select()

@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getAddressEmission = tool({
   description: 'Get CO2 emissions emitted and incoming for a VeChain address',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('VeChain wallet address'),
   }),
   execute: async ({ address }) => {

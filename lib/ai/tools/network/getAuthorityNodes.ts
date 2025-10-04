@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getAuthorityNodes = tool({
   description: 'Get list of all VeChain authority nodes and their relevant data',
-  parameters: z.object({
+  inputSchema: z.object({
     expanded: z.boolean().optional().default(true).describe('Include expanded information'),
   }),
   execute: async ({ expanded = true }) => {
@@ -22,11 +22,11 @@ export const getAuthorityNodes = tool({
         // Transform the data object into an array of authority node info
         const nodes = Object.entries(result.data).map(([address, nodeInfo]) => ({
           address,
-          endorser: nodeInfo.endorser,
-          blocks_total_signed: nodeInfo.blocks_total_signed,
-          vtho_total_rewarded: nodeInfo.vtho_total_rewarded,
-          last_block_signed: nodeInfo.last_block_signed,
-          last_block_timestamp: nodeInfo.last_block_timestamp,
+          endorser: (nodeInfo as any).endorser,
+          blocks_total_signed: (nodeInfo as any).blocks_total_signed,
+          vtho_total_rewarded: (nodeInfo as any).vtho_total_rewarded,
+          last_block_signed: (nodeInfo as any).last_block_signed,
+          last_block_timestamp: (nodeInfo as any).last_block_timestamp,
         }));
 
         return {

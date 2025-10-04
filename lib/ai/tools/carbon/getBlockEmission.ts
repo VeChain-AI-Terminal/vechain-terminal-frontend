@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getBlockEmission = tool({
   description: 'Get CO2 emissions for producing a specific VeChain block',
-  parameters: z.object({
+  inputSchema: z.object({
     blocknum: z.number().describe('Block number'),
   }),
   execute: async ({ blocknum }) => {

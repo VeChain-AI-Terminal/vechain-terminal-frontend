@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getAccountStats = tool({
   description: 'Get statistics on total, new, active and seen accounts on VeChain',
-  parameters: z.object({
+  inputSchema: z.object({
     date: z.string().describe('Date in YYYY-MM-DD format'),
     expanded: z.boolean().optional().default(true).describe('Include expanded statistics'),
   }),

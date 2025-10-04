@@ -3,12 +3,12 @@ import { z } from 'zod';
 
 export const verifyContractMetadata = tool({
   description: 'Submit a smart contract for verification using Solidity metadata.json',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('Contract address to verify'),
     sources: z.record(z.string()).describe('Contract source files'),
     metadata: z.object({}).describe('Solidity metadata object'),
   }),
-  execute: async ({ address, sources, metadata }) => {
+  execute: async ({ address, sources, metadata }): Promise<any> => {
     try {
       const response = await fetch(
         `https://verify-api.vechainstats.com/v2/verify/metadata/100009/${address}`,
@@ -45,4 +45,5 @@ export const verifyContractMetadata = tool({
     }
   },
 });
+
 

@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getContractCode = tool({
   description: 'Get verified contract source code from VeChainStats',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('Contract address'),
     expanded: z.boolean().optional().default(true).describe('Include expanded information'),
   }),

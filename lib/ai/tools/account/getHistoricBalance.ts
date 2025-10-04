@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getHistoricBalance = tool({
   description: 'Get historic VET/VTHO balance for an address on a specific date or block',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('VeChain wallet address'),
     date: z.string().optional().describe('Date in YYYY-MM-DD format'),
     blocknum: z.number().optional().describe('Specific block number'),

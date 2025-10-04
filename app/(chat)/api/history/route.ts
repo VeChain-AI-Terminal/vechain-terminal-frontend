@@ -1,6 +1,6 @@
-import { auth } from "@/app/(auth)/auth";
 import type { NextRequest } from "next/server";
 import { getChatsByUserId } from "@/lib/db/queries";
+import { authenticateWallet } from "@/lib/auth/wallet-auth";
 import { ChatSDKError } from "@/lib/errors";
 
 export async function GET(request: NextRequest) {
@@ -17,18 +17,33 @@ export async function GET(request: NextRequest) {
     ).toResponse();
   }
 
-  const session = await auth();
-
-  if (!session?.user) {
-    return new ChatSDKError("unauthorized:chat").toResponse();
+  // Get wallet address from query params or headers
+  const walletAddress = searchParams.get("wallet_address") || request.headers.get('x-wallet-address');
+  
+  if (!walletAddress) {
+    return new ChatSDKError(
+      "unauthorized:api", 
+      "Wallet address is required. Please connect your wallet."
+    ).toResponse();
   }
 
-  const chats = await getChatsByUserId({
-    id: session.user.id,
-    limit,
-    startingAfter,
-    endingBefore,
-  });
+  try {
+    // Authenticate wallet and get/create user
+    const user = await authenticateWallet(walletAddress);
+    
+    const chats = await getChatsByUserId({
+      id: user.id,
+      limit,
+      startingAfter,
+      endingBefore,
+    });
 
-  return Response.json(chats);
+    return Response.json(chats);
+  } catch (error) {
+    console.error("Error fetching chat history:", error);
+    return new ChatSDKError(
+      "internal_server_error:api",
+      "Failed to fetch chat history"
+    ).toResponse();
+  }
 }

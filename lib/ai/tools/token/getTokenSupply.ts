@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getTokenSupply = tool({
   description: 'Get the total, max and circulating supply of a VeChain token',
-  parameters: z.object({
+  inputSchema: z.object({
     token: z.string().describe('Token symbol (e.g., vet, vtho, oce, sha)'),
   }),
   execute: async ({ token }) => {

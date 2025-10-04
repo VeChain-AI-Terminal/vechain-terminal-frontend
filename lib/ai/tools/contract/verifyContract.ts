@@ -3,14 +3,14 @@ import { z } from 'zod';
 
 export const verifyContract = tool({
   description: 'Submit a smart contract for verification on VeChain',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('Contract address to verify'),
     stdJsonInput: z.object({}).describe('Solidity standard JSON input'),
     compilerVersion: z.string().describe('Compiler version (e.g., 0.8.7+commit.e28d00a7)'),
     contractIdentifier: z.string().describe('Contract identifier (e.g., contracts/Storage.sol:Storage)'),
     creationTransactionHash: z.string().describe('Transaction hash where contract was created'),
   }),
-  execute: async ({ address, stdJsonInput, compilerVersion, contractIdentifier, creationTransactionHash }) => {
+  execute: async ({ address, stdJsonInput, compilerVersion, contractIdentifier, creationTransactionHash }): Promise<any> => {
     try {
       const response = await fetch(
         `https://verify-api.vechainstats.com/v2/verify/100009/${address}`,

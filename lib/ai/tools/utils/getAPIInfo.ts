@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const getAPIInfo = tool({
   description: 'Get information about your VeChainStats API key plan and usage limits',
   parameters: z.object({}),
-  execute: async () => {
+  execute: async (): Promise<any> => {
     try {
       const response = await fetch(
         `https://api.vechainstats.com/v2/api-info?VCS_API_KEY=${process.env.VCS_API_KEY}`

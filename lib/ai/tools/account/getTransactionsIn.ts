@@ -8,7 +8,7 @@ export const getTransactionsIn = tool({
     page: z.number().optional().default(1).describe('Page number for pagination'),
     sort: z.enum(['asc', 'desc']).optional().default('desc').describe('Sort order by timestamp'),
   }),
-  execute: async ({ address, page = 1, sort = 'desc' }) => {
+  execute: async ({ address, page = 1, sort = 'desc' }): Promise<any> => {
     try {
       const response = await fetch(
         `https://api.vechainstats.com/v2/account/txin?address=${address}&page=${page}&sort=${sort}&VCS_API_KEY=${process.env.VCS_API_KEY}`
@@ -66,6 +66,12 @@ export const getTransactionsIn = tool({
           error: 'Unexpected response format from vechainstats API',
         };
       }
+    } catch (error) {
+      console.error('Error fetching incoming transactions:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred'
+      };
     }
   },
 });

@@ -24,25 +24,24 @@ function PureSuggestedActions({
 
   const suggestedActions = [
     {
-      title: "Best yield-generating opportunity for my CORE",
-      label: "find the most rewarding strategy",
-      action: "What is the best yield-generating opportunity for my CORE?",
+      title: "Check my VET and VTHO balances",
+      label: "view wallet token balances",
+      action: "Show me my VET and VTHO balances",
     },
     {
-      title: "Highest APYs right now across protocols",
-      label: "to make your tokens work for you",
-      action: "List the highest APYs available right now across protocols.",
-    },
-
-    {
-      title: "Swap all my USDC to CORE",
-      label: "instant 1-click swap",
-      action: "Swap all my USDC to CORE",
+      title: "Get VeChain network statistics",
+      label: "current blockchain metrics",
+      action: "What are the current VeChain network statistics?",
     },
     {
-      title: "What is dual staking?",
-      label: "learn all about CORE",
-      action: "Explain how dual staking works in Core blockchain",
+      title: "View my NFT collections",
+      label: "check VIP-181 NFT holdings",
+      action: "Show me my NFT collections and balances",
+    },
+    {
+      title: "What is VeChain's carbon tracking?",
+      label: "learn about sustainability features",
+      action: "Explain VeChain's carbon emission tracking and environmental impact",
     },
   ];
 

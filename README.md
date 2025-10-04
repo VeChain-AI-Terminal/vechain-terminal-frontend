@@ -1,12 +1,12 @@
-# Orange Terminal
+# VeChain Terminal
 
-AI co-pilot for Bitcoin on CORE blockchain, built with **Next.js**.
+AI co-pilot for VeChain blockchain, built with **Next.js**.
 
-Orange Terminal solves the problem of fragmented, hard-to-navigate DeFi opportunities for BTC holders by integrating with the CORE protocol:
+VeChain Terminal provides AI-powered blockchain interactions for VeChain ecosystem:
 
-- Real-time DeFi data aggregation for staking, dual staking, lending/borrowing, and liquidity pools.
-- AI-powered insights to analyze yield opportunities and recommend optimal strategies.
-- One-click transactions that let users execute DeFi actions directly from the AI interface.
+- Real-time VeChain blockchain data and analytics.
+- AI-powered insights for VeChain transactions and smart contracts.
+- Seamless wallet integration with VeChain DApp Kit.
 
 ---
 
@@ -77,26 +77,26 @@ pnpm lint
 **AI Layer**
 
 - Vercel AI SDK for streaming AI responses.
-- GPT fine-tuned for Core DeFi context integrated with real-time data tools
+- GPT fine-tuned for VeChain context integrated with real-time blockchain data tools
 
 **Blockchain Tools**
 
-- wagmi + viem for on-chain reads/writes
-- Reown AppKit for wallet connection
+- VeChain SDK for on-chain reads/writes
+- VeChain DApp Kit for wallet connection
 
-**DeFi Integrations**
+**VeChain Integrations**
 
-- Staking (Core staking APIs + CoreAgent contract).
-- Lending/borrowing.
-- Liquidity pool stats and transaction builders.
-- Transactions via smart contract calls through connected wallets.
+- VeChain blockchain data and transaction tools.
+- Smart contract interactions.
+- VTHO and VET token utilities.
+- Transactions via VeChain wallets.
 
 ---
 
 ## 5) Development Notes
 
-- **Auth**: Current flow uses NextAuth + Reown SIWE.
-- **Chain Safety**: Default to mainnet (`1116`). You can change it by changing the CHAIN_ID var in `lib/constants.ts` file.
+- **Auth**: Uses VeChain Kit for wallet authentication.
+- **Network**: Configured for VeChain TestNet by default.
 
 ---
 

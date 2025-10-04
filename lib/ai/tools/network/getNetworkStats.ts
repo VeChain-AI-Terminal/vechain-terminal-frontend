@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getNetworkStats = tool({
   description: 'Get VeChain network statistics for a specific timeframe',
-  parameters: z.object({
+  inputSchema: z.object({
     timeframe: z.string().describe('Date or period (e.g., 2023-09-01, 2023-09)'),
   }),
   execute: async ({ timeframe }) => {

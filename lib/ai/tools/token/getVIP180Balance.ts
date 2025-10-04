@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getVIP180Balance = tool({
   description: 'Get all VIP180 token balances for a VeChain address',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('VeChain wallet address'),
     expanded: z.boolean().optional().default(false).describe('Include expanded token information'),
   }),

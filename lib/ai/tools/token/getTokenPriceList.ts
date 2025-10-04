@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getTokenPriceList = tool({
   description: 'Get prices for all VeChain tokens that have price data available',
-  parameters: z.object({
+  inputSchema: z.object({
     expanded: z.boolean().optional().default(false).describe('Include expanded price information'),
   }),
   execute: async ({ expanded = false }) => {

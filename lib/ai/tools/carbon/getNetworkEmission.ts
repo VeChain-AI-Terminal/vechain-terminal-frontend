@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getNetworkEmission = tool({
   description: 'Get CO2 emissions data for the VeChain network for a given timeframe',
-  parameters: z.object({
+  inputSchema: z.object({
     timeframe: z.string().describe('Date or period (e.g., 2023-09 for month, 2023-09-01 for day)'),
   }),
   execute: async ({ timeframe }) => {

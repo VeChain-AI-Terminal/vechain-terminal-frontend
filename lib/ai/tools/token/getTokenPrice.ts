@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getTokenPrice = tool({
   description: 'Get the current price of a VeChain token in USD, EUR, CNY, and VET',
-  parameters: z.object({
+  inputSchema: z.object({
     token: z.string().describe('Token symbol (e.g., vet, vtho, oce, sha)'),
     expanded: z.boolean().optional().default(true).describe('Include expanded price information'),
   }),

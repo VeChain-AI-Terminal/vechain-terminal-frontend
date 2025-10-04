@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getContractInfo = tool({
   description: 'Get information and metadata about a VeChain smart contract',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('Contract address'),
     expanded: z.boolean().optional().default(true).describe('Include expanded information'),
   }),

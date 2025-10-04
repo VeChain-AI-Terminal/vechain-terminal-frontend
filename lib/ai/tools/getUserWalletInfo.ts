@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 export const getUserWalletInfo = tool({
   description: "Get the user's wallet address and network info from request headers",
   inputSchema: z.object({}),
-  execute: async () => {
+  execute: async (): Promise<any> => {
     try {
       const headersList = await headers();
       const walletAddress = headersList.get('x-wallet-address');

@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getVIP181Balance = tool({
   description: 'Get VIP181 NFT token balance for a VeChain address',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('VeChain wallet address'),
     id: z.string().optional().describe('Specific NFT project ID to check'),
     expanded: z.boolean().optional().default(true).describe('Include expanded NFT information'),
@@ -12,10 +12,6 @@ export const getVIP181Balance = tool({
     address,
     id,
     expanded = true,
-  }: {
-    address: string;
-    id?: string;
-    expanded?: boolean;
   }) => {
     try {
       const idParam = id ? `&id=${id}` : '';

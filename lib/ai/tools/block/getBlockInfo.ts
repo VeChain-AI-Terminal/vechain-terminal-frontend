@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const getBlockInfo = tool({
   description: 'Get metadata and raw block information for a VeChain block',
-  parameters: z.object({
+  inputSchema: z.object({
     blocknum: z.number().describe('Block number'),
   }),
   execute: async ({ blocknum }) => {

@@ -6,7 +6,7 @@ export const getVETVTHOBalance = tool({
   parameters: z.object({
     address: z.string().describe('VeChain wallet address to check balance for'),
   }),
-  execute: async ({ address }) => {
+  execute: async ({ address }): Promise<any> => {
     try {
       const response = await fetch(
         `https://api.vechainstats.com/v2/account/vet-vtho?address=${address}&VCS_API_KEY=${process.env.VCS_API_KEY}`
