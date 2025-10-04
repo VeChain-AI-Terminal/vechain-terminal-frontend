@@ -3,7 +3,7 @@ import z from "zod";
 
 export const makeSendTransaction = tool({
   description:
-    "Make a transaction object on the Core blockchain. Pass the receiver,recever ens name if avalaible, sender, amount, and chainId. The chainId is 1116 for the Core blockchain.",
+    "Make a VeChain transaction object. Pass the receiver, receiver ens name if available, sender, amount, and network. Use 'main' for mainnet or 'test' for testnet.",
   inputSchema: z.object({
     from: z.string().describe("The sender address"),
     receiver_address: z.string().describe("The receiver address"),
@@ -14,26 +14,37 @@ export const makeSendTransaction = tool({
     value: z
       .string()
       .describe(
-        "The amount of tokens to send in human readable format eg, 0.5, 3"
+        "The amount of VET to send in human readable format eg, 0.5, 3"
       ),
-    chainId: z.number().default(1116),
+    network: z.enum(["main", "test"]).default("test").describe("VeChain network to use"),
   }),
   execute: async ({
     from,
     receiver_address,
     receiver_ensName,
     value,
-    chainId,
+    network,
   }) => {
+    // Convert human readable value to wei (18 decimals for VET)
+    const valueInWei = (parseFloat(value) * Math.pow(10, 18)).toString();
+    
+    // VeChain transaction uses clauses format
     const transaction = {
       from,
       receiver_address,
       receiver_ensName,
-      value,
-      chainId,
+      value: valueInWei,
+      network,
+      clauses: [
+        {
+          to: receiver_address,
+          value: valueInWei,
+          data: "0x", // empty data for simple VET transfer
+        }
+      ],
     };
 
-    console.log("transaction in makeSendTransaction", transaction);
+    console.log("VeChain transaction in makeSendTransaction", transaction);
 
     return transaction;
   },

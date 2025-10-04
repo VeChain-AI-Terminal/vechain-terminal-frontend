@@ -20,30 +20,22 @@ import { useDataStream } from "./data-stream-provider";
 import TransactionComponent, {
   TransactionComponentProps,
 } from "@/components/TransactionComponent";
-import StakeComponent from "@/components/stake-actions-components/StakeComponent";
-import { PortfolioDataType } from "@/lib/types/portfolio-data";
-import { StakeComponentProps } from "@/lib/ai/tools/core-staking-actions/makeStakeCoreTransaction";
-import { getDelegatedCoreForEachValidator } from "@/lib/ai/tools/core-staking-actions/getDelegatedCoreForEachValidator";
-import { getClaimedAndPendingRewards } from "@/lib/ai/tools/core-staking-actions/getClaimedAndPendingRewards";
-import UnDelegateComponent from "@/components/stake-actions-components/UnDelegateComponent";
-import TransferComponent from "@/components/stake-actions-components/TransferComponent";
-import { TransferStakedCoreTransactionProps } from "@/lib/ai/tools/core-staking-actions/makeTransferStakedCoreTransaction";
-import ClaimRewardsComponent from "@/components/stake-actions-components/ClaimRewards";
-import ColendSupplyCore from "@/components/colend-actions-components/colend-supply-core";
-import { ColendSupplyCoreTxProps } from "@/lib/ai/tools/colend/colendSupplyCore";
-import { ColendSupplyErc20TxProps } from "@/lib/ai/tools/colend/colendSupplyErc20";
-import ColendSupplyErc20 from "@/components/colend-actions-components/colend-supply-erc20";
 import ToolCallLoader from "@/components/tool-call-loader";
-import ColendWithdrawErc20 from "@/components/colend-actions-components/colend-withdraw-erc20";
-import { ColendWithdrawErc20TxProps } from "@/lib/ai/tools/colend/colendWithdrawErc20";
-import ColendWithdrawCore from "@/components/colend-actions-components/colend-withdraw-core";
-import { ColendWithdrawCoreTxProps } from "@/lib/ai/tools/colend/colendWithdrawCore";
-import TokenSwap from "@/components/swap-actions-components/TokenSwap";
-import { TokenSwapProps } from "@/lib/ai/tools/swap-actions/tokenSwapTransaction";
-import { SLIPPAGE_FOR_SWAPS } from "@/lib/constants";
 import { SuggestionAwareMarkdown } from "@/components/SuggestionAwareMarkdown";
 import { InfoIcon } from "lucide-react";
-import { UnDelegateComponentProps } from "@/lib/ai/tools/core-staking-actions/makeUnDelegateCoreTransaction";
+
+// VeChain Card Components
+import VETVTHOBalance from "@/components/vechain-portfolio/VETVTHOBalance";
+import AccountStats from "@/components/vechain-portfolio/AccountStats";
+import TokenList from "@/components/vechain-tokens/TokenList";
+import NFTList from "@/components/vechain-nfts/NFTList";
+import NetworkStats from "@/components/vechain-network/NetworkStats";
+import TransactionInfo from "@/components/vechain-transactions/TransactionInfo";
+import ContractInfo from "@/components/vechain-contracts/ContractInfo";
+import AddressEmission from "@/components/vechain-carbon/AddressEmission";
+import BlockEmission from "@/components/vechain-carbon/BlockEmission";
+import TransactionEmission from "@/components/vechain-carbon/TransactionEmission";
+import NetworkEmission from "@/components/vechain-carbon/NetworkEmission";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -235,7 +227,8 @@ const PurePreviewMessage = ({
                     receiver_address,
                     receiver_ensName,
                     value,
-                    chainId,
+                    network,
+                    clauses,
                   } = output as TransactionComponentProps;
                   return (
                     <TransactionComponent
@@ -243,475 +236,252 @@ const PurePreviewMessage = ({
                       receiver_address={receiver_address}
                       receiver_ensName={receiver_ensName}
                       value={value}
-                      chainId={chainId}
+                      network={network}
+                      clauses={clauses}
                       key={toolCallId}
                     />
                   );
                 }
               }
 
-              if (type === "tool-getTokenAddresses") {
-                const { toolCallId, state } = part;
-
-                if (state === "input-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Getting token address..." />
-                    </div>
-                  );
-                }
-
-                if (state === "output-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader
-                        loadingMessage="Token address fetched."
-                        isFinished
-                      />
-                    </div>
-                  );
-                }
-              }
-
-              if (type === "tool-getCoreScanApiParams") {
-                const { toolCallId, state } = part;
-
-                if (state === "input-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Exploring core blockchain ..." />
-                    </div>
-                  );
-                }
-
-                if (state === "output-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader
-                        loadingMessage="Exploring core blockchain"
-                        isFinished
-                      />
-                    </div>
-                  );
-                }
-              }
-              if (type === "tool-makeCoreScanApiCall") {
-                const { toolCallId, state } = part;
-
-                if (state === "input-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Gathering information..." />
-                    </div>
-                  );
-                }
-
-                if (state === "output-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader
-                        loadingMessage="Gathering information"
-                        isFinished
-                      />
-                    </div>
-                  );
-                }
-              }
-
-              if (type === "tool-getPortfolio") {
-                const { toolCallId, state } = part;
-
-                if (state === "input-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Looking at your portfolio..." />
-                    </div>
-                  );
-                }
-
-                if (state === "output-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader
-                        loadingMessage="Portfolio analysed."
-                        isFinished
-                      />
-                    </div>
-                  );
-                }
-              }
-
-              if (type === "tool-getTransactionHistory") {
-                const { toolCallId, state } = part;
-
-                if (state === "input-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Looking at your transactions..." />
-                    </div>
-                  );
-                }
-
-                if (state === "output-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader
-                        loadingMessage="Transactions analysed."
-                        isFinished
-                      />
-                    </div>
-                  );
-                }
-              }
-
-              // staking actions
-              if (type === "tool-makeStakeCoreTransaction") {
+              // VeChain Portfolio Tools
+              if (type === "tool-getVETVTHOBalance") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Making stake transaction..." />
+                      <ToolCallLoader loadingMessage="Getting VET/VTHO balance..." />
                     </div>
                   );
                 }
-
                 if (state === "output-available") {
                   const { output } = part;
-                  const {
-                    candidateAddress,
-                    candidateName,
-                    humanReadableValue,
-                    valueInWei,
-                    chainId,
-                  } = output as StakeComponentProps;
                   return (
-                    <StakeComponent
-                      candidateAddress={candidateAddress}
-                      candidateName={candidateName}
-                      humanReadableValue={humanReadableValue}
-                      valueInWei={valueInWei}
-                      chainId={chainId}
+                    <VETVTHOBalance
                       key={toolCallId}
-                      sendMessage={sendMessage}
+                      data={output}
+                      isLoading={false}
                     />
                   );
                 }
               }
 
-              if (type === "tool-makeUnDelegateCoreTransaction") {
+              if (type === "tool-getAccountStats") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Making un-delegate stake transaction..." />
+                      <ToolCallLoader loadingMessage="Getting account statistics..." />
                     </div>
                   );
                 }
-
                 if (state === "output-available") {
                   const { output } = part;
-                  const {
-                    candidateAddress,
-                    candidateName,
-                    humanReadableValue,
-                    valueInWei,
-                    chainId,
-                  } = output as UnDelegateComponentProps;
                   return (
-                    <UnDelegateComponent
-                      candidateAddress={candidateAddress}
-                      candidateName={candidateName}
-                      humanReadableValue={humanReadableValue}
-                      valueInWei={valueInWei}
-                      chainId={chainId}
+                    <AccountStats
                       key={toolCallId}
-                      sendMessage={sendMessage}
+                      data={output}
+                      isLoading={false}
                     />
                   );
                 }
               }
 
-              if (type === "tool-makeClaimRewardsTransaction") {
+              // VeChain Token Tools
+              if (type === "tool-getTokenList") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Making claim rewards transaction..." />
+                      <ToolCallLoader loadingMessage="Getting token list..." />
                     </div>
                   );
                 }
-
                 if (state === "output-available") {
                   const { output } = part;
-                  const {
-                    candidateAddress,
-                    candidateName,
-                    humanReadableValue,
-                    valueInWei,
-                    chainId,
-                  } = output as StakeComponentProps;
                   return (
-                    <ClaimRewardsComponent
-                      candidateAddress={candidateAddress}
-                      candidateName={candidateName}
-                      humanReadableValue={humanReadableValue}
-                      valueInWei={valueInWei}
-                      chainId={chainId}
+                    <TokenList
                       key={toolCallId}
-                      sendMessage={sendMessage}
+                      data={output}
+                      isLoading={false}
                     />
                   );
                 }
               }
 
-              if (type === "tool-makeTransferStakedCoreTransaction") {
+              // VeChain NFT Tools
+              if (type === "tool-getNFTList") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Making transfer stake transaction..." />
+                      <ToolCallLoader loadingMessage="Getting NFT collections..." />
                     </div>
                   );
                 }
-
                 if (state === "output-available") {
                   const { output } = part;
-                  const {
-                    sourceCandidateAddress,
-                    sourceCandidateName,
-                    targetCandidateAddress,
-                    targetCandidateName,
-                    humanReadableValue,
-                    valueInWei,
-                    chainId,
-                  } = output as TransferStakedCoreTransactionProps;
-
                   return (
-                    <TransferComponent
-                      sourceCandidateAddress={sourceCandidateAddress}
-                      sourceCandidateName={sourceCandidateName}
-                      targetCandidateAddress={targetCandidateAddress}
-                      targetCandidateName={targetCandidateName}
-                      humanReadableValue={humanReadableValue}
-                      valueInWei={valueInWei}
-                      chainId={chainId}
+                    <NFTList
                       key={toolCallId}
-                      sendMessage={sendMessage}
+                      data={output}
+                      isLoading={false}
                     />
                   );
                 }
               }
-              if (type === "tool-getDelegatedCoreForEachValidator") {
-                const { toolCallId, state } = part;
 
-                if (state === "input-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Looking up your staked CORE across validators..." />
-                    </div>
-                  );
-                }
-
-                if (state === "output-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader
-                        loadingMessage="Information fetched."
-                        isFinished
-                      />
-                    </div>
-                  );
-                }
-              }
-
-              if (type === "tool-getClaimedAndPendingRewards") {
-                const { toolCallId, state } = part;
-
-                if (state === "input-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Looking up your rewards across validators..." />
-                    </div>
-                  );
-                }
-
-                if (state === "output-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader
-                        loadingMessage="Rewards information fetched."
-                        isFinished
-                      />
-                    </div>
-                  );
-                }
-              }
-
-              // protocol stats
-              if (type === "tool-getDefiProtocolsStats") {
+              // VeChain Network Tools
+              if (type === "tool-getNetworkStats") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Gathering information from protocols..." />
+                      <ToolCallLoader loadingMessage="Getting network statistics..." />
                     </div>
                   );
                 }
-
-                if (state === "output-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader
-                        loadingMessage="Gathering information from protocols"
-                        isFinished
-                      />
-                    </div>
-                  );
-                }
-              }
-
-              if (type === "tool-ensToAddress") {
-                const { toolCallId, state } = part;
-
-                if (state === "input-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Getting address..." />
-                    </div>
-                  );
-                }
-
-                if (state === "output-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader
-                        loadingMessage="Address fetched"
-                        isFinished
-                      />
-                    </div>
-                  );
-                }
-              }
-
-              // colend supply and withdraw actions
-              if (type === "tool-colendSupplyCore") {
-                const { toolCallId, state } = part;
-                if (state === "input-available") {
-                  return (
-                    <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Making supply core transaction on colend..." />
-                    </div>
-                  );
-                }
-
                 if (state === "output-available") {
                   const { output } = part;
-                  const tx = output as ColendSupplyCoreTxProps;
                   return (
-                    <ColendSupplyCore
-                      tx={tx}
+                    <NetworkStats
                       key={toolCallId}
-                      sendMessage={sendMessage}
+                      data={output}
+                      isLoading={false}
                     />
                   );
                 }
               }
 
-              if (type === "tool-colendSupplyErc20") {
+              // VeChain Transaction Tools
+              if (type === "tool-getTransactionInfo") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Making supply token transaction on colend..." />
+                      <ToolCallLoader loadingMessage="Getting transaction details..." />
                     </div>
                   );
                 }
-
                 if (state === "output-available") {
                   const { output } = part;
-                  const tx = output as ColendSupplyErc20TxProps;
                   return (
-                    <ColendSupplyErc20
-                      tx={tx}
+                    <TransactionInfo
                       key={toolCallId}
-                      sendMessage={sendMessage}
+                      data={output}
+                      isLoading={false}
                     />
                   );
                 }
               }
 
-              if (type === "tool-colendWithdrawErc20") {
+              // VeChain Contract Tools
+              if (type === "tool-getContractInfo") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Making supply token transaction on colend..." />
+                      <ToolCallLoader loadingMessage="Getting contract information..." />
                     </div>
                   );
                 }
-
                 if (state === "output-available") {
                   const { output } = part;
-                  const tx = output as ColendWithdrawErc20TxProps;
                   return (
-                    <ColendWithdrawErc20
-                      tx={tx}
+                    <ContractInfo
                       key={toolCallId}
-                      sendMessage={sendMessage}
+                      data={output}
+                      isLoading={false}
                     />
                   );
                 }
               }
 
-              if (type === "tool-colendWithdrawCore") {
+              // VeChain Carbon Emission Tools
+              if (type === "tool-getAddressEmission") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Making supply token transaction on colend..." />
+                      <ToolCallLoader loadingMessage="Getting carbon emissions for address..." />
                     </div>
                   );
                 }
-
                 if (state === "output-available") {
                   const { output } = part;
-                  const tx = output as ColendWithdrawCoreTxProps;
                   return (
-                    <ColendWithdrawCore
-                      tx={tx}
+                    <AddressEmission
                       key={toolCallId}
-                      sendMessage={sendMessage}
+                      data={output}
+                      isLoading={false}
                     />
                   );
                 }
               }
 
-              // swaps
-              if (type === "tool-tokenSwapTransaction") {
+              if (type === "tool-getBlockEmission") {
                 const { toolCallId, state } = part;
                 if (state === "input-available") {
                   return (
                     <div key={toolCallId}>
-                      <ToolCallLoader loadingMessage="Preparing swap transaction..." />
+                      <ToolCallLoader loadingMessage="Getting block carbon emissions..." />
                     </div>
                   );
                 }
-
                 if (state === "output-available") {
                   const { output } = part;
-                  const tx = output as TokenSwapProps;
                   return (
-                    <TokenSwap
+                    <BlockEmission
                       key={toolCallId}
-                      tokenIn={tx.tokenIn as `0x${string}`}
-                      tokenOut={tx.tokenOut as `0x${string}`}
-                      amount={tx.amount}
-                      slippagePct={tx.slippage}
-                      sendMessage={sendMessage}
+                      data={output}
+                      isLoading={false}
                     />
                   );
                 }
               }
+
+              if (type === "tool-getTransactionEmission") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Getting transaction carbon emissions..." />
+                    </div>
+                  );
+                }
+                if (state === "output-available") {
+                  const { output } = part;
+                  return (
+                    <TransactionEmission
+                      key={toolCallId}
+                      data={output}
+                      isLoading={false}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-getNetworkEmission") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Getting network carbon emissions..." />
+                    </div>
+                  );
+                }
+                if (state === "output-available") {
+                  const { output } = part;
+                  return (
+                    <NetworkEmission
+                      key={toolCallId}
+                      data={output}
+                      isLoading={false}
+                    />
+                  );
+                }
+              }
+
             })}
 
             {!isReadonly && (
