@@ -6,11 +6,11 @@ import Image from 'next/image';
 import { ExternalLink, Image as ImageIcon } from 'lucide-react';
 
 type NFTData = {
-  contract_address: string;
+  contract: string;
   name: string;
   symbol: string;
   type: string;
-  total_supply?: number;
+  nft?: number;
   official?: boolean;
   verified?: boolean;
 };
@@ -22,6 +22,16 @@ type NFTListData = {
     timestamp: string;
   };
   error?: string;
+};
+
+// Simple identicon generator based on address
+const generateIdenticon = (address: string) => {
+  const hash = address.slice(2); // Remove 0x
+  const hue = parseInt(hash.slice(0, 6), 16) % 360;
+  const saturation = 70 + (parseInt(hash.slice(6, 8), 16) % 30);
+  const lightness = 40 + (parseInt(hash.slice(8, 10), 16) % 20);
+  
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 };
 
 export default function NFTList({ 
@@ -53,6 +63,7 @@ export default function NFTList({
       </Card>
     );
   }
+  console.log(data);
 
   if (!data.success || !data.data) {
     return (
@@ -100,12 +111,17 @@ export default function NFTList({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
           {data.data.map((nft, index) => (
             <div 
-              key={nft.contract_address || index} 
+              key={nft.contract || index} 
               className="bg-zinc-800 rounded-lg p-4 hover:bg-zinc-750 transition-colors"
             >
-              {/* NFT Image Placeholder */}
-              <div className="w-full h-32 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg mb-3 flex items-center justify-center">
-                <ImageIcon className="w-8 h-8 text-white/50" />
+              {/* NFT Identicon */}
+              <div 
+                className="w-full h-32 rounded-lg mb-3 flex items-center justify-center"
+                style={{ backgroundColor: generateIdenticon(nft.contract || '') }}
+              >
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                  <ImageIcon className="w-4 h-4 text-white/80" />
+                </div>
               </div>
               
               {/* NFT Info */}
@@ -122,9 +138,14 @@ export default function NFTList({
                     </div>
                     <p className="text-sm text-zinc-400 truncate">{nft.symbol}</p>
                   </div>
-                  <button className="p-1 hover:bg-zinc-700 rounded ml-2">
-                    <ExternalLink className="w-4 h-4 text-zinc-400" />
-                  </button>
+                  <a 
+                    href={`https://vechainstats.com/account/${nft.contract}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-1 hover:bg-zinc-700 rounded ml-2 transition-colors"
+                  >
+                    <ExternalLink className="w-4 h-4 text-zinc-400 hover:text-zinc-300" />
+                  </a>
                 </div>
                 
                 <div className="flex items-center justify-between">
@@ -132,7 +153,7 @@ export default function NFTList({
                     {nft.type.toUpperCase()}
                   </Badge>
                   <span className="text-xs text-zinc-400">
-                    {formatSupply(nft.total_supply)} items
+                    {formatSupply(nft.nft)} items
                   </span>
                 </div>
                 
@@ -145,7 +166,7 @@ export default function NFTList({
                 
                 <div className="mt-2 pt-2 border-t border-zinc-700">
                   <code className="text-xs text-zinc-500 break-all">
-                    {nft.contract_address?.slice(0, 10)}...{nft.contract_address?.slice(-8)}
+                    {nft.contract?.slice(0, 10)}...{nft.contract?.slice(-8)}
                   </code>
                 </div>
               </div>

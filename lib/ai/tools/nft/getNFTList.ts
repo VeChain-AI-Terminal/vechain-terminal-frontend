@@ -7,7 +7,12 @@ export const getNFTList = tool({
   execute: async (): Promise<any> => {
     try {
       const response = await fetch(
-        `https://api.vechainstats.com/v2/nft/list?VCS_API_KEY=${process.env.VCS_API_KEY}`
+        `https://api.vechainstats.com/v2/nft/list`,
+        {
+          headers: {
+            'X-API-Key': process.env.VCS_API_KEY || ''
+          }
+        }
       );
 
       if (!response.ok) {
@@ -23,6 +28,7 @@ export const getNFTList = tool({
           data: result.data.map((nft: any) => ({
             id: nft.id,
             name: nft.name,
+            symbol: nft.name, // Use name as symbol since API doesn't provide symbol
             type: nft.type,
             nfts: nft.nfts,
             contract: nft.contract,
