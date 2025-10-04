@@ -1,37 +1,44 @@
-import { useSendTransaction, useEstimateGas } from "wagmi";
-import { parseUnits, hexToBigInt, type Address } from "viem";
+import { useSendTransaction } from "@vechain/vechain-kit";
 import { useWallet } from "@vechain/vechain-kit";
 
 export function useHandleTransaction() {
-  const { account, connection } = useWallet();
-  const { sendTransactionAsync } = useSendTransaction();
+  const { account } = useWallet();
+  
+  const config = {
+    signerAccountAddress: account?.address || "",
+    onTxConfirmed: () => {
+      console.log("Transaction confirmed");
+    },
+    onTxFailedOrCancelled: (error: unknown) => {
+      console.error("Transaction failed or cancelled:", error);
+    },
+  };
+  
+  const { sendTransaction } = useSendTransaction(config);
 
   const handleTransaction = async (tx: {
     chainId: number;
-    to: Address;
+    to: string;
     value: string; // hex string
-    data: `0x${string}`;
+    data: string;
   }) => {
-    if (!connection.isConnected || !account) {
+    if (!account) {
       console.warn("Wallet not connected");
       return;
     }
     console.log("tx", tx);
 
     try {
-      const txRequest = {
+      const clause = {
         to: tx.to,
-        value: hexToBigInt(tx.value as `0x${string}`), // convert hex value to BigInt
+        value: tx.value,
         data: tx.data,
       };
 
-      const hash = await sendTransactionAsync({
-        ...txRequest,
-        account: account?.address as Address,
-      });
+      const result = await sendTransaction([clause]);
 
-      console.log("✅ Transaction sent:", hash);
-      return hash;
+      console.log("✅ Transaction sent:", result);
+      return result;
     } catch (err) {
       console.error("❌ Error sending transaction:", err);
       throw err;

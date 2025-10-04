@@ -33,7 +33,8 @@ const SigningComponent: React.FC<SigningComponentProps> = ({
   action,
   note,
 }) => {
-  const { account, isConnected } = useWallet();
+  const { account } = useWallet();
+  const isConnected = !!account;
   const [signature, setSignature] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 

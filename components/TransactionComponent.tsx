@@ -110,7 +110,7 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
     onTxConfirmed: () => {
       console.log("Transaction confirmed");
     },
-    onTxFailedOrCancelled: (error) => {
+    onTxFailedOrCancelled: (error: unknown) => {
       console.error("Transaction failed or cancelled:", error);
     },
   };
