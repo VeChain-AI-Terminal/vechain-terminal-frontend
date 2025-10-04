@@ -2,9 +2,6 @@
 
 import React, { ReactNode } from 'react';
 import { VeChainKitProvider } from '@vechain/vechain-kit';
-import { VECHAIN_MAINNET, VECHAIN_TESTNET } from '@vechain/vechain-kit';
-
-const vechainNetworks = [VECHAIN_MAINNET, VECHAIN_TESTNET];
 
 export default function VeChainKitProviderWrapper({
   children,
@@ -13,27 +10,42 @@ export default function VeChainKitProviderWrapper({
 }) {
   return (
     <VeChainKitProvider
-      networks={vechainNetworks}
-      defaultNetwork={VECHAIN_TESTNET}
-      enableWalletConnect={true}
-      walletConnectOptions={{
-        projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID || '',
+      network={{
+        type: "test", // "main" | "test" | "solo"
       }}
-      enableSocialLogin={true}
-      privyConfig={{
-        appId: process.env.NEXT_PUBLIC_PRIVY_APP_ID || '',
-        config: {
-          appearance: {
-            theme: 'dark',
-          },
-          loginMethods: ['email', 'sms', 'google', 'twitter'],
-          embeddedWallets: {
-            createOnLogin: 'users-without-wallets',
+      
+      feeDelegation={{
+        delegatorUrl: "https://sponsor-testnet.vechain.energy/by/441",
+        delegateAllTransactions: false,
+      }}
+      
+      loginMethods={[
+        { method: "vechain", gridColumn: 4 },
+        { method: "dappkit", gridColumn: 4 },
+        { method: "ecosystem", gridColumn: 4 },
+      ]}
+      
+      dappKit={{
+        allowedWallets: ["veworld", "wallet-connect", "sync2"],
+        walletConnectOptions: {
+          projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '',
+          metadata: {
+            name: "VeChain Terminal",
+            description: "AI-powered VeChain blockchain terminal",
+            url: typeof window !== "undefined" ? window.location.origin : "",
+            icons: ["/images/vechain.png"],
           },
         },
       }}
-      enableFeeDelegation={true}
-      feeDelegatorUrl={process.env.NEXT_PUBLIC_FEE_DELEGATOR_URL}
+      
+      darkMode={true}
+      language="en"
+      allowCustomTokens={true}
+      
+      loginModalUI={{
+        logo: '/images/vechain.png',
+        description: 'Connect your wallet to access VeChain Terminal',
+      }}
     >
       {children}
     </VeChainKitProvider>

@@ -1,15 +1,10 @@
 "use client";
-import {
-  useDisconnect,
-  useAppKit,
-  useAppKitNetwork,
-} from "@reown/appkit/react";
-import { chains } from "@/config";
+import { useWallet, useConnectModal, useAccountModal } from "@vechain/vechain-kit";
 
 export const ActionButtonList = () => {
-  const { disconnect } = useDisconnect();
-  const { open } = useAppKit();
-  const { switchNetwork } = useAppKitNetwork();
+  const { disconnect } = useWallet();
+  const { open: openConnect } = useConnectModal();
+  const { open: openAccount } = useAccountModal();
 
   const handleDisconnect = async () => {
     try {
@@ -20,9 +15,9 @@ export const ActionButtonList = () => {
   };
   return (
     <div>
-      <button onClick={() => open()}>Open</button>
+      <button onClick={() => openConnect()}>Connect Wallet</button>
+      <button onClick={() => openAccount()}>Account</button>
       <button onClick={handleDisconnect}>Disconnect</button>
-      <button onClick={() => switchNetwork(chains[1])}>Switch</button>
     </div>
   );
 };

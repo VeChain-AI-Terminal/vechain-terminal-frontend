@@ -1,9 +1,9 @@
 import { useSendTransaction, useEstimateGas } from "wagmi";
 import { parseUnits, hexToBigInt, type Address } from "viem";
-import { useAppKitAccount } from "@reown/appkit/react";
+import { useWallet } from "@vechain/vechain-kit";
 
 export function useHandleTransaction() {
-  const { address, isConnected } = useAppKitAccount();
+  const { account, connection } = useWallet();
   const { sendTransactionAsync } = useSendTransaction();
 
   const handleTransaction = async (tx: {
@@ -12,7 +12,7 @@ export function useHandleTransaction() {
     value: string; // hex string
     data: `0x${string}`;
   }) => {
-    if (!isConnected || !address) {
+    if (!connection.isConnected || !account) {
       console.warn("Wallet not connected");
       return;
     }
@@ -27,7 +27,7 @@ export function useHandleTransaction() {
 
       const hash = await sendTransactionAsync({
         ...txRequest,
-        account: address as Address,
+        account: account?.address as Address,
       });
 
       console.log("✅ Transaction sent:", hash);

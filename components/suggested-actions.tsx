@@ -7,7 +7,7 @@ import type { UseChatHelpers } from "@ai-sdk/react";
 import type { VisibilityType } from "./visibility-selector";
 import type { ChatMessage } from "@/lib/types";
 import { toast } from "sonner";
-import { useAppKitAccount } from "@reown/appkit/react";
+import { useWallet } from "@vechain/vechain-kit";
 
 interface SuggestedActionsProps {
   chatId: string;
@@ -20,7 +20,7 @@ function PureSuggestedActions({
   sendMessage,
   selectedVisibilityType,
 }: SuggestedActionsProps) {
-  const { address, isConnected, caipAddress } = useAppKitAccount();
+  const { account, connection } = useWallet();
 
   const suggestedActions = [
     {
@@ -64,7 +64,7 @@ function PureSuggestedActions({
             variant="ghost"
             onClick={async (e) => {
               e.preventDefault();
-              if (!isConnected) {
+              if (!connection.isConnected) {
                 toast.error("Please connect your wallet to send a message");
                 return;
               }
