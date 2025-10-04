@@ -2,7 +2,7 @@
 
 import { isToday, isYesterday, subMonths, subWeeks } from "date-fns";
 import { useParams, useRouter } from "next/navigation";
-import type { User } from "next-auth";
+// Remove next-auth User type import
 import { useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -93,11 +93,15 @@ export function getChatHistoryPaginationKey(
   return `/api/history?ending_before=${firstChatFromPage.id}&limit=${PAGE_SIZE}`;
 }
 
+type WalletUser = {
+  address?: string;
+};
+
 export function SidebarHistory({
   user,
   status,
 }: {
-  user: User | undefined;
+  user: WalletUser | undefined;
   status: "unauthenticated" | "authenticated" | "loading";
 }) {
   const { setOpenMobile } = useSidebar();

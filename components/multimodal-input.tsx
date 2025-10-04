@@ -30,7 +30,6 @@ import type { VisibilityType } from "./visibility-selector";
 import type { Attachment, ChatMessage } from "@/lib/types";
 import { useAppKitAccount } from "@reown/appkit/react";
 import Disclaimer from "@/components/disclaimer";
-import { useSession } from "next-auth/react";
 
 function AttachmentsButton({
   fileInputRef,
@@ -132,7 +131,6 @@ export function MultimodalInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
   const { address, isConnected, caipAddress } = useAppKitAccount();
-  const { status: sessionStatus } = useSession();
 
   // console.log("is connected multimodal", isConnected);
   // console.log("sessionStatus multimodal", sessionStatus);
