@@ -12,18 +12,17 @@ import { useSidebar } from "./ui/sidebar";
 import { memo } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { type VisibilityType, VisibilitySelector } from "./visibility-selector";
-import type { Session } from "next-auth";
 import { ConnectButton } from "@/components/ConnectButton";
 import { FaSuitcase } from "react-icons/fa";
 import { Wallet } from "lucide-react";
-import { useAppKitAccount } from "@reown/appkit/react";
+import { useWallet } from "@vechain/vechain-kit";
 
 function PureChatHeader() {
   const router = useRouter();
   const { open } = useSidebar();
 
   const { width: windowWidth } = useWindowSize();
-  const { address, isConnected } = useAppKitAccount();
+  const { account, connection } = useWallet();
   return (
     <header className="flex sticky top-0 bg-background py-1.5 items-center justify-between px-2 md:px-2 gap-2 z-10">
       <div className="flex items-center gap-2">
@@ -65,7 +64,7 @@ function PureChatHeader() {
         )} */}
       </div>
       <div className="flex flex-row gap-2 items-center">
-        {isConnected && (
+        {connection.isConnected && (
           <Link
             href={"/portfolio"}
             className="flex flex-row gap-2 border border-theme-orange rounded-full px-3 py-2 items-center hover:bg-zinc-900 h-full"
