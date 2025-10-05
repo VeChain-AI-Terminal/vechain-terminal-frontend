@@ -750,7 +750,7 @@ function ComponentCarousel({ category }: { category: typeof componentCategories[
             <div className="p-6 bg-background border rounded-lg">
               {CurrentComponent && mockData[currentIndex] && (
                 currentComponent?.name === "Contract Verification" ? (
-                  <CurrentComponent 
+                  <ContractVerification 
                     onVerify={mockData[currentIndex].onVerify}
                   />
                 ) : (
