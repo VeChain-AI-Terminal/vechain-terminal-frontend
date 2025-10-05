@@ -24,65 +24,65 @@ import { PageHeader } from "@/components/ui/page-header";
 const roadmapPhases = [
   {
     phase: "Phase 1",
-    title: "Foundation & Core Features",
+    title: "Foundation ✅ COMPLETED",
     status: "completed",
-    timeframe: "Q4 2024",
-    description: "Establish the fundamental platform and core AI capabilities",
+    timeframe: "SHIPPED",
+    description: "64+ AI tools for VeChain operations - we've built what everyone else is promising",
     milestones: [
       {
-        title: "AI Chat Interface",
-        description: "Natural language blockchain queries and responses",
+        title: "64+ Live Operations",
+        description: "VET transfers, StarGate staking, cross-chain bridges, NFT management",
         status: "completed",
         icon: Brain
       },
       {
-        title: "Wallet Integration", 
-        description: "Connect VeChain wallets and access account data",
+        title: "25+ Bridge Destinations", 
+        description: "Connect VeChain to entire crypto ecosystem via WanBridge & XFlows",
         status: "completed",
-        icon: Shield
+        icon: Globe
       },
       {
-        title: "Basic Analytics",
-        description: "Transaction history and balance tracking",
+        title: "Real-time AI Streaming",
+        description: "Live blockchain data with progressive AI responses",
         status: "completed", 
         icon: Zap
       },
       {
-        title: "Smart Contract Tools",
-        description: "Contract verification and basic interaction",
-        status: "in-progress",
+        title: "Web Interface",
+        description: "Full-featured web app with wallet connectivity",
+        status: "completed",
         icon: Code
       }
     ]
   },
   {
     phase: "Phase 2", 
-    title: "Advanced Analytics & Tools",
+    title: "Plugin Ecosystem 🚧 IN PROGRESS",
     status: "in-progress",
     timeframe: "Q1 2025",
-    description: "Enhanced analytics capabilities and developer tools",
+    description: "Building the ChatGPT plugin moment for blockchain - any VeChain project can integrate",
     milestones: [
       {
-        title: "Advanced Contract Analysis",
-        description: "Deep code analysis and security auditing", 
+        title: "MCP Integration",
+        description: "Model Context Protocol for seamless AI tool integration", 
         status: "in-progress",
         icon: Shield
       },
       {
-        title: "Portfolio Management",
-        description: "Comprehensive asset tracking and insights",
-        status: "planned",
+        title: "Open Plugin Registry",
+        description: "Any VeChain project can add their tools to our AI",
+        status: "in-progress",
         icon: Target
       },
       {
-        title: "API Access",
-        description: "RESTful API for third-party integrations",
+        title: "Plugin Marketplace",
+        description: "Discover and install new protocol integrations",
         status: "planned",
         icon: Code
       },
       {
-        title: "Real-time Monitoring",
-        description: "Live network and transaction monitoring",
+        title: "VeBetter DAO Integration",
+        description: "Sustainability rewards through simple conversation",
         status: "planned",
         icon: Zap
       }
@@ -90,32 +90,32 @@ const roadmapPhases = [
   },
   {
     phase: "Phase 3",
-    title: "Enterprise & Integrations", 
+    title: "Desktop & Local Operation 🎯 Q1 2025", 
     status: "planned",
-    timeframe: "Q2 2025",
-    description: "Enterprise features and ecosystem integrations",
+    timeframe: "Q1 2025",
+    description: "Breaking free from browsers and OpenAI dependency",
     milestones: [
       {
-        title: "MCP Server",
-        description: "Model Context Protocol server for AI integrations",
+        title: "Native Desktop App",
+        description: "Windows, Mac, Linux apps with enhanced performance",
         status: "planned",
         icon: Brain
       },
       {
-        title: "Multi-user Support",
-        description: "Team collaboration and role management",
+        title: "Local AI with Ollama",
+        description: "No OpenAI API required - run everything locally",
         status: "planned", 
         icon: Users
       },
       {
-        title: "Custom Dashboards",
-        description: "Personalized analytics and reporting",
+        title: "Enhanced Security",
+        description: "Advanced security features for desktop operations",
         status: "planned",
         icon: Target
       },
       {
-        title: "Third-party Integrations",
-        description: "Connect with popular DeFi and NFT platforms",
+        title: "Performance Optimization",
+        description: "Native performance benefits over web version",
         status: "planned",
         icon: Globe
       }
@@ -123,32 +123,32 @@ const roadmapPhases = [
   },
   {
     phase: "Phase 4",
-    title: "Ecosystem Expansion",
+    title: "Reward Economy 🔮 Q2 2025",
     status: "planned", 
-    timeframe: "Q3-Q4 2025",
-    description: "Platform expansion and community features",
+    timeframe: "Q2 2025",
+    description: "Making blockchain interaction profitable, not just functional",
     milestones: [
       {
-        title: "Mobile Application",
-        description: "Native iOS and Android applications",
+        title: "User Rewards System",
+        description: "Earn tokens for platform engagement and usage",
         status: "planned",
         icon: Rocket
       },
       {
-        title: "Developer SDK",
-        description: "Software development kit for building on VeChain Terminal",
+        title: "Developer Incentives",
+        description: "Revenue sharing for plugin creators and contributors",
         status: "planned",
         icon: Code
       },
       {
-        title: "Community Features",
-        description: "Shared insights and collaborative analytics",
+        title: "Ecosystem Acceleration",
+        description: "Making VeChain accessible through reward incentives",
         status: "planned",
         icon: Users
       },
       {
-        title: "Advanced AI Models",
-        description: "Specialized models for VeChain ecosystem analysis",
+        title: "Cross-Protocol Rewards",
+        description: "Earn from multiple VeChain projects through one interface",
         status: "planned",
         icon: Brain
       }
@@ -186,12 +186,12 @@ export default function RoadmapPage() {
             </Badge>
             
             <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
-              Building the Future
+              Building the VeChain Operating System
             </h1>
             
             <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-              Our roadmap outlines the journey to make VeChain Terminal the most powerful 
-              and intuitive blockchain development platform. Here's what we're building.
+              We've already shipped 64+ working tools. Now we're building the plugin ecosystem, 
+              desktop apps, and reward systems that will make VeChain accessible to everyone.
             </p>
 
             <Button size="lg" asChild className="text-lg px-8 py-6">
@@ -214,9 +214,9 @@ export default function RoadmapPage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Development Roadmap</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">From Working Tools to Operating System</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Our phased approach to building the most comprehensive VeChain development platform
+              Phase 1 is complete - we've shipped what others promise. Now we're building the infrastructure for the post-website era.
             </p>
           </motion.div>
 
@@ -312,10 +312,10 @@ export default function RoadmapPage() {
             viewport={{ once: true }}
             className="max-w-4xl mx-auto text-center"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Shape the Future</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Join the Post-Website Era</h2>
             <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-              VeChain Terminal is built for the community. Your feedback and suggestions 
-              help us prioritize features and build what developers actually need.
+              We're not waiting for the future - we're building it. 64+ tools already live. 
+              Plugin ecosystem in development. Desktop apps coming soon. The revolution is here.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

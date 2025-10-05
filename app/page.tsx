@@ -100,16 +100,55 @@ export default function LandingPage() {
               VeChain <span className="text-primary">AI</span> Terminal
             </h1>
             
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-              Your intelligent AI co-pilot for the VeChain blockchain. 
-              Analyze transactions, interact with smart contracts, and explore 
-              the ecosystem with powerful AI assistance.
-            </p>
+            {/* Hero Hook */}
+            <div className="text-center mb-8">
+              <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-primary to-orange-500 bg-clip-text text-transparent">
+                Stop visiting websites.<br />
+                Start talking to VeChain.
+              </h2>
+            </div>
 
+            {/* Story Section */}
+            <div className="text-center mb-8 max-w-5xl mx-auto">
+              <p className="text-xl md:text-2xl text-muted-foreground mb-6 leading-relaxed">
+                Remember when we used to open apps for everything? Now we just talk to AI.
+              </p>
+              
+              <p className="text-lg md:text-xl text-muted-foreground mb-6 leading-relaxed">
+                The same revolution is hitting blockchain. Why navigate complex DeFi interfaces when you can say{" "}
+                <span className="bg-primary/20 text-primary px-2 py-1 rounded font-mono text-base">
+                  "swap 100 VET for VTHO"
+                </span>? Why remember StarGate tier requirements when you can ask{" "}
+                <span className="bg-primary/20 text-primary px-2 py-1 rounded font-mono text-base">
+                  "what staking levels can I afford"
+                </span>?
+              </p>
+            </div>
+
+            {/* Key Message */}
+            <div className="text-center mb-8">
+              <p className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+                VeChain AI Terminal isn't just another blockchain tool -<br />
+                it's <span className="bg-gradient-to-r from-primary to-orange-500 bg-clip-text text-transparent">the interface for the post-website era.</span>
+              </p>
+            </div>
+
+            {/* Stats */}
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center justify-center gap-4 bg-primary/10 backdrop-blur-sm border border-primary/20 rounded-full px-8 py-4">
+                <span className="text-primary font-bold text-lg">64+ operations</span>
+                <div className="w-1 h-1 bg-primary/60 rounded-full"></div>
+                <span className="text-primary font-bold text-lg">25+ bridge destinations</span>
+                <div className="w-1 h-1 bg-primary/60 rounded-full"></div>
+                <span className="text-primary font-bold text-lg">1 conversation</span>
+              </div>
+            </div>
+
+            {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <Button size="lg" asChild className="text-lg px-8 py-6">
+              <Button size="lg" asChild className="text-lg px-10 py-7 bg-gradient-to-r from-primary to-orange-500 hover:from-primary/90 hover:to-orange-500/90 text-white font-bold">
                 <Link href="/chat">
-                  Launch Terminal
+                  🚀 Start Talking to VeChain
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -136,10 +175,11 @@ export default function LandingPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Powerful Features for Developers
+              We've Built What Everyone Else Is Promising
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Everything you need to build, analyze, and interact with the VeChain ecosystem
+              From VET transfers to cross-chain bridges, NFT management to carbon tracking - everything through natural language. 
+              We're not just serving users - we're building the rails. Think ChatGPT plugins, but for an entire blockchain ecosystem.
             </p>
           </motion.div>
 
@@ -152,9 +192,9 @@ export default function LandingPage() {
               className="p-8 border rounded-xl bg-card/50 backdrop-blur-sm hover:bg-card/70 transition-all duration-300"
             >
               <Brain className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-3">AI-Powered Analysis</h3>
+              <h3 className="text-xl font-semibold mb-3">64+ Live Operations</h3>
               <p className="text-muted-foreground">
-                Get intelligent insights into blockchain data with natural language queries and AI-driven analysis
+                Not promises - working tools. Bridge to 25+ chains, stake StarGate nodes, track carbon footprint, manage NFTs - all through conversation.
               </p>
             </motion.div>
 
@@ -166,9 +206,9 @@ export default function LandingPage() {
               className="p-8 border rounded-xl bg-card/50 backdrop-blur-sm hover:bg-card/70 transition-all duration-300"
             >
               <Shield className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-3">Smart Contract Tools</h3>
+              <h3 className="text-xl font-semibold mb-3">The Ecosystem Play</h3>
               <p className="text-muted-foreground">
-                Verify, analyze, and interact with smart contracts using advanced tools and real-time data
+                We're not just serving users - we're building the rails. Like ChatGPT plugins, every VeChain project can integrate their tools.
               </p>
             </motion.div>
 
@@ -180,9 +220,9 @@ export default function LandingPage() {
               className="p-8 border rounded-xl bg-card/50 backdrop-blur-sm hover:bg-card/70 transition-all duration-300"
             >
               <Zap className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-3">Real-time Insights</h3>
+              <h3 className="text-xl font-semibold mb-3">Post-Website Era</h3>
               <p className="text-muted-foreground">
-                Monitor network activity, track transactions, and get live updates on blockchain metrics
+                Desktop app coming. Local AI operation. No OpenAI required. The future where blockchain is as easy as talking.
               </p>
             </motion.div>
           </div>
@@ -203,10 +243,11 @@ export default function LandingPage() {
             className="max-w-3xl mx-auto"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to explore VeChain?
+              Ready to stop visiting websites?
             </h2>
             <p className="text-xl text-muted-foreground mb-8">
-              Connect your wallet and start your journey with the most advanced VeChain terminal
+              Experience the post-website era today. 64+ blockchain operations through simple conversation. 
+              Bridge to 25+ chains. Stake StarGate nodes. Track everything - just by talking.
             </p>
             <Button size="lg" asChild className="text-lg px-8 py-6">
               <Link href="/chat">

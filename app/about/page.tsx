@@ -27,13 +27,12 @@ export default function AboutPage() {
             </Badge>
             
             <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
-              Building the Future of Blockchain Intelligence
+              The Interface for the <br /> Post-Website Era
             </h1>
             
             <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-              VeChain Terminal is an AI-powered platform that democratizes access to blockchain data 
-              and smart contract interaction, making the VeChain ecosystem more accessible to developers 
-              and businesses worldwide.
+              Remember when we used to open apps for everything? Now we just talk to AI. 
+              We're bringing this same revolution to blockchain - making VeChain operations as simple as conversation.
             </p>
 
             <Button size="lg" asChild className="text-lg px-8 py-6">
@@ -56,11 +55,11 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="max-w-4xl mx-auto text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Our Mission</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">The Problem We're Solving</h2>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              To bridge the gap between complex blockchain technology and everyday users by providing 
-              intuitive AI-powered tools that make VeChain accessible, understandable, and actionable 
-              for developers, businesses, and enthusiasts.
+              VeChain's ecosystem is exploding with incredible innovation - but users are drowning in interfaces. 
+              New protocols every week. Complex procedures to remember. Technical UIs to navigate. 
+              We solved it by making blockchain operations as simple as sending a text message.
             </p>
           </motion.div>
 
@@ -73,10 +72,10 @@ export default function AboutPage() {
               className="p-8 border rounded-xl bg-card/50 backdrop-blur-sm text-center"
             >
               <Brain className="h-12 w-12 text-primary mb-4 mx-auto" />
-              <h3 className="text-xl font-semibold mb-3">AI-First Approach</h3>
+              <h3 className="text-xl font-semibold mb-3">64+ Live Operations</h3>
               <p className="text-muted-foreground">
-                Leveraging cutting-edge AI to interpret blockchain data and provide intelligent insights 
-                that would take hours to discover manually.
+                Not promises - working tools. Bridge to 25+ chains, stake StarGate nodes, track carbon footprint, 
+                manage NFTs. We've built what everyone else is promising.
               </p>
             </motion.div>
 
@@ -88,10 +87,10 @@ export default function AboutPage() {
               className="p-8 border rounded-xl bg-card/50 backdrop-blur-sm text-center"
             >
               <Users className="h-12 w-12 text-primary mb-4 mx-auto" />
-              <h3 className="text-xl font-semibold mb-3">Developer-Centric</h3>
+              <h3 className="text-xl font-semibold mb-3">The Ecosystem Play</h3>
               <p className="text-muted-foreground">
-                Built by developers, for developers. Every feature is designed to streamline blockchain 
-                development and reduce the complexity barrier.
+                We're not just serving users - we're building the rails. Like ChatGPT plugins, 
+                every VeChain project can integrate their tools into our AI platform.
               </p>
             </motion.div>
 
@@ -103,10 +102,10 @@ export default function AboutPage() {
               className="p-8 border rounded-xl bg-card/50 backdrop-blur-sm text-center"
             >
               <Globe className="h-12 w-12 text-primary mb-4 mx-auto" />
-              <h3 className="text-xl font-semibold mb-3">Open Ecosystem</h3>
+              <h3 className="text-xl font-semibold mb-3">Coming Soon</h3>
               <p className="text-muted-foreground">
-                Contributing to the VeChain ecosystem by making blockchain data more accessible 
-                and fostering innovation through better tooling.
+                Desktop app with local AI operation. No OpenAI required. User rewards for engagement. 
+                The future where blockchain is as easy as talking.
               </p>
             </motion.div>
           </div>
@@ -123,9 +122,9 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="max-w-4xl mx-auto text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Our Values</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Our Vision</h2>
             <p className="text-xl text-muted-foreground">
-              The principles that guide everything we build
+              Making VeChain so easy that anyone can become a power user
             </p>
           </motion.div>
 
@@ -140,10 +139,10 @@ export default function AboutPage() {
               <div className="flex items-start gap-4">
                 <Shield className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">Security First</h3>
+                  <h3 className="text-xl font-semibold mb-2">Plugin Ecosystem</h3>
                   <p className="text-muted-foreground">
-                    Every interaction with blockchain data is secured and verified. We never store 
-                    private keys and always encourage best security practices.
+                    Like ChatGPT's plugin ecosystem, we're building the platform where every VeChain project 
+                    can plug in. Users get one interface. Developers get instant distribution.
                   </p>
                 </div>
               </div>
@@ -151,10 +150,10 @@ export default function AboutPage() {
               <div className="flex items-start gap-4">
                 <Zap className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">Performance</h3>
+                  <h3 className="text-xl font-semibold mb-2">Local Operation</h3>
                   <p className="text-muted-foreground">
-                    Real-time data processing and lightning-fast responses. We optimize every query 
-                    to ensure you get the information you need instantly.
+                    Coming soon: Desktop app with local AI operation using Ollama. No OpenAI required. 
+                    Complete privacy and control over your blockchain operations.
                   </p>
                 </div>
               </div>
@@ -170,10 +169,10 @@ export default function AboutPage() {
               <div className="flex items-start gap-4">
                 <Brain className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">Intelligence</h3>
+                  <h3 className="text-xl font-semibold mb-2">User Rewards</h3>
                   <p className="text-muted-foreground">
-                    Advanced AI models that understand context, learn from patterns, and provide 
-                    insights that go beyond simple data queries.
+                    Coming soon: Get rewarded for using VeChain. Earn tokens for platform engagement. 
+                    Make blockchain interaction profitable, not just functional.
                   </p>
                 </div>
               </div>
@@ -181,10 +180,10 @@ export default function AboutPage() {
               <div className="flex items-start gap-4">
                 <Users className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">Community</h3>
+                  <h3 className="text-xl font-semibold mb-2">Accessibility Revolution</h3>
                   <p className="text-muted-foreground">
-                    Built for and with the VeChain community. We listen to feedback and continuously 
-                    improve based on real user needs and use cases.
+                    Making blockchain operations as easy as sending a text. Grandmother-friendly DeFi. 
+                    College student-accessible cross-chain bridges. Anyone can become a VeChain power user.
                   </p>
                 </div>
               </div>
@@ -265,11 +264,11 @@ export default function AboutPage() {
             className="max-w-3xl mx-auto"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to explore VeChain?
+              Ready to stop visiting websites?
             </h2>
             <p className="text-xl text-muted-foreground mb-8">
-              Join thousands of developers and businesses already using VeChain Terminal 
-              to build the future of blockchain applications.
+              Experience the post-website era today. 64+ blockchain operations through simple conversation. 
+              We've built what everyone else is promising.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild className="text-lg px-8 py-6">

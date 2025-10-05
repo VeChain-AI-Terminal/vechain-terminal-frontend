@@ -24,81 +24,81 @@ import { PageHeader } from "@/components/ui/page-header";
 
 const upcomingFeatures = [
   {
-    title: "Mobile Application",
-    description: "Native iOS and Android apps for VeChain Terminal with full feature parity",
-    icon: Smartphone,
-    category: "Platform",
-    eta: "Q3 2025",
-    highlights: [
-      "Native mobile UI optimized for blockchain interactions",
-      "Push notifications for transaction updates",
-      "Offline data caching and sync",
-      "Biometric authentication"
-    ]
-  },
-  {
-    title: "Advanced AI Models",
-    description: "Specialized AI models trained specifically on VeChain ecosystem data",
-    icon: Brain,
-    category: "AI/ML",
-    eta: "Q2 2025", 
-    highlights: [
-      "VeChain-specific smart contract analysis",
-      "Predictive analytics for token movements",
-      "Automated security audit reports",
-      "Natural language contract deployment"
-    ]
-  },
-  {
-    title: "Developer SDK",
-    description: "Complete software development kit for building on VeChain Terminal",
+    title: "🖥️ Desktop Application",
+    description: "Breaking free from browsers with native desktop apps for enhanced performance",
     icon: Code,
-    category: "Developer Tools",
-    eta: "Q4 2025",
+    category: "Post-Website Era",
+    eta: "Q1 2025",
     highlights: [
-      "JavaScript/TypeScript SDK",
-      "React components library", 
-      "Webhook integrations",
-      "Custom dashboard embedding"
+      "Native Windows, Mac, Linux applications",
+      "Enhanced performance vs web version",
+      "Offline transaction building and signing",
+      "Direct hardware wallet integration"
     ]
   },
   {
-    title: "Community Features",
-    description: "Collaborative analytics and shared insights within the VeChain community",
-    icon: Users,
-    category: "Social",
-    eta: "Q3 2025",
+    title: "🤖 Local AI Operation",
+    description: "Your AI, your control - run VeChain AI Terminal completely locally",
+    icon: Brain,
+    category: "Privacy & Control",
+    eta: "Q1 2025", 
     highlights: [
-      "Shared watchlists and portfolios",
-      "Community-driven research reports",
-      "Social trading signals",
-      "Collaborative contract auditing"
+      "Local AI operation using Ollama",
+      "No OpenAI API keys required",
+      "Complete privacy and data control",
+      "Offline AI processing capabilities"
     ]
   },
   {
-    title: "Multi-Chain Support",
-    description: "Expand beyond VeChain to support multiple blockchain networks",
+    title: "🔌 Plugin Marketplace",
+    description: "The ChatGPT moment for blockchain - any VeChain project can integrate",
     icon: Globe,
-    category: "Platform",
-    eta: "Q1 2026",
-    highlights: [
-      "Ethereum and Polygon integration",
-      "Cross-chain analytics",
-      "Multi-wallet management",
-      "Cross-chain bridge monitoring"
-    ]
-  },
-  {
-    title: "Enterprise Dashboard",
-    description: "Advanced analytics and reporting tools for enterprise customers",
-    icon: Target,
-    category: "Enterprise",
+    category: "Ecosystem",
     eta: "Q2 2025",
     highlights: [
-      "Custom KPI tracking",
-      "White-label solutions",
-      "Advanced user management",
-      "Compliance reporting tools"
+      "Plugin marketplace and discovery",
+      "Easy integration SDK for projects", 
+      "Revenue sharing for plugin creators",
+      "One interface, infinite protocols"
+    ]
+  },
+  {
+    title: "💰 User Rewards System",
+    description: "Get rewarded for using VeChain - make blockchain interaction profitable",
+    icon: Target,
+    category: "Rewards",
+    eta: "Q2 2025",
+    highlights: [
+      "Earn tokens for platform engagement",
+      "Cross-protocol reward aggregation",
+      "Community governance participation",
+      "Incentivized ecosystem growth"
+    ]
+  },
+  {
+    title: "🏢 Enterprise Solutions",
+    description: "White-label AI interfaces for any VeChain project to offer their users",
+    icon: Users,
+    category: "B2B",
+    eta: "Q3 2025",
+    highlights: [
+      "White-label conversational interfaces",
+      "Custom plugin development",
+      "Enterprise API access",
+      "Infrastructure for the post-website era"
+    ]
+  },
+  {
+    title: "🌐 Multi-Chain Expansion", 
+    description: "While VeChain remains home, expand to support the entire blockchain ecosystem",
+    icon: Rocket,
+    category: "Platform",
+    eta: "Q3 2025",
+    highlights: [
+      "Ethereum and Polygon support",
+      "Universal blockchain interface",
+      "Cross-chain operation management",
+      "One AI for all blockchains"
     ]
   }
 ];
@@ -124,12 +124,12 @@ export default function ComingSoonPage() {
             </Badge>
             
             <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
-              The Future is Bright
+              The Next Revolution
             </h1>
             
             <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-              Get a sneak peek at the exciting features we're building for VeChain Terminal. 
-              From mobile apps to advanced AI capabilities, here's what's coming next.
+              We've shipped 64+ working tools. Now comes the infrastructure for the post-website era: 
+              Desktop apps, local AI, plugin marketplaces, and user rewards. The future is almost here.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -160,9 +160,9 @@ export default function ComingSoonPage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Upcoming Features</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Building the Post-Website Era</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Revolutionary features that will transform how you interact with the VeChain ecosystem
+              Beyond working tools - we're building the infrastructure where blockchain becomes as easy as conversation
             </p>
           </motion.div>
 
@@ -232,9 +232,9 @@ export default function ComingSoonPage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Exclusive Preview</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Why We're Different</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Get early access to beta features and help shape the future of VeChain Terminal
+              While others promise, we ship. 64+ tools already live. The post-website era is here.
             </p>
           </motion.div>
 
@@ -249,9 +249,9 @@ export default function ComingSoonPage() {
               <div className="p-4 bg-primary/10 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <Bell className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="font-semibold text-lg mb-2">Early Access</h3>
+              <h3 className="font-semibold text-lg mb-2">Already Shipping</h3>
               <p className="text-muted-foreground text-sm">
-                Be the first to try new features before they're publicly released
+                64+ blockchain operations working today - not promises for tomorrow
               </p>
             </motion.div>
 
@@ -265,9 +265,9 @@ export default function ComingSoonPage() {
               <div className="p-4 bg-primary/10 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <Users className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="font-semibold text-lg mb-2">Community Feedback</h3>
+              <h3 className="font-semibold text-lg mb-2">Plugin Ecosystem</h3>
               <p className="text-muted-foreground text-sm">
-                Your input directly influences feature development and priorities
+                Any VeChain project can integrate - building the ChatGPT moment for blockchain
               </p>
             </motion.div>
 
@@ -281,9 +281,9 @@ export default function ComingSoonPage() {
               <div className="p-4 bg-primary/10 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <Zap className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="font-semibold text-lg mb-2">Cutting Edge</h3>
+              <h3 className="font-semibold text-lg mb-2">Local Operation</h3>
               <p className="text-muted-foreground text-sm">
-                Experience the latest advancements in blockchain technology and AI
+                Desktop apps with local AI - no OpenAI required, complete privacy control
               </p>
             </motion.div>
           </div>
@@ -301,11 +301,11 @@ export default function ComingSoonPage() {
             className="max-w-3xl mx-auto"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to Join the Journey?
+              Ready to Stop Visiting Websites?
             </h2>
             <p className="text-xl text-muted-foreground mb-8">
-              Start using VeChain Terminal today and be part of the community shaping 
-              the future of blockchain development tools.
+              Experience the post-website era today. 64+ operations through conversation. 
+              Bridge to 25+ chains. Desktop apps coming Q1 2025.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild className="text-lg px-8 py-6">
