@@ -15,14 +15,14 @@ export const stakeVET = tool({
       ? "0x1856c533ac2d94340aaa8544d35a5c1d4a21dee7" // Mainnet StarGate NFT
       : "0x1ec1d168574603ec35b9d229843b7c2b44bcb770"; // Testnet StarGate NFT
 
-    // Level requirements mapping
+    // Level requirements mapping - CORRECTED amounts from contract
     const levelRequirements: { [key: number]: { name: string, vetRequired: string, isX: boolean } } = {
-      1: { name: "Dawn", vetRequired: "600000000000000000000000", isX: false }, // 600k VET
-      2: { name: "Lightning", vetRequired: "1500000000000000000000000", isX: false }, // 1.5M VET
-      3: { name: "Flash", vetRequired: "5000000000000000000000000", isX: false }, // 5M VET
-      4: { name: "Strength", vetRequired: "15600000000000000000000000", isX: true }, // 15.6M VET
-      5: { name: "Thunder", vetRequired: "56000000000000000000000000", isX: true }, // 56M VET
-      6: { name: "Mjolnir", vetRequired: "156000000000000000000000000", isX: true }, // 156M VET
+      1: { name: "Dawn", vetRequired: "1000000000000000000", isX: false }, // 1 VET
+      2: { name: "Lightning", vetRequired: "5000000000000000000", isX: false }, // 5 VET
+      3: { name: "Flash", vetRequired: "20000000000000000000", isX: false }, // 20 VET
+      4: { name: "Strength", vetRequired: "100000000000000000000", isX: false }, // 100 VET
+      5: { name: "Thunder", vetRequired: "500000000000000000000", isX: false }, // 500 VET
+      6: { name: "Mjolnir", vetRequired: "1500000000000000000000", isX: false }, // 1500 VET
     };
 
     const level = levelRequirements[levelId];
