@@ -319,7 +319,7 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
         <div className="mb-4 flex justify-between items-center border-b border-zinc-700 pb-3">
           <span className="text-gray-400">From</span>
           <span className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-gradient-to-br from-pink-400 to-pink-600" />
+            <span className="size-3 rounded-full bg-gradient-to-br from-pink-400 to-pink-600" />
             {shortenAddress(from)}
           </span>
         </div>
@@ -329,7 +329,7 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
             {type === "token_approval" ? "Spender" : "To"}
           </span>
           <span className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-gradient-to-br from-purple-400 to-purple-600" />
+            <span className="size-3 rounded-full bg-gradient-to-br from-purple-400 to-purple-600" />
             {getDestinationDisplay()}
           </span>
         </div>
@@ -423,7 +423,7 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
         {approveRequired && (
           <div className="mb-4 p-4 bg-zinc-800/30 border border-theme-orange/30 rounded-xl">
             <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-8 h-8 bg-theme-orange/20 rounded-full flex items-center justify-center">
+                <div className="shrink-0 size-8 bg-theme-orange/20 rounded-full flex items-center justify-center">
                 <AlertTriangle className="w-4 h-4 text-theme-orange" />
               </div>
               <div className="flex-1">
@@ -452,7 +452,7 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
                 </div>
                 <div className="mt-3 p-2 bg-zinc-700/30 border border-theme-orange/20 rounded-lg">
                   <p className="text-theme-orange text-xs">
-                    💡 If you've already approved this token spending, you can proceed with the transaction. If not, please approve first.
+                    💡 If you&apos;ve already approved this token spending, you can proceed with the transaction. If not, please approve first.
                   </p>
                 </div>
               </div>
@@ -600,7 +600,7 @@ Execute Transaction
         <DialogContent className="bg-zinc-900 border-zinc-700 text-white max-w-lg">
           <DialogHeader>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-theme-orange/20 rounded-full flex items-center justify-center">
+              <div className="size-10 bg-theme-orange/20 rounded-full flex items-center justify-center">
                 <AlertTriangle className="w-6 h-6 text-theme-orange" />
               </div>
               <div>
@@ -619,7 +619,7 @@ Execute Transaction
               {/* Token Details Card */}
               <div className="bg-zinc-800/30 border border-theme-orange/20 p-4 rounded-xl">
                 <h4 className="text-theme-orange font-medium mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-theme-orange rounded-full"></span>
+                    <span className="size-2 bg-theme-orange rounded-full"></span>
                   Approval Details
                 </h4>
                 <div className="grid grid-cols-1 gap-3">
@@ -649,13 +649,13 @@ Execute Transaction
               {/* Status Check Card */}
               <div className="bg-zinc-800/30 border border-theme-orange/20 p-4 rounded-xl">
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-theme-orange/20 rounded-full flex items-center justify-center">
+                  <div className="shrink-0 size-8 bg-theme-orange/20 rounded-full flex items-center justify-center">
                     <AlertTriangle className="w-4 h-4 text-theme-orange" />
                   </div>
                   <div>
                     <h4 className="text-theme-orange font-medium mb-2">Have you approved this token?</h4>
                     <p className="text-zinc-300 text-sm">
-                      If you've already completed the token approval, you can proceed safely. 
+                      If you&apos;ve already completed the token approval, you can proceed safely. 
                       If not, please approve first to avoid transaction failure.
                     </p>
                   </div>
@@ -676,7 +676,7 @@ Execute Transaction
               onClick={handleProceedWithTransaction}
               className="bg-theme-orange hover:bg-theme-orange-dark text-black font-bold flex-1"
             >
-              I've Already Approved
+              I&apos;ve Already Approved
             </Button>
           </DialogFooter>
         </DialogContent>

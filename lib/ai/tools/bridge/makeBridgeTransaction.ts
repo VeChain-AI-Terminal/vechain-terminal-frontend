@@ -1,5 +1,5 @@
 import { tool } from "ai";
-import z from "zod";
+import { z } from "zod";
 
 // WanBridge API configuration
 const WANBRIDGE_API = {
