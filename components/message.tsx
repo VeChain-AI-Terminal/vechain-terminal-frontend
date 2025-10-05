@@ -31,6 +31,7 @@ import NFTList from "@/components/vechain-nfts/NFTList";
 import NetworkStats from "@/components/vechain-network/NetworkStats";
 import TransactionInfo from "@/components/vechain-transactions/TransactionInfo";
 import ContractInfo from "@/components/vechain-contracts/ContractInfo";
+import ContractCode from "@/components/vechain-contracts/ContractCode";
 import AddressEmission from "@/components/vechain-carbon/AddressEmission";
 import BlockEmission from "@/components/vechain-carbon/BlockEmission";
 import TransactionEmission from "@/components/vechain-carbon/TransactionEmission";
@@ -42,6 +43,14 @@ import BridgeQuotaAndFee from "@/components/vechain-bridge/BridgeQuotaAndFee";
 import BridgeStatus from "@/components/vechain-bridge/BridgeStatus";
 import XFlowsQuote from "@/components/vechain-bridge/XFlowsQuote";
 import BridgeDashboard from "@/components/vechain-bridge/BridgeDashboard";
+
+// VeChain StarGate Components
+import StargateStakingLevels from "@/components/vechain-stargate/StargateStakingLevels";
+import StargateUserStakes from "@/components/vechain-stargate/StargateUserStakes";
+import StargateStakeInfo from "@/components/vechain-stargate/StargateStakeInfo";
+
+// Contract Verification Component
+import ContractVerification from "@/components/ContractVerification";
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -792,6 +801,260 @@ const PurePreviewMessage = ({
                       key={toolCallId}
                       data={output as any}
                       isLoading={false}
+                    />
+                  );
+                }
+              }
+
+              // VeChain StarGate Tools
+              if (type === "tool-getStakingLevels") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Getting StarGate staking levels..." />
+                    </div>
+                  );
+                }
+                if (state === "output-available") {
+                  const { output } = part;
+                  return (
+                    <StargateStakingLevels
+                      key={toolCallId}
+                      data={output as any}
+                      isLoading={false}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-stakeVET") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Creating VET staking transaction..." />
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+                  const {
+                    from,
+                    contractAddress,
+                    functionName,
+                    functionArgs,
+                    value,
+                    data,
+                    network,
+                    levelId,
+                    levelName,
+                    vetStaked,
+                    isX,
+                    autoDelegate,
+                    comment,
+                    clauses,
+                  } = output as any;
+                  return (
+                    <TransactionComponent
+                      from={from}
+                      contractAddress={contractAddress}
+                      functionName={functionName}
+                      functionArgs={functionArgs}
+                      value={value}
+                      data={data}
+                      network={network}
+                      comment={comment}
+                      clauses={clauses}
+                      type="stargate_stake"
+                      key={toolCallId}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-getUserStakes") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Getting your StarGate stakes..." />
+                    </div>
+                  );
+                }
+                if (state === "output-available") {
+                  const { output } = part;
+                  return (
+                    <StargateUserStakes
+                      key={toolCallId}
+                      data={output as any}
+                      isLoading={false}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-getStakeInfo") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Getting StarGate NFT details..." />
+                    </div>
+                  );
+                }
+                if (state === "output-available") {
+                  const { output } = part;
+                  return (
+                    <StargateStakeInfo
+                      key={toolCallId}
+                      data={output as any}
+                      isLoading={false}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-claimVTHORewards") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Creating VTHO claim transaction..." />
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+                  const {
+                    from,
+                    contractAddress,
+                    functionName,
+                    functionArgs,
+                    value,
+                    data,
+                    network,
+                    tokenId,
+                    comment,
+                    clauses,
+                  } = output as any;
+                  return (
+                    <TransactionComponent
+                      from={from}
+                      contractAddress={contractAddress}
+                      functionName={functionName}
+                      functionArgs={functionArgs}
+                      value={value}
+                      data={data}
+                      network={network}
+                      comment={comment}
+                      clauses={clauses}
+                      type="stargate_claim"
+                      key={toolCallId}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-unstakeStargate") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Creating unstake transaction..." />
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+                  const {
+                    from,
+                    contractAddress,
+                    functionName,
+                    functionArgs,
+                    value,
+                    data,
+                    network,
+                    tokenId,
+                    comment,
+                    clauses,
+                  } = output as any;
+                  return (
+                    <TransactionComponent
+                      from={from}
+                      contractAddress={contractAddress}
+                      functionName={functionName}
+                      functionArgs={functionArgs}
+                      value={value}
+                      data={data}
+                      network={network}
+                      comment={comment}
+                      clauses={clauses}
+                      type="stargate_unstake"
+                      key={toolCallId}
+                    />
+                  );
+                }
+              }
+
+              // Contract verification tool
+              if (type === "tool-verifyContract") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ContractVerification
+                        onVerify={(data) => {
+                          // This would typically trigger the AI to use the verifyContract tool
+                          console.log('Contract verification data:', data);
+                        }}
+                      />
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part as any;
+                  return (
+                    <div key={toolCallId} className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                      <h3 className="font-semibold text-green-800 mb-2">Contract Verification Result</h3>
+                      {output.success ? (
+                        <div className="text-green-700">
+                          <p>✓ Contract verification submitted successfully!</p>
+                          {output.data?.verificationId && (
+                            <p className="text-sm mt-1">Verification ID: {output.data.verificationId}</p>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-red-700">
+                          <p>✗ Contract verification failed: {output.error}</p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+              }
+
+              // Contract code tool
+              if (type === "tool-getContractCode") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Fetching contract source code..." />
+                    </div>
+                  );
+                }
+
+                if (state === "output-available") {
+                  const { output } = part as any;
+                  return (
+                    <ContractCode
+                      data={output}
+                      key={toolCallId}
                     />
                   );
                 }

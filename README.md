@@ -76,7 +76,7 @@ graph TB
 ### AI Integration
 - **Vercel AI SDK**: Streaming AI responses with tool calling capabilities
 - **OpenAI Integration**: GPT models fine-tuned for VeChain blockchain context
-- **Tool System**: 50+ blockchain tools for comprehensive VeChain operations
+- **Tool System**: 60+ blockchain tools including staking, bridge, and analytics operations
 - **Real-time Streaming**: Live AI responses with progressive data loading
 
 ### Blockchain Connectivity
@@ -96,6 +96,7 @@ graph TB
 ### Blockchain Operations
 - **Token Management**: VET, VTHO, and VIP-180 token operations with real-time balances
 - **Smart Contract Interaction**: Dynamic contract calls with ABI resolution
+- **StarGate Staking**: VET staking for NFT rewards with automated maturity tracking
 - **Transaction Monitoring**: Real-time transaction status tracking and confirmation
 - **Gas Optimization**: Automatic fee estimation and optimization strategies
 
@@ -124,6 +125,9 @@ Advanced cross-chain swap protocols with intelligent routing algorithms for opti
 
 ### **Carbon Emission APIs**
 Environmental impact tracking for blockchain operations, providing carbon footprint calculations for transactions, smart contract interactions, and network participation.
+
+### **StarGate API**
+VET staking protocol integration enabling NFT-based staking rewards across six tier levels (Dawn through Mjolnir). Handles stake creation, VTHO reward tracking, maturity monitoring, and automated unstaking operations with X-Series instant liquidity support.
 
 ## Technology Stack
 
@@ -237,6 +241,15 @@ pnpm db:push
 "Bridge 500 VET to Ethereum using WanBridge"
 "Check bridge fees for VET to Polygon"
 "Show me my cross-chain transaction history"
+```
+
+### StarGate Staking Operations
+```
+"Show me all available StarGate staking levels"
+"Stake 600,000 VET for a Dawn level StarGate NFT"
+"Check my StarGate stakes and claimable VTHO rewards"
+"Claim VTHO rewards from my Lightning StarGate NFT"
+"Unstake my mature Flash level StarGate NFT"
 ```
 
 ### Analytics and Data
