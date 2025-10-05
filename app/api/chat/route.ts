@@ -155,15 +155,6 @@ export async function POST(request: Request) {
 
     const stream = createUIMessageStream({
       execute: ({ writer: dataStream }) => {
-        // Debug the tools object
-        console.log("vTools keys:", Object.keys(vTools));
-        console.log("First few tools:", Object.keys(vTools).slice(0, 3).map(key => ({
-          key,
-          hasDescription: !!(vTools as any)[key]?.description,
-          hasInputSchema: !!(vTools as any)[key]?.inputSchema,
-          hasExecute: !!(vTools as any)[key]?.execute,
-        })));
-
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
           system: systemPrompt({ selectedChatModel, walletAddress }),

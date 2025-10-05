@@ -37,7 +37,7 @@ export type TransactionComponentProps = {
   data?: string;
   gasLimit?: number;
   comment?: string;
-  type: "simple_transfer" | "contract_interaction" | "bridge_transaction" | "token_transfer" | "token_approval";
+  type: "simple_transfer" | "contract_interaction" | "bridge_transaction" | "token_transfer" | "token_approval" | "stargate_stake" | "stargate_claim" | "stargate_unstake";
   // Token specific props
   tokenAddress?: string;
   tokenSymbol?: string;
@@ -261,6 +261,12 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
         return functionName ? `${functionName}()` : "Contract Interaction";
       case "bridge_transaction":
         return "Bridge Transaction";
+      case "stargate_stake":
+        return "Stake VET";
+      case "stargate_claim":
+        return "Claim VTHO Rewards";
+      case "stargate_unstake":
+        return "Unstake StarGate NFT";
       default:
         return "VET Transfer";
     }
@@ -277,6 +283,10 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
                tokenAddress ? shortenAddress(tokenAddress) : "Unknown";
       case "bridge_transaction":
         return bridgeDetails ? `${shortenAddress(bridgeDetails.recipient)} (${bridgeDetails.toChain})` : "Bridge";
+      case "stargate_stake":
+      case "stargate_claim":
+      case "stargate_unstake":
+        return contractAddress ? shortenAddress(contractAddress) : "StarGate Contract";
       default:
         return receiver_ensName ? receiver_ensName : shortenAddress(receiver_address!);
     }
@@ -291,10 +301,18 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
         // For bridge transactions, try to get token symbol from tokenSymbol prop first
         const displaySymbol = tokenSymbol || bridgeDetails?.fromChain || 'TOKEN';
         return bridgeDetails ? `${bridgeDetails.amount} ${displaySymbol}` : "0";
-      default:
+      case "stargate_stake":
         const decimalValue = parseFloat(value || "0");
         if (decimalValue === 0) return "0 VET";
-        return `${(decimalValue / Math.pow(10, 18)).toString()} VET`;
+        return `${(decimalValue / Math.pow(10, 18)).toLocaleString()} VET`;
+      case "stargate_claim":
+        return "VTHO Rewards";
+      case "stargate_unstake":
+        return "StarGate NFT";
+      default:
+        const defaultDecimalValue = parseFloat(value || "0");
+        if (defaultDecimalValue === 0) return "0 VET";
+        return `${(defaultDecimalValue / Math.pow(10, 18)).toString()} VET`;
     }
   };
 

@@ -12,6 +12,7 @@ import { Navbar, NavbarLeft, NavbarRight } from "@/components/ui/navbar";
 import Navigation from "@/components/ui/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
+import VeChainToolsSection from "@/components/vechain-tools-section";
 
 export default function LandingPage() {
   return (
@@ -187,6 +188,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* VeChain Tools Section */}
+      <VeChainToolsSection />
 
       {/* CTA Section */}
       <section className="py-32 bg-gradient-to-r from-primary/10 to-primary/5">
