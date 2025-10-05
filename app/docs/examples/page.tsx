@@ -749,10 +749,16 @@ function ComponentCarousel({ category }: { category: typeof componentCategories[
             {/* Component Demo */}
             <div className="p-6 bg-background border rounded-lg">
               {CurrentComponent && mockData[currentIndex] && (
-                <CurrentComponent 
-                  data={mockData[currentIndex]} 
-                  isLoading={false}
-                />
+                currentComponent?.name === "Contract Verification" ? (
+                  <CurrentComponent 
+                    onVerify={mockData[currentIndex].onVerify}
+                  />
+                ) : (
+                  <CurrentComponent 
+                    data={mockData[currentIndex]} 
+                    isLoading={false}
+                  />
+                )
               )}
             </div>
           </motion.div>
