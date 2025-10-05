@@ -100,7 +100,7 @@ const StargateStakingLevels: React.FC<StargateStakingLevelsProps> = ({ data, isL
           <CardTitle>No Staking Levels Available</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-zinc-400">{data.message || actualData?.message || 'No levels found'}</p>
+          <p className="text-zinc-400">{data.message || actualData?.totalLevels?.toString() || 'No levels found'}</p>
         </CardContent>
       </Card>
     );
@@ -183,7 +183,7 @@ const StargateStakingLevels: React.FC<StargateStakingLevelsProps> = ({ data, isL
           {data.meta && (
             <div className="mt-4 pt-4 border-t border-zinc-700">
               <p className="text-xs text-zinc-400">
-                Updated: {new Date(data.meta.timestamp).toLocaleString()}
+                Updated: {new Date(data.meta.timestamp || '').toLocaleString()}
               </p>
             </div>
           )}

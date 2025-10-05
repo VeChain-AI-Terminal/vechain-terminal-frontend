@@ -124,7 +124,7 @@ export const getUserStakes = tool({
           address,
           totalStakes: stakes.length,
           stakes,
-          dataSource: stakes.length > 0 && !contractError ? "contract" : "fallback"
+          dataSource: stakes.length > 0  ? "contract" : "fallback"
         },
         meta: {
           network,
