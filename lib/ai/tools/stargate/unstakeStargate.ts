@@ -11,8 +11,8 @@ export const unstakeStargate = tool({
   execute: async ({ from, tokenId, network }) => {
     // StarGate contract addresses
     const contractAddress = network === "main"
-      ? "0x5E5b2c8DB3c74B4d1d5BC1baE90b473Cf13E8eD1" // Mainnet StarGate NFT
-      : "0x5E5b2c8DB3c74B4d1d5BC1baE90b473Cf13E8eD1"; // Testnet StarGate NFT
+      ? "0x1856c533ac2d94340aaa8544d35a5c1d4a21dee7" // Mainnet StarGate NFT
+      : "0x1ec1d168574603ec35b9d229843b7c2b44bcb770"; // Testnet StarGate NFT
 
     try {
       // Validate token ID

@@ -102,7 +102,7 @@ const StargateUserStakes: React.FC<StargateUserStakesProps> = ({ data, isLoading
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {data.stakes.map((stake) => (
+        {data?.stakes?.map((stake) => (
           <Card key={stake.tokenId} className={`${stake.isX ? 'border-yellow-500 bg-yellow-50/5' : 'border-blue-500 bg-blue-50/5'}`}>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
