@@ -212,10 +212,10 @@ export default function TransactionInfo({
         {data.meta && (
           <div className="pt-4 border-t border-zinc-700">
             <p className="text-xs text-zinc-400">
-              Block Time: {new Date(tx.block_timestamp).toLocaleString()}
+              Block Time: {new Date(tx.block_timestamp)?.toLocaleString()}
             </p>
             <p className="text-xs text-zinc-400">
-              Updated: {new Date(data.meta.timestamp).toLocaleString()}
+              Updated: {new Date(data.meta.timestamp)?.toLocaleString()}
             </p>
           </div>
         )}

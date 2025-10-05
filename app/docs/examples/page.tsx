@@ -748,18 +748,30 @@ function ComponentCarousel({ category }: { category: typeof componentCategories[
 
             {/* Component Demo */}
             <div className="p-6 bg-background border rounded-lg">
-              {CurrentComponent && mockData[currentIndex] && (
-                currentComponent?.name === "Contract Verification" ? (
-                  <ContractVerification 
-                    onVerify={mockData[currentIndex].onVerify}
-                  />
-                ) : (
-                  <CurrentComponent 
-                    data={mockData[currentIndex]} 
-                    isLoading={false}
-                  />
-                )
-              )}
+              {(() => {
+                if (currentComponent?.name === "Contract Verification") {
+                  return (
+                    <ContractVerification 
+                      onVerify={mockData[currentIndex]?.onVerify}
+                    />
+                  );
+                }
+                
+                if (currentComponent && mockData[currentIndex]) {
+                  const Component = currentComponent.component as React.ComponentType<{
+                    data: any;
+                    isLoading: boolean;
+                  }>;
+                  return (
+                    <Component 
+                      data={mockData[currentIndex]} 
+                      isLoading={false}
+                    />
+                  );
+                }
+                
+                return null;
+              })()}
             </div>
           </motion.div>
         </AnimatePresence>

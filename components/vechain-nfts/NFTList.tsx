@@ -82,7 +82,7 @@ export default function NFTList({
     if (!supply) return 'Unknown';
     if (supply >= 1e6) return `${(supply / 1e6).toFixed(1)}M`;
     if (supply >= 1e3) return `${(supply / 1e3).toFixed(1)}K`;
-    return supply.toLocaleString();
+    return supply?.toLocaleString();
   };
 
   const getTypeColor = (type: string) => {
