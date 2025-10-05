@@ -1,8 +1,8 @@
 "use client";
 
 import { ChevronUp } from "lucide-react";
-import Image from "next/image";
 import { useTheme } from "next-themes";
+import { AvatarFallback } from "@/components/ui/avatar-fallback";
 
 import {
   DropdownMenu,
@@ -40,12 +40,12 @@ export function SidebarUserNav({ user }: { user: User }) {
               data-testid="user-nav-button"
               className="data-[state=open]:bg-sidebar-accent bg-background data-[state=open]:text-sidebar-accent-foreground h-10"
             >
-              <Image
+              <AvatarFallback
                 src={`https://avatar.vercel.sh/${user.address}`}
                 alt={user.address ?? "User Avatar"}
+                fallbackText={user.address}
                 width={24}
                 height={24}
-                className="rounded-full"
               />
               <span data-testid="user-address" className="truncate">
                 {isGuest ? "Guest" : user?.address}
