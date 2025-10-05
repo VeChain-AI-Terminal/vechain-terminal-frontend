@@ -2,11 +2,23 @@
 
 ![VeChain AI Terminal Banner](https://raw.githubusercontent.com/VeChain-AI-Terminal/vechain-terminal-mcp/main/src/docs/images/vechain-terminal-banner.png)
 
-A modern web interface for VeChain AI Terminal that provides natural language blockchain interactions through advanced AI capabilities. Built with Next.js and React, this frontend enables users to perform complex VeChain operations through conversational commands.
+**Stop visiting websites. Start talking to VeChain Ai Terminal.**
+Can't stop
+Remember when we used to open apps for everything? Now we just talk to AI. We're bringing this same revolution to blockchain - making VeChain operations as simple as I 
+
+#### THIS IS THE INTERFACE FOR THE POST-WEBSITE ERA .
 
 ## Overview
 
-VeChain AI Terminal Frontend serves as the primary user interface for interacting with the VeChain blockchain ecosystem through AI-powered natural language processing. The application integrates real-time blockchain data, wallet connectivity, and comprehensive transaction management in a seamless user experience.
+**64+ operations. 25+ bridge destinations. 1 conversation.**
+
+VeChain's ecosystem is exploding with innovation - but users are drowning in interfaces. We solved it by making blockchain operations as simple as sending a text message. This isn't just another blockchain tool - it's the interface for the post-website era.
+
+**We've built what everyone else is promising:**
+- 64+ live blockchain operations (not promises)
+- Bridge to 25+ chains through conversation
+- Real-time AI streaming with live blockchain data
+- Plugin ecosystem like ChatGPT for blockchain
 
 ## Architecture Frontend 
 ![VeChain AI Terminal Banner](docs/images/vechain-terminal-frontendArc.png)
@@ -353,4 +365,4 @@ MIT License - see LICENSE file for complete terms and conditions.
 
 ---
 
-**VeChain AI Terminal Frontend** - Bridging artificial intelligence with blockchain technology through intuitive web interfaces.
+**VeChain AI Terminal** - Pioneering the post-website era where blockchain operations are as simple as conversation.
