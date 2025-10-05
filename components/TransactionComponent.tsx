@@ -6,8 +6,17 @@ import {
 } from "@vechain/vechain-kit";
 import Image from "next/image";
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, AlertTriangle, X } from "lucide-react";
 import { CheckCircleFillIcon } from "@/components/icons";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export type TransactionComponentProps = {
   from: string;
@@ -47,9 +56,24 @@ export type TransactionComponentProps = {
     token: string;
     spender: string;
     amount: string;
+    note?: string;
   };
   receiveAmount?: string;
   instructions?: string[];
+  feeAndQuota?: {
+    networkFee: {
+      value: string;
+      isPercent: boolean;
+    };
+    operationFee: {
+      value: string;
+      isPercent: boolean;
+      minLimit?: string;
+      maxLimit?: string;
+    };
+  };
+  txDataDetail?: any;
+  platform?: 'VeChain' | 'EVM';
 };
 
 const networkToName = {
@@ -85,6 +109,9 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
   approveRequired,
   receiveAmount,
   instructions,
+  feeAndQuota,
+  txDataDetail,
+  platform,
 }) => {
   const { account, connection } = useWallet();
   const [txId, setTxId] = useState<string | null>(null);
@@ -152,6 +179,14 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
       console.error("No valid transaction clauses provided");
       return;
     }
+
+    // Check if approval is required before proceeding
+    if (approveRequired) {
+      console.warn("Token approval may be required - user should ensure approval is completed");
+      // Show custom modal instead of browser confirm
+      setShowApprovalModal(true);
+      return;
+    }
     
     // Debug: Log clauses right before sending
     console.log("handleSendTx: About to send transaction with clauses:", transactionClauses);
@@ -161,6 +196,17 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
       await sendTransaction(transactionClauses);
     } catch (error) {
       console.error("Transaction failed:", error);
+      
+      // Provide user-friendly error messages
+      if (error instanceof Error) {
+        if (error.message.includes("transferFrom failed")) {
+          alert("Transaction failed: Insufficient token allowance.\n\nPlease approve the token spending first, then try again.");
+        } else if (error.message.includes("gas")) {
+          alert("Transaction failed: Gas estimation error.\n\nThis might be due to insufficient balance or network issues. Please try again.");
+        } else {
+          alert(`Transaction failed: ${error.message}`);
+        }
+      }
     }
   };
 
@@ -172,7 +218,38 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
   const networkName = networkToName[network];
   const token = networkToToken[network];
 
+  // Button is only disabled for actual transaction states, not approval requirements
   const isButtonDisabled = isSending || isMining || isSuccess || !hasValidClauses;
+  
+  // Modal state for approval confirmation
+  const [showApprovalModal, setShowApprovalModal] = useState(false);
+  
+  // Execute transaction function
+  const executeTransaction = async () => {
+    console.log("handleSendTx: About to send transaction with clauses:", transactionClauses);
+    
+    try {
+      // Pass clauses directly to sendTransaction call, not in hook config
+      await sendTransaction(transactionClauses);
+    } catch (error) {
+      console.error("Transaction failed:", error);
+      if (error instanceof Error) {
+        if (error.message.includes("transferFrom failed")) {
+          alert("Transaction failed: Insufficient token allowance.\n\nPlease approve the token spending first, then try again.");
+        } else if (error.message.includes("gas")) {
+          alert("Transaction failed: Gas estimation error.\n\nThis might be due to insufficient balance or network issues. Please try again.");
+        } else {
+          alert(`Transaction failed: ${error.message}`);
+        }
+      }
+    }
+  };
+  
+  // Handle modal proceed
+  const handleProceedWithTransaction = () => {
+    setShowApprovalModal(false);
+    executeTransaction();
+  };
 
   const getTransactionTitle = () => {
     switch (type) {
@@ -211,16 +288,20 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
       case "token_approval":
         return amount ? `${amount} ${tokenSymbol || 'TOKEN'}` : "0";
       case "bridge_transaction":
-        return bridgeDetails ? `${bridgeDetails.amount} ${bridgeDetails.fromChain}` : "0";
+        // For bridge transactions, try to get token symbol from tokenSymbol prop first
+        const displaySymbol = tokenSymbol || bridgeDetails?.fromChain || 'TOKEN';
+        return bridgeDetails ? `${bridgeDetails.amount} ${displaySymbol}` : "0";
       default:
-        const decimalValue = (parseFloat(value) / Math.pow(10, 18)).toString();
-        return `${decimalValue} VET`;
+        const decimalValue = parseFloat(value || "0");
+        if (decimalValue === 0) return "0 VET";
+        return `${(decimalValue / Math.pow(10, 18)).toString()} VET`;
     }
   };
 
   const getValueDisplay = () => {
-    const decimalValue = (parseFloat(value) / Math.pow(10, 18)).toString();
-    return `${decimalValue} VET`;
+    const decimalValue = parseFloat(value || "0");
+    if (decimalValue === 0) return "0 VET";
+    return `${(decimalValue / Math.pow(10, 18)).toString()} VET`;
   };
 
   return (
@@ -285,6 +366,10 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
         {type === "bridge_transaction" && bridgeDetails && (
           <>
             <div className="mb-4 flex justify-between items-center border-b border-zinc-700 pb-3">
+              <span className="text-gray-400">Platform</span>
+              <span className="text-white">{platform || 'VeChain'}</span>
+            </div>
+            <div className="mb-4 flex justify-between items-center border-b border-zinc-700 pb-3">
               <span className="text-gray-400">From Chain</span>
               <span className="text-white">{bridgeDetails.fromChain}</span>
             </div>
@@ -292,17 +377,91 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
               <span className="text-gray-400">To Chain</span>
               <span className="text-white">{bridgeDetails.toChain}</span>
             </div>
+            <div className="mb-4 flex justify-between items-center border-b border-zinc-700 pb-3">
+              <span className="text-gray-400">Gateway</span>
+              <span className="text-white font-mono text-xs">{shortenAddress(bridgeDetails.gatewayAddress)}</span>
+            </div>
             {receiveAmount && (
               <div className="mb-4 flex justify-between items-center border-b border-zinc-700 pb-3">
                 <span className="text-gray-400">You&apos;ll Receive</span>
                 <span className="text-green-400">{receiveAmount}</span>
               </div>
             )}
+            {feeAndQuota && (
+              <>
+                <div className="mb-4 flex justify-between items-center border-b border-zinc-700 pb-3">
+                  <span className="text-gray-400">Network Fee</span>
+                  <span className="text-white">
+                    {feeAndQuota.networkFee.value} {feeAndQuota.networkFee.isPercent ? '%' : 'wei'}
+                  </span>
+                </div>
+                <div className="mb-4 flex justify-between items-center border-b border-zinc-700 pb-3">
+                  <span className="text-gray-400">Operation Fee</span>
+                  <span className="text-white">
+                    {feeAndQuota.operationFee.value} {feeAndQuota.operationFee.isPercent ? '%' : 'tokens'}
+                  </span>
+                </div>
+              </>
+            )}
+            {instructions && instructions.length > 0 && (
+              <div className="mb-4 border-b border-zinc-700 pb-3">
+                <span className="text-gray-400 block mb-2">Instructions:</span>
+                <ol className="text-sm text-gray-300 space-y-1">
+                  {instructions.map((instruction, index) => (
+                    <li key={index} className="flex items-start">
+                      <span className="text-orange-400 mr-2">{index + 1}.</span>
+                      <span>{instruction}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
           </>
         )}
 
+        {/* Approval Information */}
+        {approveRequired && (
+          <div className="mb-4 p-4 bg-zinc-800/30 border border-theme-orange/30 rounded-xl">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-theme-orange/20 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-4 h-4 text-theme-orange" />
+              </div>
+              <div className="flex-1">
+                <p className="text-theme-orange text-sm font-medium mb-2">
+                  Token Approval Check
+                </p>
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-zinc-400">Token:</span>
+                    <span className="text-theme-orange font-mono">{shortenAddress(approveRequired.token)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-zinc-400">Spender:</span>
+                    <span className="text-theme-orange font-mono">{shortenAddress(approveRequired.spender)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-zinc-400">Amount:</span>
+                    <span className="text-theme-orange font-medium">
+                      {(() => {
+                        const weiAmount = BigInt(approveRequired.amount);
+                        const tokenAmount = weiAmount / BigInt('1000000000000000000');
+                        return `${tokenAmount.toString()} ${tokenSymbol || 'TOKEN'}`;
+                      })()}
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-3 p-2 bg-zinc-700/30 border border-theme-orange/20 rounded-lg">
+                  <p className="text-theme-orange text-xs">
+                    💡 If you've already approved this token spending, you can proceed with the transaction. If not, please approve first.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* VET Value (only show if significant) */}
-        {parseFloat(value) > 0 && (
+        {parseFloat(value || "0") > 0 && (
           <div className="mb-4 flex justify-between items-center border-b border-zinc-700 pb-3">
             <span className="text-gray-400">VET Value</span>
             <span className="text-white">
@@ -329,22 +488,17 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
           </span>
         </div>
 
-        {/* Approval warning */}
-        {approveRequired && (
-          <div className="mb-4 p-3 bg-yellow-900/30 border border-yellow-500/50 rounded-lg">
-            <p className="text-yellow-400 text-sm">
-              ⚠️ Token approval required first: {shortenAddress(approveRequired.token)}
-            </p>
-          </div>
-        )}
 
         {/* Instructions */}
         {instructions && instructions.length > 0 && (
-          <div className="mb-4 p-3 bg-blue-900/30 border border-blue-500/50 rounded-lg">
-            <p className="text-blue-400 text-sm font-medium mb-2">Instructions:</p>
-            <ol className="text-blue-300 text-xs space-y-1">
+          <div className="mb-4 p-3 bg-orange-900/20 border border-orange-500/30 rounded-lg">
+            <p className="text-orange-400 text-sm font-medium mb-2">Instructions:</p>
+            <ol className="text-orange-300 text-xs space-y-1">
               {instructions.map((instruction, index) => (
-                <li key={index}>{instruction}</li>
+                <li key={index} className="flex items-start">
+                  <span className="text-orange-400 mr-2">{index + 1}.</span>
+                  <span>{instruction}</span>
+                </li>
               ))}
             </ol>
           </div>
@@ -381,7 +535,7 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
             {!isSending && !txId && !isSuccess && !isTxError && (
               <>
                 <FaSyncAlt className="text-sm" />
-                Execute Transaction
+Execute Transaction
               </>
             )}
           </button>
@@ -440,6 +594,93 @@ const TransactionComponent: React.FC<TransactionComponentProps> = ({
           )}
         </div>
       )}
+
+      {/* Approval Confirmation Dialog */}
+      <Dialog open={showApprovalModal} onOpenChange={setShowApprovalModal}>
+        <DialogContent className="bg-zinc-900 border-zinc-700 text-white max-w-lg">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-theme-orange/20 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-theme-orange" />
+              </div>
+              <div>
+                <DialogTitle className="text-white text-lg">
+                  Token Approval Check
+                </DialogTitle>
+                <DialogDescription className="text-zinc-400">
+                  Verify your approval status before proceeding
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          
+          {approveRequired && (
+            <div className="space-y-4 py-4">
+              {/* Token Details Card */}
+              <div className="bg-zinc-800/30 border border-theme-orange/20 p-4 rounded-xl">
+                <h4 className="text-theme-orange font-medium mb-3 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-theme-orange rounded-full"></span>
+                  Approval Details
+                </h4>
+                <div className="grid grid-cols-1 gap-3">
+                  <div>
+                    <p className="text-xs text-zinc-400 mb-1">Token Contract</p>
+                    <p className="text-white font-mono text-sm bg-zinc-800/50 p-2 rounded">{shortenAddress(approveRequired.token)}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-xs text-zinc-400 mb-1">Spender Address</p>
+                    <p className="text-white font-mono text-sm bg-zinc-800/50 p-2 rounded">{shortenAddress(approveRequired.spender)}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-xs text-zinc-400 mb-1">Amount</p>
+                    <p className="text-theme-orange font-semibold text-sm bg-theme-orange/10 p-2 rounded">
+                      {(() => {
+                        const weiAmount = BigInt(approveRequired.amount);
+                        const tokenAmount = weiAmount / BigInt('1000000000000000000');
+                        return `${tokenAmount.toString()} ${tokenSymbol || 'TOKEN'}`;
+                      })()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Status Check Card */}
+              <div className="bg-zinc-800/30 border border-theme-orange/20 p-4 rounded-xl">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 bg-theme-orange/20 rounded-full flex items-center justify-center">
+                    <AlertTriangle className="w-4 h-4 text-theme-orange" />
+                  </div>
+                  <div>
+                    <h4 className="text-theme-orange font-medium mb-2">Have you approved this token?</h4>
+                    <p className="text-zinc-300 text-sm">
+                      If you've already completed the token approval, you can proceed safely. 
+                      If not, please approve first to avoid transaction failure.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter className="gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowApprovalModal(false)}
+              className="border-zinc-600 text-zinc-300 hover:bg-zinc-800 flex-1"
+            >
+              I Need to Approve First
+            </Button>
+            <Button
+              onClick={handleProceedWithTransaction}
+              className="bg-theme-orange hover:bg-theme-orange-dark text-black font-bold flex-1"
+            >
+              I've Already Approved
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

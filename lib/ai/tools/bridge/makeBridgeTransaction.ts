@@ -71,11 +71,66 @@ export const makeBridgeTransaction = tool({
 
       const txData = bridgeResult.data.tx;
       const approveCheck = bridgeResult.data.approveCheck;
+      
+      // Debug: Log the bridge result to understand what data we're getting
+      console.log('🔍 Bridge API Response:', bridgeResult);
+      console.log('🔍 Bridge result data:', bridgeResult.data);
+      console.log('🔍 Approval check:', approveCheck);
+      console.log('🔍 From token address:', fromToken);
+      console.log('🔍 From token (lowercase):', fromToken.toLowerCase());
+      console.log('🔍 Symbol from API:', bridgeResult.data?.symbol);
+      console.log('🔍 Request parameters:', { fromChain, toChain, fromToken, toToken, amount });
+
+      // Check if approval is needed based on API response
+      let approvalRequired = null;
+      if (approveCheck && approveCheck.token !== '0x0000000000000000000000000000000000000000') {
+        approvalRequired = {
+          token: approveCheck.token,
+          spender: approveCheck.to,
+          amount: approveCheck.amount,
+          note: 'For this transaction to be successful, you must have approved this token spending first'
+        };
+      }
 
       // VeChain-specific response formatting
       if (fromChain === 'VET') {
+        // Determine token symbol based on fromToken address
+        let tokenSymbol = 'TOKEN';
+        
+        // Known token addresses mapping (case-insensitive)
+        // Note: The truncated address 0x0000...6779 likely refers to VTHO
+        const KNOWN_TOKENS: { [key: string]: string } = {
+          '0x0000000000000000000000000000000000000000': 'VET',
+          '0x0000000000000000000000000000456e65726779': 'VTHO', // VTHO (lowercase)
+          '0x0000000000000000000000000000456E65726779': 'VTHO', // VTHO (uppercase)
+          // Add more known tokens as needed
+        };
+        
+        // Check both original and lowercase versions
+        const fromTokenLower = fromToken.toLowerCase();
+        
+        // Also check if the address contains the VTHO pattern (ends with 6779)
+        const isVTHOAddress = fromTokenLower.includes('456e65726779') || fromTokenLower.endsWith('6779');
+        if (KNOWN_TOKENS[fromToken] || KNOWN_TOKENS[fromTokenLower]) {
+          tokenSymbol = KNOWN_TOKENS[fromToken] || KNOWN_TOKENS[fromTokenLower];
+        } else if (isVTHOAddress) {
+          // Special case for VTHO addresses that end with 6779
+          tokenSymbol = 'VTHO';
+        } else {
+          // Try to determine token symbol from API response
+          tokenSymbol = bridgeResult.data?.symbol || 'TOKEN';
+        }
+        
+        console.log('🔍 From token original:', fromToken);
+        console.log('🔍 From token lowercase:', fromTokenLower);
+        console.log('🔍 Found in mapping:', !!KNOWN_TOKENS[fromToken] || !!KNOWN_TOKENS[fromTokenLower]);
+        console.log('🔍 Is VTHO address pattern:', isVTHOAddress);
+        console.log('🔍 Determined token symbol:', tokenSymbol);
+        console.log('🔍 API symbol:', bridgeResult.data?.symbol);
+
         const vechainTransaction = {
           from: fromAccount,
+          tokenSymbol, // Add token symbol for proper display
           bridgeDetails: {
             fromChain,
             toChain,
@@ -91,12 +146,7 @@ export const makeBridgeTransaction = tool({
               data: txData.data,
             }
           ],
-          approveRequired: approveCheck ? {
-            token: approveCheck.token,
-            spender: approveCheck.to,
-            amount: approveCheck.amount,
-            note: 'Execute approval first using VeChain wallet'
-          } : null,
+          approveRequired: approvalRequired,
           type: "bridge_transaction",
           receiveAmount: bridgeResult.data.receiveAmount,
           feeAndQuota: bridgeResult.data.feeAndQuota,
