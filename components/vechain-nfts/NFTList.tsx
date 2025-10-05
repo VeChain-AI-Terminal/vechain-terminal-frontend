@@ -82,7 +82,7 @@ export default function NFTList({
     if (!supply) return 'Unknown';
     if (supply >= 1e6) return `${(supply / 1e6).toFixed(1)}M`;
     if (supply >= 1e3) return `${(supply / 1e3).toFixed(1)}K`;
-    return supply.toLocaleString();
+    return supply?.toLocaleString();
   };
 
   const getTypeColor = (type: string) => {
@@ -103,13 +103,13 @@ export default function NFTList({
         <CardTitle className="flex items-center justify-between">
           VeChain NFT Collections
           <span className="text-sm font-normal text-zinc-400">
-            {data.data.length} collections
+            {data.data?.length} collections
           </span>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
-          {data.data.map((nft, index) => (
+          {data.data?.map((nft, index) => (
             <div 
               key={nft.contract || index} 
               className="bg-zinc-800 rounded-lg p-4 hover:bg-zinc-750 transition-colors"

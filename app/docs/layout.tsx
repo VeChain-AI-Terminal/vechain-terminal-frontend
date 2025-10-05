@@ -8,12 +8,9 @@ import {
   BookOpen, 
   Code, 
   Server, 
-  FileText, 
-  Puzzle, 
   HelpCircle,
-  ChevronDown,
-  ChevronRight,
-  Building2
+  Building2,
+  Coins
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -38,16 +35,10 @@ const docsNavigation = [
     description: "MCP server setup and usage"
   },
   {
-    name: "API Reference",
-    href: "/docs/api-reference",
-    icon: FileText,
-    description: "Complete API documentation"
-  },
-  {
-    name: "Integration Guides",
-    href: "/docs/integration-guides", 
-    icon: Puzzle,
-    description: "How to integrate VeChain Terminal"
+    name: "Earn",
+    href: "/docs/earn",
+    icon: Coins,
+    description: "VeBetter rewards and earning system"
   },
   {
     name: "Examples",

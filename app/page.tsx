@@ -63,6 +63,9 @@ export default function LandingPage() {
                     <Link href="/about" className="text-muted-foreground hover:text-foreground">
                       About
                     </Link>
+                    <Link href="/earn" className="text-muted-foreground hover:text-foreground">
+                      Earn
+                    </Link>
                     <Link href="/docs" className="text-muted-foreground hover:text-foreground">
                       Documentation
                     </Link>

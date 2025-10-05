@@ -61,7 +61,7 @@ export default function AccountStats({
   }
 
   const formatNumber = (num: number) => {
-    return num.toLocaleString();
+    return num?.toLocaleString();
   };
 
   const stats = [

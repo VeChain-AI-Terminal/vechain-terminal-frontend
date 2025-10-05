@@ -77,7 +77,7 @@ export default function BlockEmission({
   const emissionLevel = getEmissionLevel(data.data.co2e_emitted);
 
   const shortenHash = (hash: string) => {
-    return `${hash.slice(0, 10)}...${hash.slice(-8)}`;
+    return `${hash?.slice(0, 10)}...${hash?.slice(-8)}`;
   };
 
   return (
@@ -118,7 +118,7 @@ export default function BlockEmission({
                 <span className="text-sm font-medium text-zinc-400">Block Number</span>
               </div>
               <div className="text-lg font-bold text-white bg-zinc-800 p-3 rounded-lg">
-                #{data.data.number.toLocaleString()}
+                #{data.data.number?.toLocaleString()}
               </div>
             </div>
 
@@ -128,7 +128,7 @@ export default function BlockEmission({
                 <span className="text-sm font-medium text-zinc-400">Block Time</span>
               </div>
               <div className="text-sm text-white bg-zinc-800 p-3 rounded-lg">
-                {new Date(data.data.timestamp).toLocaleString()}
+                {new Date(data.data.timestamp)?.toLocaleString()}
               </div>
             </div>
           </div>
@@ -201,7 +201,7 @@ export default function BlockEmission({
               </div>
             </div>
             <p className="text-xs text-zinc-400 mt-2">
-              Updated: {new Date(data.meta.timestamp).toLocaleString()}
+              Updated: {new Date(data.meta.timestamp)?.toLocaleString()}
             </p>
           </div>
         )}

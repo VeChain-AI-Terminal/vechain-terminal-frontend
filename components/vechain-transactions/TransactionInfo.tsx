@@ -142,7 +142,7 @@ export default function TransactionInfo({
               <span className="text-sm font-medium text-zinc-400">Block</span>
             </div>
             <div className="text-sm text-white bg-zinc-800 p-2 rounded">
-              #{tx.block_number.toLocaleString()}
+              #{tx.block_number?.toLocaleString()}
             </div>
           </div>
         </div>
@@ -156,7 +156,7 @@ export default function TransactionInfo({
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="bg-zinc-800 p-3 rounded-lg">
               <span className="text-zinc-400">Gas Used:</span>
-              <p className="font-medium text-white">{tx.gas_used.toLocaleString()}</p>
+              <p className="font-medium text-white">{tx.gas_used?.toLocaleString()}</p>
             </div>
             <div className="bg-zinc-800 p-3 rounded-lg">
               <span className="text-zinc-400">Gas Price:</span>
@@ -212,10 +212,10 @@ export default function TransactionInfo({
         {data.meta && (
           <div className="pt-4 border-t border-zinc-700">
             <p className="text-xs text-zinc-400">
-              Block Time: {new Date(tx.block_timestamp).toLocaleString()}
+              Block Time: {new Date(tx.block_timestamp)?.toLocaleString()}
             </p>
             <p className="text-xs text-zinc-400">
-              Updated: {new Date(data.meta.timestamp).toLocaleString()}
+              Updated: {new Date(data.meta.timestamp)?.toLocaleString()}
             </p>
           </div>
         )}

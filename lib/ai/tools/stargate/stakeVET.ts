@@ -50,7 +50,7 @@ export const stakeVET = tool({
 
       // Format VET amount for display
       const vetAmountBigInt = BigInt(level.vetRequired);
-      const vetAmountFormatted = (Number(vetAmountBigInt) / Math.pow(10, 18)).toLocaleString();
+      const vetAmountFormatted = (Number(vetAmountBigInt) / Math.pow(10, 18))?.toLocaleString();
 
       const transaction = {
         from,
