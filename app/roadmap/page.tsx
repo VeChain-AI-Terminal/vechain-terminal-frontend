@@ -257,7 +257,7 @@ export default function RoadmapPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ml-22">
                   {phase.milestones.map((milestone, milestoneIndex) => {
                     const Icon = milestone.icon;
-                    const StatusIcon = statusIcons[milestone.status];
+                    const StatusIcon = statusIcons[milestone.status as keyof typeof statusIcons];
                     
                     return (
                       <motion.div

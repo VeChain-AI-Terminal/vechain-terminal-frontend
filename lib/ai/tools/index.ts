@@ -57,10 +57,19 @@ export { getBlockEmission } from './carbon/getBlockEmission';
 export { getTransactionEmission } from './carbon/getTransactionEmission';
 export { getNetworkEmission } from './carbon/getNetworkEmission';
 
+// Bridge Tools
+export { getTokenPairs } from './bridge/getTokenPairs';
+export { getQuotaAndFee } from './bridge/getQuotaAndFee';
+export { checkBridgeStatus } from './bridge/checkBridgeStatus';
+export { getSmgID } from './bridge/getSmgID';
+export { getXFlowsQuote } from './bridge/getXFlowsQuote';
+export { buildXFlowsTransaction } from './bridge/buildXFlowsTransaction';
+export { checkXFlowsStatus } from './bridge/checkXFlowsStatus';
+export { makeBridgeTransaction } from './bridge/makeBridgeTransaction';
+
 // Transaction Tools
 export { makeSendTransaction } from './makeSendTransaction';
 export { makeContractTransaction } from './makeContractTransaction';
-export { makeBridgeTransaction } from './makeBridgeTransaction';
 export { makeTokenTransfer } from './token/makeTokenTransfer';
 export { makeTokenApproval } from './token/makeTokenApproval';
 export { signMessage } from './signMessage';

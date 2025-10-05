@@ -36,6 +36,13 @@ import BlockEmission from "@/components/vechain-carbon/BlockEmission";
 import TransactionEmission from "@/components/vechain-carbon/TransactionEmission";
 import NetworkEmission from "@/components/vechain-carbon/NetworkEmission";
 
+// VeChain Bridge Components
+import BridgeTokenPairs from "@/components/vechain-bridge/BridgeTokenPairs";
+import BridgeQuotaAndFee from "@/components/vechain-bridge/BridgeQuotaAndFee";
+import BridgeStatus from "@/components/vechain-bridge/BridgeStatus";
+import XFlowsQuote from "@/components/vechain-bridge/XFlowsQuote";
+import BridgeDashboard from "@/components/vechain-bridge/BridgeDashboard";
+
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
 
@@ -306,6 +313,7 @@ const PurePreviewMessage = ({
                     approveRequired,
                     receiveAmount,
                     instructions,
+                    tokenSymbol,
                   } = output as TransactionComponentProps;
                   return (
                     <TransactionComponent
@@ -317,6 +325,7 @@ const PurePreviewMessage = ({
                       approveRequired={approveRequired}
                       receiveAmount={receiveAmount}
                       instructions={instructions}
+                      tokenSymbol={tokenSymbol}
                       type="bridge_transaction"
                       key={toolCallId}
                     />
@@ -634,6 +643,152 @@ const PurePreviewMessage = ({
                   const { output } = part;
                   return (
                     <NetworkEmission
+                      key={toolCallId}
+                      data={output as any}
+                      isLoading={false}
+                    />
+                  );
+                }
+              }
+
+              // VeChain Bridge Tools
+              if (type === "tool-getTokenPairs") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Getting cross-chain token pairs..." />
+                    </div>
+                  );
+                }
+                if (state === "output-available") {
+                  const { output } = part;
+                  return (
+                    <BridgeTokenPairs
+                      key={toolCallId}
+                      data={output as any}
+                      isLoading={false}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-getQuotaAndFee") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Getting bridge quota and fees..." />
+                    </div>
+                  );
+                }
+                if (state === "output-available") {
+                  const { output } = part;
+                  return (
+                    <BridgeQuotaAndFee
+                      key={toolCallId}
+                      data={output as any}
+                      isLoading={false}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-checkBridgeStatus") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Checking bridge transaction status..." />
+                    </div>
+                  );
+                }
+                if (state === "output-available") {
+                  const { output } = part;
+                  return (
+                    <BridgeStatus
+                      key={toolCallId}
+                      data={output as any}
+                      isLoading={false}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-getXFlowsQuote") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Getting XFlows cross-chain swap quote..." />
+                    </div>
+                  );
+                }
+                if (state === "output-available") {
+                  const { output } = part;
+                  return (
+                    <XFlowsQuote
+                      key={toolCallId}
+                      data={output as any}
+                      isLoading={false}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-buildXFlowsTransaction") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Building XFlows transaction..." />
+                    </div>
+                  );
+                }
+                if (state === "output-available") {
+                  const { output } = part;
+                  const {
+                    from,
+                    value,
+                    network,
+                    clauses,
+                    bridgeDetails,
+                    approveRequired,
+                    receiveAmount,
+                    instructions,
+                    tokenSymbol,
+                  } = output as TransactionComponentProps;
+                  return (
+                    <TransactionComponent
+                      from={from}
+                      value={value}
+                      network={network}
+                      clauses={clauses}
+                      bridgeDetails={bridgeDetails}
+                      approveRequired={approveRequired}
+                      receiveAmount={receiveAmount}
+                      instructions={instructions}
+                      tokenSymbol={tokenSymbol}
+                      type="bridge_transaction"
+                      key={toolCallId}
+                    />
+                  );
+                }
+              }
+
+              if (type === "tool-checkXFlowsStatus") {
+                const { toolCallId, state } = part;
+                if (state === "input-available") {
+                  return (
+                    <div key={toolCallId}>
+                      <ToolCallLoader loadingMessage="Checking XFlows transaction status..." />
+                    </div>
+                  );
+                }
+                if (state === "output-available") {
+                  const { output } = part;
+                  return (
+                    <BridgeStatus
                       key={toolCallId}
                       data={output as any}
                       isLoading={false}
