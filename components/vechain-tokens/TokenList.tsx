@@ -95,7 +95,7 @@ export default function TokenList({
       </CardHeader>
       <CardContent>
         <div className="space-y-3 max-h-96 overflow-y-auto">
-          {data.data.map((token, index) => (
+          {data?.data?.map((token, index) => (
             <div 
               key={token.address || index} 
               className="flex items-center space-x-4 p-3 bg-zinc-800 rounded-lg hover:bg-zinc-750 transition-colors"

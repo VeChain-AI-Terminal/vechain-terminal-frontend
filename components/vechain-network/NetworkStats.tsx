@@ -65,7 +65,7 @@ export default function NetworkStats({
   const formatNumber = (num: number) => {
     if (num >= 1e6) return `${(num / 1e6).toFixed(2)}M`;
     if (num >= 1e3) return `${(num / 1e3).toFixed(2)}K`;
-    return num.toLocaleString();
+    return num?.toLocaleString();
   };
 
   const formatFee = (fee: string) => {
@@ -104,7 +104,7 @@ export default function NetworkStats({
     },
     {
       label: 'Avg Clauses/Tx',
-      value: data.data.average_clause_per_transaction.toFixed(2),
+      value: data.data.average_clause_per_transaction?.toFixed(2),
       icon: TrendingUp,
       color: 'text-cyan-400',
       bgColor: 'bg-cyan-500/10'
