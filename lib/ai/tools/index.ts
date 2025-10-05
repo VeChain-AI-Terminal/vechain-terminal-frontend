@@ -49,7 +49,9 @@ export { getMempool } from './network/getMempool';
 // Contract Tools
 export { getContractInfo } from './contract/getContractInfo';
 export { getContractStats } from './contract/getContractStats';
+export { getContractCode } from './contract/getContractCode';
 export { verifyContract } from './contract/verifyContract';
+export { verifyContractMetadata } from './contract/verifyContractMetadata';
 
 // Carbon Emission Tools
 export { getAddressEmission } from './carbon/getAddressEmission';
@@ -66,6 +68,14 @@ export { getXFlowsQuote } from './bridge/getXFlowsQuote';
 export { buildXFlowsTransaction } from './bridge/buildXFlowsTransaction';
 export { checkXFlowsStatus } from './bridge/checkXFlowsStatus';
 export { makeBridgeTransaction } from './bridge/makeBridgeTransaction';
+
+// StarGate Staking Tools
+export { getStakingLevels } from './stargate/getStakingLevels';
+export { stakeVET } from './stargate/stakeVET';
+export { getUserStakes } from './stargate/getUserStakes';
+export { getStakeInfo } from './stargate/getStakeInfo';
+export { claimVTHORewards } from './stargate/claimVTHORewards';
+export { unstakeStargate } from './stargate/unstakeStargate';
 
 // Transaction Tools
 export { makeSendTransaction } from './makeSendTransaction';
