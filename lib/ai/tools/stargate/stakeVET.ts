@@ -77,6 +77,19 @@ export const stakeVET = tool({
           ],
           "stateMutability": "view",
           "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint8",
+              "name": "_levelId",
+              "type": "uint8"
+            }
+          ],
+          "name": "stake",
+          "outputs": [],
+          "stateMutability": "payable",
+          "type": "function"
         }
       ];
 
@@ -95,28 +108,13 @@ export const stakeVET = tool({
         throw new Error(`Invalid level ID: ${levelId}`);
       }
 
-      // Function selectors
-      // stake(uint8) = 0x7b47ec1a
-      // stakeAndDelegate(uint8,address) = 0x4b8a3529 (if we had a delegate address)
-      
-      let data: string;
-      if (autoDelegate) {
-        // For simplicity, we'll use the regular stake function
-        // In production, you'd need to specify a delegate address
-        const levelIdHex = levelId.toString(16).padStart(2, '0');
-        data = `0x7b47ec1a000000000000000000000000000000000000000000000000000000000000000${levelIdHex}`;
-      } else {
-        // stake(uint8 level)
-        const levelIdHex = levelId.toString(16).padStart(2, '0');
-        data = `0x7b47ec1a000000000000000000000000000000000000000000000000000000000000000${levelIdHex}`;
-      }
+      // Use proper ABI encoding instead of manual hex construction
+      const encodedData = contract.encodeFunctionInput('stake', [levelId]);
+      const data = encodedData.toString();
 
       // vetAmountRequiredToStake is already in wei from contract
       const vetAmountInWei = level.vetAmountRequiredToStake.toString();
       const vetAmountFormatted = (Number(vetAmountInWei) / Math.pow(10, 18)).toLocaleString();
-      
-      // Convert wei to hex format (same as makeContractTransaction.ts)
-      // const valueInWei = `0x${BigInt(vetAmountInWei).toString(16)}`;
 
       const transaction = {
         from,
