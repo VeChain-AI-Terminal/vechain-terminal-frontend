@@ -964,8 +964,8 @@ function AIPromptsAndTools() {
       prompts: [
         {
           title: "Stake VET",
-          example: "Stake 1.5M VET for Lightning level",
-          description: "Mint StarGate NFTs by staking VET (6 levels available)",
+          example: "Stake 5 VET for Lightning level",
+          description: "Mint StarGate NFTs by staking VET (10 testnet levels available)",
           tools: ["stakeVET", "getStakingLevels"]
         },
         {
