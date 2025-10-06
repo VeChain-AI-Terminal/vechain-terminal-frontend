@@ -103,17 +103,17 @@ const faqData: FAQItem[] = [
   {
     category: "staking",
     question: "What is StarGate staking?",
-    answer: "StarGate is VeChain's official VET staking protocol that mints NFTs representing your stake. There are 6 levels from Dawn (600k VET) to Mjolnir (156M VET), each with different reward multipliers and maturity periods."
+    answer: "StarGate is VeChain's official VET staking protocol that mints NFTs representing your stake. There are 10 testnet levels from Dawn (1 VET) to Mjolnir X (1560 VET), with different tiers: New Eco, Eco, and X-Series, each with different reward multipliers and maturity periods."
   },
   {
     category: "staking",
     question: "How do I stake VET with StarGate?",
-    answer: "Say 'Stake 1.5M VET for Lightning level' or 'Show me staking options'. The AI will display all levels, requirements, and rewards, then help you create the staking transaction to mint your StarGate NFT."
+    answer: "Say 'Stake 5 VET for Lightning level' or 'Show me staking options'. The AI will display all levels, requirements, and rewards, then help you create the staking transaction to mint your StarGate NFT."
   },
   {
     category: "staking",
     question: "What are X-Series staking levels?",
-    answer: "X-Series levels (Strength, Thunder, Mjolnir) have no maturity period and can be unstaked immediately. They offer higher reward multipliers (6x, 12x, 24x) but require significantly more VET (15.6M, 56M, 156M respectively)."
+    answer: "X-Series levels (VeThor X, Strength X, Thunder X, Mjolnir X) have no maturity period and can be unstaked immediately. They offer higher reward multipliers but require more VET (60, 160, 560, 1560 VET respectively on testnet)."
   },
   {
     category: "staking",

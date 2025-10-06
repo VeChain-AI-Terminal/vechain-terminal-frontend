@@ -394,8 +394,8 @@ Essential for users to understand staking options before committing VET.
 
 export const stakeVETPrompt = `
 Use stakeVET to create VET staking transactions for minting StarGate NFTs.
-Pass from address, levelId (1-6), autoDelegate (optional), and network.
-Levels: 1=Dawn (600k VET), 2=Lightning (1.5M VET), 3=Flash (5M VET), 4=Strength (15.6M VET), 5=Thunder (56M VET), 6=Mjolnir (156M VET).
+Pass from address, levelId (1-10), autoDelegate (optional), and network.
+Levels: 1=Strength (100 VET), 2=Thunder (500 VET), 3=Mjolnir (1500 VET), 4=VeThor X (60 VET), 5=Strength X (160 VET), 6=Thunder X (560 VET), 7=Mjolnir X (1560 VET), 8=Dawn (1 VET), 9=Lightning (5 VET), 10=Flash (20 VET).
 Always verify user has sufficient VET balance before creating transaction.
 Returns transaction ready for wallet signing with proper VET value and contract data.
 `;
@@ -439,13 +439,17 @@ StarGate Staking Workflow:
 6. Use claimVTHORewards to claim accumulated rewards
 7. Use unstakeStargate to retrieve VET after maturity period
 
-StarGate Levels:
-- Dawn (600k VET): 20-day maturity, 1x rewards
-- Lightning (1.5M VET): 30-day maturity, 2x rewards  
-- Flash (5M VET): 50-day maturity, 4x rewards
-- Strength (15.6M VET): X-Series, no maturity, 6x rewards
-- Thunder (56M VET): X-Series, no maturity, 12x rewards
-- Mjolnir (156M VET): X-Series, no maturity, 24x rewards
+StarGate Levels (Testnet):
+- Dawn (1 VET): 2-day maturity, New Eco tier
+- Lightning (5 VET): 5-day maturity, New Eco tier  
+- Flash (20 VET): 15-day maturity, New Eco tier
+- Strength (100 VET): 30-day maturity, Eco tier
+- Thunder (500 VET): 45-day maturity, Eco tier
+- Mjolnir (1500 VET): 60-day maturity, Eco tier
+- VeThor X (60 VET): X-Series, no maturity
+- Strength X (160 VET): X-Series, no maturity
+- Thunder X (560 VET): X-Series, no maturity  
+- Mjolnir X (1560 VET): X-Series, no maturity
 
 X-Series nodes have no maturity period and can be unstaked immediately.
 `;
