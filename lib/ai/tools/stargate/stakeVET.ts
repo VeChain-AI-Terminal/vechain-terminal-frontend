@@ -51,13 +51,16 @@ export const stakeVET = tool({
       // Format VET amount for display
       const vetAmountBigInt = BigInt(level.vetRequired);
       const vetAmountFormatted = (Number(vetAmountBigInt) / Math.pow(10, 18))?.toLocaleString();
+      
+      // Convert wei to hex format (same as makeContractTransaction.ts)
+      const valueInWei = `0x${BigInt(level.vetRequired).toString(16)}`;
 
       const transaction = {
         from,
         contractAddress,
         functionName: autoDelegate ? "stakeAndDelegate" : "stake",
         functionArgs: [levelId.toString()],
-        value: level.vetRequired, // VET amount in wei
+        value: valueInWei, // VET amount in wei as hex
         data: data,
         network,
         levelId,
@@ -69,7 +72,7 @@ export const stakeVET = tool({
         clauses: [
           {
             to: contractAddress,
-            value: level.vetRequired,
+            value: valueInWei,
             data: data,
             comment: `Stake ${vetAmountFormatted} VET for ${level.name} StarGate NFT`,
           }
