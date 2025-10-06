@@ -6,13 +6,28 @@ import Image from 'next/image';
 type VETVTHOBalanceData = {
   success: boolean;
   data?: {
-    vet: string;
-    vet_staked: string;
-    vtho: string;
+    address: string;
+    network: string;
+    vet: {
+      symbol: string;
+      name: string;
+      balance: string;
+      balanceFormatted: string;
+      decimals: number;
+      isNative: boolean;
+    };
+    vtho: {
+      symbol: string;
+      name: string;
+      balance: string;
+      balanceFormatted: string;
+      decimals: number;
+      contractAddress: string;
+    };
   };
   meta?: {
-    address: string;
     timestamp: string;
+    network: string;
   };
   error?: string;
 };
@@ -24,6 +39,7 @@ export default function VETVTHOBalance({
   data: VETVTHOBalanceData;
   isLoading?: boolean;
 }) {
+  console.log(data)
   if (isLoading) {
     return (
       <Card className="bg-zinc-900 border-zinc-700">
@@ -75,36 +91,33 @@ export default function VETVTHOBalance({
           <div className="flex justify-between items-center p-3 bg-zinc-800 rounded-lg">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <span className="font-medium">VET</span>
+              <span className="font-medium">{data.data.vet?.symbol}</span>
             </div>
-            <span className="font-bold text-lg">{formatBalance(data.data.vet)}</span>
+            <span className="font-bold text-lg">{formatBalance(data.data.vet?.balanceFormatted)}</span>
           </div>
           
           <div className="flex justify-between items-center p-3 bg-zinc-800 rounded-lg">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-              <span className="font-medium">VTHO</span>
+              <span className="font-medium">{data.data.vtho?.symbol}</span>
             </div>
-            <span className="font-bold text-lg">{formatBalance(data.data.vtho)}</span>
-          </div>
-          
-          <div className="flex justify-between items-center p-3 bg-zinc-800 rounded-lg">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-              <span className="font-medium">VET Staked</span>
-            </div>
-            <span className="font-bold text-lg">{formatBalance(data.data.vet_staked)}</span>
+            <span className="font-bold text-lg">{formatBalance(data.data.vtho?.balanceFormatted)}</span>
           </div>
         </div>
         
-        {data.meta && (
+        {data.data && (
           <div className="mt-4 pt-4 border-t border-zinc-700">
             <p className="text-xs text-zinc-400">
-              Address: {data.meta.address.slice(0, 6)}...{data.meta.address.slice(-4)}
+              Address: {data.data.address?.slice(0, 6)}...{data.data.address?.slice(-4)}
             </p>
             <p className="text-xs text-zinc-400">
-              Updated: {new Date(data.meta.timestamp).toLocaleString()}
+              Network: {data.data?.network}
             </p>
+            {data.meta && (
+              <p className="text-xs text-zinc-400">
+                Updated: {new Date(data.meta?.timestamp).toLocaleString()}
+              </p>
+            )}
           </div>
         )}
       </CardContent>
